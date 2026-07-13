@@ -2,6 +2,7 @@ extends Node
 
 # PLAYER STATS
 
+var daysPassed : int = 0
 var playerMoney : int = 100
 var luck : float = 1.0
 

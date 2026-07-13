@@ -1,10 +1,10 @@
 extends "res://Player/PlayerStats.gd"
 
 func addMoney(money):
-	pass
+	playerMoney += money
 
 func subtractMoney(money):
-	pass
+	playerMoney -= money
 
 func toggleUpgrade(upgrade):
 	return !upgrade
