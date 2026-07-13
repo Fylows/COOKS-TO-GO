@@ -1,34 +1,38 @@
-extends "res://Player/PlayerStats.gd"
+extends Node
 
-func addMoney(money):
+func addMoney(money: int) -> void:
 	PlayerStats.playerMoney += money
 
-func subtractMoney(money):
+func subtractMoney(money: int) -> void:
 	PlayerStats.playerMoney -= money
 
-func toggleUpgrade(upgrade):
-	return !PlayerStats.upgrade
+func toggleUpgrade(upgrade: String) -> bool:
+	if upgrade not in ["palamigUP", "containerUP", "cookUP", "burnUP"]:
+		return false
+	PlayerStats.set(upgrade, not PlayerStats.get(upgrade))
+	return PlayerStats.get(upgrade)
 
 func roll_post_day() -> void:
-	for key in post_day_events.keys():
-		var e = post_day_events[key]
-		var chance = clamp(e.base_chance + luck * e.luck_factor + daysPassed * e.day_factor, 0.0, 1.0)
+	for key in PlayerStats.post_day_events.keys():
+		var e = PlayerStats.post_day_events[key]
+		var chance = clamp(e.base_chance + PlayerStats.luck * e.luck_factor + PlayerStats.daysPassed * e.day_factor, 0.0, 1.0)
 		e.active = randf() < chance
 
 func roll_pre_day() -> String:
 	var total_weight := 0.0
 	var weights := {}
 
-	for key in pre_day_events.keys():
-		var e = pre_day_events[key]
-		var w = max(0.0, e.base_weight + luck * e.luck_factor + daysPassed * e.day_factor)
+	for key in PlayerStats.pre_day_events.keys():
+		PlayerStats.pre_day_events[key].active = false
+		var e = PlayerStats.pre_day_events[key]
+		var w = max(0.0, e.base_weight + PlayerStats.luck * e.luck_factor + PlayerStats.daysPassed * e.day_factor)
 		weights[key] = w
 		total_weight += w
 
 	var roll = randf() * total_weight
 	for key in weights.keys():
 		if roll < weights[key]:
-			pre_day_events[key].active = true
+			PlayerStats.pre_day_events[key].active = true
 			return key
 		roll -= weights[key]
 
@@ -40,8 +44,9 @@ func newDay() -> String:
 func endDay() -> Array:
 	roll_post_day()
 	var postDayEvents : Array = []
-	for key in post_day_events.keys():
-		var e = post_day_events[key]
+	for key in PlayerStats.post_day_events.keys():
+		var e = PlayerStats.post_day_events[key]
 		if (e.active):
 			postDayEvents.append(key)
+	PlayerStats.daysPassed += 1
 	return postDayEvents
