@@ -1,13 +1,13 @@
 extends "res://Player/PlayerStats.gd"
 
 func addMoney(money):
-	playerMoney += money
+	PlayerStats.playerMoney += money
 
 func subtractMoney(money):
-	playerMoney -= money
+	PlayerStats.playerMoney -= money
 
 func toggleUpgrade(upgrade):
-	return !upgrade
+	return !PlayerStats.upgrade
 
 func roll_post_day() -> void:
 	for key in post_day_events.keys():

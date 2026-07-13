@@ -2,8 +2,14 @@
 
 [ext_resource type="Script" uid="uid://c723lttww2v05" path="res://EOD/Scripts/cameraMovement.gd" id="1_1ovwu"]
 [ext_resource type="Texture2D" uid="uid://reasrtc01oir" path="res://EOD/Assets/Tindahal_FINAL_1.0_CLOSEDwBOOK.png" id="2_de1ox"]
-[ext_resource type="PackedScene" uid="uid://c8syw7nxrhgs7" path="res://EOD/Scenes/Phone.tscn" id="3_6la8b"]
-[ext_resource type="Script" uid="uid://dapn5cdxsxq6n" path="res://EOD/Scripts/PhoneParallax.gd" id="4_hqsl2"]
+[ext_resource type="Script" uid="uid://coab1l62jxgr1" path="res://EOD/Scripts/ButtonLogic.gd" id="3_qbcnb"]
+
+[sub_resource type="Gradient" id="Gradient_s6ai5"]
+offsets = PackedFloat32Array(0.87650603, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_md4an"]
+gradient = SubResource("Gradient_s6ai5")
 
 [node name="Room" type="Node2D" unique_id=1933003144]
 
@@ -15,9 +21,185 @@ deadZone = 125
 scale = Vector2(1.25, 1.25)
 texture = ExtResource("2_de1ox")
 
-[node name="Phone" parent="." unique_id=1765739015 instance=ExtResource("3_6la8b")]
-position = Vector2(0, 100)
-scale = Vector2(0.87812716, 0.87507796)
-script = ExtResource("4_hqsl2")
+[node name="Node2D" type="Node2D" parent="." unique_id=1706686152]
+position = Vector2(-4, 245)
+script = ExtResource("3_qbcnb")
 parallax_strength = 1.1
 camera_path = NodePath("../Camera2D")
+
+[node name="Phone base" type="Sprite2D" parent="Node2D" unique_id=768722228]
+scale = Vector2(14.255925, 20.733023)
+texture = SubResource("GradientTexture2D_md4an")
+
+[node name="Upgrades" type="Button" parent="Node2D" unique_id=1842615462]
+offset_left = -422.0
+offset_top = -614.0
+offset_right = -340.0
+offset_bottom = -583.0
+text = "Upgrades"
+metadata/_edit_use_anchors_ = true
+
+[node name="Upg" type="Button" parent="Node2D" unique_id=18477544]
+offset_left = -414.0
+offset_top = -543.0
+offset_right = -332.0
+offset_bottom = -512.0
+text = "Upgrades"
+metadata/_edit_use_anchors_ = true
+
+[node name="Upg2" type="Button" parent="Node2D" unique_id=448923621]
+offset_left = -410.0
+offset_top = -511.0
+offset_right = -328.0
+offset_bottom = -480.0
+text = "Upgrades"
+metadata/_edit_use_anchors_ = true
+
+[node name="Upg3" type="Button" parent="Node2D" unique_id=558685364]
+offset_left = -411.0
+offset_top = -470.0
+offset_right = -329.0
+offset_bottom = -439.0
+text = "Upgrades"
+metadata/_edit_use_anchors_ = true
+
+[node name="Upg4" type="Button" parent="Node2D" unique_id=1886365862]
+offset_left = -411.0
+offset_top = -422.0
+offset_right = -329.0
+offset_bottom = -391.0
+text = "Upgrades"
+metadata/_edit_use_anchors_ = true
+
+[node name="Resources" type="Button" parent="Node2D" unique_id=1671092552]
+offset_left = -294.0
+offset_top = -614.0
+offset_right = -206.0
+offset_bottom = -583.0
+text = "Resources"
+metadata/_edit_use_anchors_ = true
+
+[node name="Res" type="Button" parent="Node2D" unique_id=769644544]
+offset_left = -295.0
+offset_top = -548.0
+offset_right = -207.0
+offset_bottom = -517.0
+text = "Resources"
+metadata/_edit_use_anchors_ = true
+
+[node name="Res2" type="Button" parent="Node2D" unique_id=519721452]
+offset_left = -294.0
+offset_top = -506.0
+offset_right = -206.0
+offset_bottom = -475.0
+text = "Resources"
+metadata/_edit_use_anchors_ = true
+
+[node name="Res3" type="Button" parent="Node2D" unique_id=252878708]
+offset_left = -295.0
+offset_top = -465.0
+offset_right = -207.0
+offset_bottom = -434.0
+text = "Resources"
+metadata/_edit_use_anchors_ = true
+
+[node name="Res4" type="Button" parent="Node2D" unique_id=20948343]
+offset_left = -295.0
+offset_top = -425.0
+offset_right = -207.0
+offset_bottom = -394.0
+text = "Resources"
+metadata/_edit_use_anchors_ = true
+
+[node name="Family" type="Button" parent="Node2D" unique_id=361599361]
+offset_left = -175.0
+offset_top = -614.0
+offset_right = -87.0
+offset_bottom = -583.0
+text = "Family"
+metadata/_edit_use_anchors_ = true
+
+[node name="fam" type="Button" parent="Node2D" unique_id=1692411914]
+offset_left = -175.0
+offset_top = -540.0
+offset_right = -87.0
+offset_bottom = -509.0
+text = "Family"
+metadata/_edit_use_anchors_ = true
+
+[node name="fam2" type="Button" parent="Node2D" unique_id=243422942]
+offset_left = -176.0
+offset_top = -499.0
+offset_right = -88.0
+offset_bottom = -468.0
+text = "Family"
+metadata/_edit_use_anchors_ = true
+
+[node name="fam3" type="Button" parent="Node2D" unique_id=393636900]
+offset_left = -180.0
+offset_top = -470.0
+offset_right = -92.0
+offset_bottom = -439.0
+text = "Family"
+metadata/_edit_use_anchors_ = true
+
+[node name="fam4" type="Button" parent="Node2D" unique_id=1683178216]
+offset_left = -179.0
+offset_top = -428.0
+offset_right = -91.0
+offset_bottom = -397.0
+text = "Family"
+metadata/_edit_use_anchors_ = true
+
+[node name="Misc" type="Button" parent="Node2D" unique_id=602819624]
+offset_left = -55.0
+offset_top = -614.0
+offset_right = 33.0
+offset_bottom = -583.0
+text = "Misc."
+metadata/_edit_use_anchors_ = true
+
+[node name="Misc2" type="Button" parent="Node2D" unique_id=587078441]
+offset_left = -58.0
+offset_top = -548.0
+offset_right = 30.0
+offset_bottom = -517.0
+text = "Misc."
+metadata/_edit_use_anchors_ = true
+
+[node name="Misc3" type="Button" parent="Node2D" unique_id=519239740]
+offset_left = -58.0
+offset_top = -498.0
+offset_right = 30.0
+offset_bottom = -467.0
+text = "Misc."
+metadata/_edit_use_anchors_ = true
+
+[node name="Misc4" type="Button" parent="Node2D" unique_id=1936917195]
+offset_left = -58.0
+offset_top = -468.0
+offset_right = 30.0
+offset_bottom = -437.0
+text = "Misc."
+metadata/_edit_use_anchors_ = true
+
+[node name="Misc5" type="Button" parent="Node2D" unique_id=1200972253]
+offset_left = -58.0
+offset_top = -436.0
+offset_right = 30.0
+offset_bottom = -405.0
+text = "Misc."
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="Node2D" unique_id=666033550]
+offset_left = 349.0
+offset_top = -610.0
+offset_right = 411.0
+offset_bottom = -587.0
+metadata/_edit_use_anchors_ = true
+
+[connection signal="pressed" from="Node2D/Upgrades" to="Node2D" method="_on_upgrades_pressed"]
+[connection signal="pressed" from="Node2D/Upg" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/Resources" to="Node2D" method="_on_resources_pressed"]
+[connection signal="pressed" from="Node2D/Family" to="Node2D" method="_on_family_pressed"]
+[connection signal="pressed" from="Node2D/Misc" to="Node2D" method="_on_misc_pressed"]
