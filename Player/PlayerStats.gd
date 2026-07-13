@@ -54,6 +54,12 @@ var pre_day_events := {
 		"base_weight": 1.0,
 		"luck_factor": 0.0,
 		"day_factor": 0.0
+	},
+	"none": {
+		"active": false,
+		"base_weight": 5.0,  # weight higher than the others so most days are event-free
+		"luck_factor": 0.0,
+		"day_factor": 0.0
 	}
 }
 # UPGRADES

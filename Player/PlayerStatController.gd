@@ -33,3 +33,15 @@ func roll_pre_day() -> String:
 		roll -= weights[key]
 
 	return ""
+	
+func newDay() -> String:
+	return roll_pre_day()
+
+func postDay() -> Array:
+	roll_post_day()
+	var postDayEvents : Array = []
+	for key in post_day_events.keys():
+		var e = post_day_events[key]
+		if (e.active):
+			postDayEvents.append(key)
+	return postDayEvents
