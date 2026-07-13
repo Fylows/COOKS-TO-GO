@@ -35,10 +35,17 @@ var results_modal: ColorRect
 var results_label: Label
 var sfx := {}
 
+# autoloads from the end_of_day branch, null until that lands on main
+@onready var stats: Node = get_node_or_null("/root/PlayerStats")
+@onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
+
 
 func _ready() -> void:
 	base_target_fill = target_fill
 	_randomize_target()
+	if stats:
+		# jug is however much palamig got bought at the store
+		jug_cups = stats.palamigStock
 	cups_remaining = maxi(jug_cups, 0)
 	current_step = Step.POUR if cups_remaining > 0 else Step.EMPTY
 	jug.gui_input.connect(_on_jug_input)
@@ -131,15 +138,21 @@ func _stop_pour() -> void:
 		return
 
 	cups_remaining -= 1
+	if stats:
+		stats.palamigStock = cups_remaining
 	# spilled cup is never a sale, even if the target sits close to the brim
 	var spilled := cup_fill >= 100.0
 	if not spilled and absf(cup_fill - target_fill) <= fill_tolerance:
 		total_money_earned += sale_price
+		if stat_controller:
+			stat_controller.addMoney(sale_price)
 		palamig_served.emit(sale_price)
 		sfx["serve"].play()
 		feedback_label.text = "Cup served! +P%d" % sale_price
 	else:
 		total_money_lost += waste_cost
+		if stat_controller:
+			stat_controller.subtractMoney(waste_cost)
 		money_lost.emit(waste_cost)
 		palamig_wasted.emit(1)
 		sfx["waste"].play()
