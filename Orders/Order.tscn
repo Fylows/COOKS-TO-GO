@@ -1,3 +1,10 @@
-[gd_scene format=3 uid="uid://bgnw0t3nktf6b"]
+[gd_scene load_steps=2 format=3 uid="uid://bgnw0t3nktf6b"]
+
+[ext_resource type="Script" path="res://Orders/OrderModel.gd" id="1_order"]
 
 [node name="Order" type="Node2D" unique_id=2012838902]
+script = ExtResource("1_order")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 200.0
+offset_bottom = 120.0
