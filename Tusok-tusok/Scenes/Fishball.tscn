@@ -1,0 +1,95 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://Tusok-tusok/Assets/Fishball/Fishball_Cooked.png" id="1_jktnb"]
+[ext_resource type="Texture2D" path="res://Tusok-tusok/Assets/Fishball/Fishball_CookingAnim.png" id="2_epf0j"]
+[ext_resource type="Texture2D" path="res://Tusok-tusok/Assets/Fishball/Fishball_RawAnim.png" id="3_nfpav"]
+[ext_resource type="Texture2D" path="res://Tusok-tusok/Assets/Fishball/Fishball_RawFull.png" id="4_2osyl"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6fbal"]
+atlas = ExtResource("2_epf0j")
+region = Rect2(0, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_52p4l"]
+atlas = ExtResource("2_epf0j")
+region = Rect2(1024, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fsfeu"]
+atlas = ExtResource("2_epf0j")
+region = Rect2(2048, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fo7ln"]
+atlas = ExtResource("2_epf0j")
+region = Rect2(3072, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xjco2"]
+atlas = ExtResource("2_epf0j")
+region = Rect2(4096, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u1rkk"]
+atlas = ExtResource("3_nfpav")
+region = Rect2(0, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pvem7"]
+atlas = ExtResource("3_nfpav")
+region = Rect2(1024, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vpuhs"]
+atlas = ExtResource("3_nfpav")
+region = Rect2(2048, 0, 1024, 1024)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ycemh"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_jktnb")
+}],
+"loop": 0,
+"name": &"cooked",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6fbal")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_52p4l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fsfeu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fo7ln")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xjco2")
+}],
+"loop": 1,
+"name": &"cooking",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u1rkk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pvem7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vpuhs")
+}],
+"loop": 1,
+"name": &"raw",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_2osyl")
+}],
+"loop": 0,
+"name": &"raw_full",
+"speed": 1.0
+}]
+
+[node name="Fishball" type="AnimatedSprite2D" unique_id=548084863]
+sprite_frames = SubResource("SpriteFrames_ycemh")
+animation = &"raw"
