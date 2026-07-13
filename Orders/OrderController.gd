@@ -7,7 +7,13 @@ const FOOD_AMOUNT_MULTIPLIER: int = 3
 const FOOD_MIN_QUANTITY: int = 1
 const FOOD_MAX_QUANTITY: int = 50
 
+const SELL_PRICE_PER_ITEM: int = 5
+
 @export var order_container: Node2D
+
+# null until end_of_day's autoloads land, so guard every use
+@onready var stats: Node = get_node_or_null("/root/PlayerStats")
+@onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
 
 ## Helper function for generating random food quantity
 func get_random_food_quantity(days_passed: int) -> int:
@@ -75,8 +81,35 @@ func create_order(days_passed: int) -> Order:
 
 	return new_order
 
-func confirm_order():	
-	pass
-	
-func cancel_order():
-	pass
+func confirm_order(order: Order) -> bool:
+	var needed := {
+		"fishballStock": order.fishball_count,
+		"kwekwekStock": order.kwekwek_count,
+		"kikiamStock": order.kikiam_count,
+		"palamigStock": order.palamig_count,
+	}
+
+	if stats:
+		for stock_var: String in needed:
+			if stats.get(stock_var) < needed[stock_var]:
+				return false
+		for stock_var: String in needed:
+			stats.set(stock_var, stats.get(stock_var) - needed[stock_var])
+
+	# no betamaxStock yet, betamax pays but doesn't get deducted
+	var total_items: int = (
+		order.fishball_count
+		+ order.kwekwek_count
+		+ order.kikiam_count
+		+ order.betamax_count
+		+ order.palamig_count
+	)
+	if stat_controller:
+		stat_controller.addMoney(total_items * SELL_PRICE_PER_ITEM)
+
+	order.queue_free()
+	return true
+
+
+func cancel_order(order: Order) -> void:
+	order.queue_free()
