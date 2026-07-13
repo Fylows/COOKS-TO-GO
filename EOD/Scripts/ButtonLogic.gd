@@ -13,6 +13,9 @@ var base_position: Vector2
 
 var categories: Dictionary
 
+# flat price for now, tweak later
+const RESOURCE_PRICE: int = 10
+
 func _ready() -> void:
 	camera = get_node(camera_path)
 	base_position = position
@@ -48,4 +51,21 @@ func _on_misc_pressed() -> void:
 
 func _on_upg_pressed() -> void:
 	PlayerStatController.subtractMoney(100)
-	print(PlayerStats.playerMoney)
+
+func buyResource(stock_var: String) -> void:
+	if PlayerStats.playerMoney < RESOURCE_PRICE:
+		return
+	PlayerStatController.subtractMoney(RESOURCE_PRICE)
+	PlayerStats.set(stock_var, PlayerStats.get(stock_var) + 1)
+
+func _on_res_pressed() -> void:
+	buyResource("fishballStock")
+
+func _on_res2_pressed() -> void:
+	buyResource("kwekwekStock")
+
+func _on_res3_pressed() -> void:
+	buyResource("kikiamStock")
+
+func _on_res4_pressed() -> void:
+	buyResource("palamigStock")

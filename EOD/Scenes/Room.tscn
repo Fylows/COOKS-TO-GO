@@ -203,3 +203,7 @@ metadata/_edit_use_anchors_ = true
 [connection signal="pressed" from="Node2D/Resources" to="Node2D" method="_on_resources_pressed"]
 [connection signal="pressed" from="Node2D/Family" to="Node2D" method="_on_family_pressed"]
 [connection signal="pressed" from="Node2D/Misc" to="Node2D" method="_on_misc_pressed"]
+[connection signal="pressed" from="Node2D/Res" to="Node2D" method="_on_res_pressed"]
+[connection signal="pressed" from="Node2D/Res2" to="Node2D" method="_on_res2_pressed"]
+[connection signal="pressed" from="Node2D/Res3" to="Node2D" method="_on_res3_pressed"]
+[connection signal="pressed" from="Node2D/Res4" to="Node2D" method="_on_res4_pressed"]
