@@ -107,6 +107,9 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	if is_pouring:
 		cup_fill = minf(cup_fill + pour_rate * delta, 100.0)
+		if cup_fill >= 100.0:
+			# cup is overflowing, don't let the player keep holding
+			_stop_pour()
 
 
 func _start_pour() -> void:
@@ -128,7 +131,9 @@ func _stop_pour() -> void:
 		return
 
 	cups_remaining -= 1
-	if absf(cup_fill - target_fill) <= fill_tolerance:
+	# spilled cup is never a sale, even if the target sits close to the brim
+	var spilled := cup_fill >= 100.0
+	if not spilled and absf(cup_fill - target_fill) <= fill_tolerance:
 		total_money_earned += sale_price
 		palamig_served.emit(sale_price)
 		sfx["serve"].play()
@@ -138,7 +143,10 @@ func _stop_pour() -> void:
 		money_lost.emit(waste_cost)
 		palamig_wasted.emit(1)
 		sfx["waste"].play()
-		feedback_label.text = "Wrong amount. One cup wasted (P%d lost)." % waste_cost
+		if spilled:
+			feedback_label.text = "Spilled! Cup overflowed (P%d lost)." % waste_cost
+		else:
+			feedback_label.text = "Wrong amount. One cup wasted (P%d lost)." % waste_cost
 
 	if cups_remaining <= 0:
 		current_step = Step.EMPTY

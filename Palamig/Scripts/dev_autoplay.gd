@@ -36,11 +36,20 @@ func _run() -> void:
 	assert(game.cups_remaining == game.jug_cups - 2, "bad cup should waste one serving")
 	await _shot("03_wasted")
 
+	# hold way too long, the game itself should cut the pour at the brim
+	var lost_before: int = game.total_money_lost
+	game._start_pour()
+	while game.is_pouring:
+		await get_tree().process_frame
+	assert(game.cup_fill >= 100.0, "pour should have run to the brim")
+	assert(game.total_money_lost == lost_before + game.waste_cost, "spill should waste the cup")
+	await _shot("04_spilled")
+
 	game.cups_remaining = 1
 	await _pour_until(game.target_fill, "")
 	assert(game.current_step == game.Step.EMPTY, "last cup should empty the jug")
 	assert(game.results_modal.visible, "results modal should pop when jug empties")
-	await _shot("04_results_modal")
+	await _shot("05_results_modal")
 
 	var finished := []
 	game.minigame_finished.connect(func(e: int, l: int) -> void: finished.append_array([e, l]))
