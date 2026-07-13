@@ -24,10 +24,10 @@ func create_order(days_passed: int) -> Order:
 	var available_food: Array[String] = ["fishball"]
 
 	if days_passed >= 1:
-		available_food.append_array(["kwekwek", "kikiam"])
+		available_food.append_array(["kwekwek", "palamig"])
 
 	if days_passed >= 2:
-		available_food.append_array(["betamax", "palamig"])
+		available_food.append("kikiam")
 
 	var item_type_count: int = randi_range(1, available_food.size())
 
