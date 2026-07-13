@@ -1,0 +1,142 @@
+[gd_scene load_steps=4 format=3 uid="uid://c8palamigminigame"]
+
+[ext_resource type="Script" path="res://Palamig/Scripts/palamig_minigame.gd" id="1_script"]
+[ext_resource type="Script" path="res://Palamig/Scripts/palamig_visuals.gd" id="2_visuals"]
+[ext_resource type="PackedScene" uid="uid://fillvessel01" path="res://Palamig/Scenes/Components/fill_vessel.tscn" id="3_vessel"]
+
+[node name="PalamigMinigame" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.18, 0.14, 0.11, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StepLabel" type="Label" parent="MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.8, 1)
+theme_override_font_sizes/font_size = 24
+text = "Pour one cup"
+horizontal_alignment = 1
+
+[node name="TargetHint" type="Label" parent="MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.73, 0.66, 1)
+text = "Hold the palamig jug. Release at the cup's green line."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="WorkArea" type="Control" parent="MarginContainer/VBox"]
+custom_minimum_size = Vector2(520, 330)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("2_visuals")
+
+[node name="ContentRow" type="Control" parent="MarginContainer/VBox/WorkArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TubArea" type="VBoxContainer" parent="MarginContainer/VBox/WorkArea/ContentRow"]
+layout_mode = 0
+offset_left = 466.0
+offset_right = 646.0
+offset_bottom = 252.0
+theme_override_constants/separation = 6
+mouse_filter = 2
+
+[node name="BigTub" parent="MarginContainer/VBox/WorkArea/ContentRow/TubArea" instance=ExtResource("3_vessel")]
+custom_minimum_size = Vector2(180, 220)
+layout_mode = 2
+
+[node name="Tap" type="ColorRect" parent="MarginContainer/VBox/WorkArea/ContentRow/TubArea/BigTub"]
+layout_mode = 0
+offset_left = 178.0
+offset_top = 185.0
+offset_right = 198.0
+offset_bottom = 197.0
+mouse_filter = 2
+color = Color(0.85, 0.85, 0.9, 1)
+
+[node name="Label" type="Label" parent="MarginContainer/VBox/WorkArea/ContentRow/TubArea"]
+layout_mode = 2
+text = "Palamig dispenser"
+horizontal_alignment = 1
+
+[node name="ServeArea" type="VBoxContainer" parent="MarginContainer/VBox/WorkArea/ContentRow"]
+layout_mode = 0
+offset_left = 610.0
+offset_top = 250.0
+offset_right = 700.0
+offset_bottom = 422.0
+theme_override_constants/separation = 6
+mouse_filter = 2
+
+[node name="Cup" parent="MarginContainer/VBox/WorkArea/ContentRow/ServeArea" instance=ExtResource("3_vessel")]
+custom_minimum_size = Vector2(90, 140)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBox/WorkArea/ContentRow/ServeArea"]
+layout_mode = 2
+text = "Customer's cup"
+horizontal_alignment = 1
+
+[node name="EffectsLayer" type="Control" parent="MarginContainer/VBox/WorkArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Stream" type="Line2D" parent="MarginContainer/VBox/WorkArea/EffectsLayer"]
+visible = false
+width = 8.0
+default_color = Color(0.78, 0.45, 0.16, 0.95)
+
+[node name="FeedbackLabel" type="Label" parent="MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+text = "Serve the customer one cup."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="PenaltyLabel" type="Label" parent="MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.55, 0.55, 1)
+text = "Earned: P0 | Lost: P0 | Jug: 10 cups"
+horizontal_alignment = 1
