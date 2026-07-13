@@ -11,7 +11,6 @@ const SELL_PRICE_PER_ITEM: int = 5
 
 @export var order_container: Node2D
 
-# null until end_of_day's autoloads land, so guard every use
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
 @onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
 
@@ -82,6 +81,9 @@ func create_order(days_passed: int) -> Order:
 	return new_order
 
 func confirm_order(order: Order) -> bool:
+	if not stats or not stat_controller or order.betamax_count > 0:
+		return false
+
 	var needed := {
 		"fishballStock": order.fishball_count,
 		"kwekwekStock": order.kwekwek_count,
@@ -89,23 +91,19 @@ func confirm_order(order: Order) -> bool:
 		"palamigStock": order.palamig_count,
 	}
 
-	if stats:
-		for stock_var: String in needed:
-			if stats.get(stock_var) < needed[stock_var]:
-				return false
-		for stock_var: String in needed:
-			stats.set(stock_var, stats.get(stock_var) - needed[stock_var])
+	for stock_var: String in needed:
+		if stats.get(stock_var) < needed[stock_var]:
+			return false
+	for stock_var: String in needed:
+		stats.set(stock_var, stats.get(stock_var) - needed[stock_var])
 
-	# no betamaxStock yet, betamax pays but doesn't get deducted
 	var total_items: int = (
 		order.fishball_count
 		+ order.kwekwek_count
 		+ order.kikiam_count
-		+ order.betamax_count
 		+ order.palamig_count
 	)
-	if stat_controller:
-		stat_controller.addMoney(total_items * SELL_PRICE_PER_ITEM)
+	stat_controller.addMoney(total_items * SELL_PRICE_PER_ITEM)
 
 	order.queue_free()
 	return true
