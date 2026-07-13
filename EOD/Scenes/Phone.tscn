@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://c8syw7nxrhgs7"]
+
+[sub_resource type="Gradient" id="Gradient_s6ai5"]
+offsets = PackedFloat32Array(0.87650603, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_bccr2"]
+gradient = SubResource("Gradient_s6ai5")
+
+[node name="Phone" type="Node2D" unique_id=1765739015]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=594318627]
+scale = Vector2(14.255925, 20.733023)
+texture = SubResource("GradientTexture2D_bccr2")

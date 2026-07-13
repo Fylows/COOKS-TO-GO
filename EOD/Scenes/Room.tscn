@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://12grfk7eqntt"]
+
+[ext_resource type="Script" uid="uid://c723lttww2v05" path="res://EOD/Scripts/cameraMovement.gd" id="1_1ovwu"]
+[ext_resource type="Texture2D" uid="uid://reasrtc01oir" path="res://EOD/Assets/Tindahal_FINAL_1.0_CLOSEDwBOOK.png" id="2_de1ox"]
+[ext_resource type="PackedScene" uid="uid://c8syw7nxrhgs7" path="res://EOD/Scenes/Phone.tscn" id="3_6la8b"]
+[ext_resource type="Script" uid="uid://dapn5cdxsxq6n" path="res://EOD/Scripts/PhoneParallax.gd" id="4_hqsl2"]
+
+[node name="Room" type="Node2D" unique_id=1933003144]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=181366636]
+script = ExtResource("1_1ovwu")
+deadZone = 125
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1567093855]
+scale = Vector2(1.25, 1.25)
+texture = ExtResource("2_de1ox")
+
+[node name="Phone" parent="." unique_id=1765739015 instance=ExtResource("3_6la8b")]
+position = Vector2(0, 100)
+scale = Vector2(0.87812716, 0.87507796)
+script = ExtResource("4_hqsl2")
+parallax_strength = 1.1
+camera_path = NodePath("../Camera2D")
