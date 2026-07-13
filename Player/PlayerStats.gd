@@ -2,7 +2,7 @@ extends Node
 
 # PLAYER STATS
 
-var money : int = 100
+var playerMoney : int = 100
 var luck : float = 1.0
 
 # RESOURSES
