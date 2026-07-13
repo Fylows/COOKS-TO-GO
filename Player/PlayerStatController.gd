@@ -37,7 +37,7 @@ func roll_pre_day() -> String:
 func newDay() -> String:
 	return roll_pre_day()
 
-func postDay() -> Array:
+func endDay() -> Array:
 	roll_post_day()
 	var postDayEvents : Array = []
 	for key in post_day_events.keys():
