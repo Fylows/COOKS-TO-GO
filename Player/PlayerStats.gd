@@ -11,9 +11,12 @@ var luck : float = 1.0
 var fishballStock : int = 0
 var kwekwekStock : int = 0
 var kikiamStock : int = 0
-var betamaxlStock : int = 0
-var hasPalamig : bool = false
+var palamigStock : int = 0
 
+var kwekPurchasable : bool = daysPassed >= 1
+var palamigPurchasable : bool = daysPassed >= 1
+
+var kikiamPurchasable : bool = daysPassed >= 2
 # CIRCUMSTANCES
 
 # post day
@@ -62,6 +65,7 @@ var pre_day_events := {
 		"day_factor": 0.0
 	}
 }
+
 # UPGRADES
 var palamigUP : bool = false
 var containerUP : bool = false
