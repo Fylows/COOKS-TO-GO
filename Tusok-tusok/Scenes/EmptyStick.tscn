@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://Tusok-tusok/Assets/EmptyStick/EmptyStick.png" id="1_ptxbm"]
+
+[node name="EmptyStick" type="Sprite2D" unique_id=2128931215]
+texture = ExtResource("1_ptxbm")
