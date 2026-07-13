@@ -1,0 +1,95 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://Tusok-tusok/Assets/Kikiam/Kikiam_Cooked.png" id="1_h6e01"]
+[ext_resource type="Texture2D" path="res://Tusok-tusok/Assets/Kikiam/Kikiam_CookingAnim.png" id="2_lliof"]
+[ext_resource type="Texture2D" path="res://Tusok-tusok/Assets/Kikiam/Kikiam_RawAnim.png" id="3_0tkda"]
+[ext_resource type="Texture2D" path="res://Tusok-tusok/Assets/Kikiam/Kikiam_RawFull.png" id="4_o3is5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_meonf"]
+atlas = ExtResource("2_lliof")
+region = Rect2(0, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oypp5"]
+atlas = ExtResource("2_lliof")
+region = Rect2(1024, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mayon"]
+atlas = ExtResource("2_lliof")
+region = Rect2(2048, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3f1ck"]
+atlas = ExtResource("2_lliof")
+region = Rect2(3072, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jlnw2"]
+atlas = ExtResource("2_lliof")
+region = Rect2(4096, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3b26t"]
+atlas = ExtResource("3_0tkda")
+region = Rect2(0, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7t0mq"]
+atlas = ExtResource("3_0tkda")
+region = Rect2(1024, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lw5ga"]
+atlas = ExtResource("3_0tkda")
+region = Rect2(2048, 0, 1024, 1024)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_dcgpf"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_h6e01")
+}],
+"loop": 0,
+"name": &"cooked",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_meonf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oypp5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mayon")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3f1ck")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jlnw2")
+}],
+"loop": 1,
+"name": &"cooking",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3b26t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7t0mq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lw5ga")
+}],
+"loop": 1,
+"name": &"raw",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_o3is5")
+}],
+"loop": 0,
+"name": &"raw_full",
+"speed": 1.0
+}]
+
+[node name="Kikiam" type="AnimatedSprite2D" unique_id=75912094]
+sprite_frames = SubResource("SpriteFrames_dcgpf")
+animation = &"raw"
