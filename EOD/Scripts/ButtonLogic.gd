@@ -29,10 +29,10 @@ func _ready() -> void:
 		$ResourceGroup/VBoxContainer/Kikiam.visible = false
 func _process(delta: float) -> void:
 	position = base_position + camera.offset * parallax_strength
-	$CanvasGroup/Money.text = str(PlayerStats.playerMoney)
+	$Stats/Money.text = str(PlayerStats.playerMoney)
 	var text = ("Palamig: %s" % PlayerStats.palamigStock) if PlayerStats.palamigUP else ""
-	$CanvasGroup/Resources.text = "Fishball: %d\nKikiam: %d\nKwek-Kwek: %d\nSauce: %s\n%s" % [PlayerStats.fishballStock, PlayerStats.kikiamStock, PlayerStats.kwekwekStock, PlayerStats.boughtSauce, text]
-	$CanvasGroup/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s" % [PlayerStats.palamigUP, PlayerStats.containerUP, PlayerStats.cookUP, PlayerStats.burnUP]
+	$Stats/Resources.text = "Fishball: %d\nKikiam: %d\nKwek-Kwek: %d\nSauce: %s\n%s" % [PlayerStats.fishballStock, PlayerStats.kikiamStock, PlayerStats.kwekwekStock, PlayerStats.boughtSauce, text]
+	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s" % [PlayerStats.palamigUP, PlayerStats.containerUP, PlayerStats.cookUP, PlayerStats.burnUP]
 
 func showOpt(opt: String) -> void:
 	for key in categories.keys():
