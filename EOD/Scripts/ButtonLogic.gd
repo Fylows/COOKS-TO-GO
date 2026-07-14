@@ -187,4 +187,4 @@ func _on_weather_btn_pressed() -> void:
 
 func _on_new_day_pressed() -> void:
 	PlayerStatController.newDay()
-	# get_tree().change_scene_to_file()
+	get_tree().change_scene_to_file("res://Screens/GameScreen.tscn")
