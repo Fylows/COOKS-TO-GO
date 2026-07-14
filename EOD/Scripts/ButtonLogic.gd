@@ -23,7 +23,8 @@ func _ready() -> void:
 		"misc": misc
 	}
 	showOpt("upgrades")
-
+	if (PlayerStats.kikiamPurchasable != true):
+		$ResourceGroup/VBoxContainer/Kikiam.visible = false
 func _process(delta: float) -> void:
 	position = base_position + camera.offset * parallax_strength
 	$CanvasGroup/Money.text = str(PlayerStats.playerMoney)
@@ -41,7 +42,7 @@ func _on_upgrades_pressed() -> void:
 func _on_resources_pressed() -> void:
 	showOpt("resources")
 	if (PlayerStats.get("palamigUP") != true):
-		$ResourceGroup/Palamig.visible = false
+		$ResourceGroup/VBoxContainer/Palamig.visible = false
 
 func _on_family_pressed() -> void:
 	showOpt("family")
@@ -77,7 +78,7 @@ func _on_burn_btn_pressed() -> void:
 	buyUpgrade(PlayerStats.upgradePrices["burn"], "burnUP")
 
 func update_resource_visibility() -> void:
-	$ResourceGroup/Palamig.visible = PlayerStats.palamigUP
+	$ResourceGroup/VBoxContainer/Palamig.visible = PlayerStats.palamigUP
 	
 # RESOURCES
 const RESOURCE_PRICE: int = 10

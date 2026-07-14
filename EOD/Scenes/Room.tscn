@@ -41,102 +41,106 @@ metadata/_edit_use_anchors_ = true
 
 [node name="UpgradesGroup" type="CanvasGroup" parent="Node2D" unique_id=906747410]
 visible = false
+position = Vector2(5, -7)
 
-[node name="PalamigUpgrd" type="Node2D" parent="Node2D/UpgradesGroup" unique_id=979218905]
+[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/UpgradesGroup" unique_id=982042350]
+offset_left = -410.0
+offset_top = -556.0
+offset_right = -163.0
+offset_bottom = -420.0
 
-[node name="palamigBtn" type="Button" parent="Node2D/UpgradesGroup/PalamigUpgrd" unique_id=18477544]
-offset_left = -67.0
-offset_top = -544.0
-offset_right = 15.0
-offset_bottom = -513.0
-text = "Buy"
-metadata/_edit_use_anchors_ = true
+[node name="PalamigUpgrd" type="HBoxContainer" parent="Node2D/UpgradesGroup/VBoxContainer" unique_id=945310509]
+layout_mode = 2
 
-[node name="Label" type="Label" parent="Node2D/UpgradesGroup/PalamigUpgrd" unique_id=767199564]
-offset_left = -425.0
-offset_top = -543.0
-offset_right = -282.0
-offset_bottom = -520.0
+[node name="Label" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd" unique_id=767199564]
+layout_mode = 2
 text = "Palamig Container"
 
-[node name="Price" type="Label" parent="Node2D/UpgradesGroup/PalamigUpgrd" unique_id=1038436901]
-offset_left = -251.0
-offset_top = -538.0
-offset_right = -108.0
-offset_bottom = -515.0
+[node name="Spacer" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd" unique_id=539624251]
+layout_mode = 2
+text = "                            "
+
+[node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd" unique_id=1038436901]
+layout_mode = 2
 text = "$ 100"
 
-[node name="ContainerUpgrd" type="Node2D" parent="Node2D/UpgradesGroup" unique_id=775908871]
+[node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd" unique_id=376998132]
+layout_mode = 2
+text = "                         "
 
-[node name="containerBtn" type="Button" parent="Node2D/UpgradesGroup/ContainerUpgrd" unique_id=67443543]
-offset_left = -65.0
-offset_top = -494.0
-offset_right = 17.0
-offset_bottom = -463.0
+[node name="palamigBtn" type="Button" parent="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd" unique_id=18477544]
+layout_mode = 2
 text = "Buy"
-metadata/_edit_use_anchors_ = true
 
-[node name="Label" type="Label" parent="Node2D/UpgradesGroup/ContainerUpgrd" unique_id=1129557279]
-offset_left = -424.0
-offset_top = -491.0
-offset_right = -286.0
-offset_bottom = -468.0
+[node name="ContainerUpgrd" type="HBoxContainer" parent="Node2D/UpgradesGroup/VBoxContainer" unique_id=526581853]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=1129557279]
+layout_mode = 2
 text = "Bigger Containers"
 
-[node name="Price" type="Label" parent="Node2D/UpgradesGroup/ContainerUpgrd" unique_id=942770667]
-offset_left = -251.0
-offset_top = -488.0
-offset_right = -108.0
-offset_bottom = -465.0
+[node name="Spacer" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=734126567]
+layout_mode = 2
+text = "                              "
+
+[node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=942770667]
+layout_mode = 2
 text = "$ 100"
 
-[node name="CookingUpgrd" type="Node2D" parent="Node2D/UpgradesGroup" unique_id=187247858]
+[node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=2133625966]
+layout_mode = 2
+text = "                         "
 
-[node name="cookingBtn" type="Button" parent="Node2D/UpgradesGroup/CookingUpgrd" unique_id=19958877]
-offset_left = -62.0
-offset_top = -434.0
-offset_right = 20.0
-offset_bottom = -403.0
+[node name="containerBtn" type="Button" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=67443543]
+layout_mode = 2
 text = "Buy"
-metadata/_edit_use_anchors_ = true
 
-[node name="Label" type="Label" parent="Node2D/UpgradesGroup/CookingUpgrd" unique_id=1273436772]
-offset_left = -429.0
-offset_top = -437.0
-offset_right = -314.0
-offset_bottom = -414.0
+[node name="CookingUpgrd" type="HBoxContainer" parent="Node2D/UpgradesGroup/VBoxContainer" unique_id=1080874232]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=1273436772]
+layout_mode = 2
 text = "Faster Cooking"
 
-[node name="Price" type="Label" parent="Node2D/UpgradesGroup/CookingUpgrd" unique_id=455282992]
-offset_left = -251.0
-offset_top = -439.0
-offset_right = -108.0
-offset_bottom = -416.0
+[node name="Spacer" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=1440165546]
+layout_mode = 2
+text = "                                    "
+
+[node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=455282992]
+layout_mode = 2
 text = "$ 100"
 
-[node name="BurnUpgrd" type="Node2D" parent="Node2D/UpgradesGroup" unique_id=1563121313]
+[node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=1295428735]
+layout_mode = 2
+text = "                         "
 
-[node name="burnBtn" type="Button" parent="Node2D/UpgradesGroup/BurnUpgrd" unique_id=477488492]
-offset_left = -63.0
-offset_top = -381.0
-offset_right = 19.0
-offset_bottom = -350.0
+[node name="cookingBtn" type="Button" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=19958877]
+layout_mode = 2
 text = "Buy"
-metadata/_edit_use_anchors_ = true
 
-[node name="Label" type="Label" parent="Node2D/UpgradesGroup/BurnUpgrd" unique_id=643536829]
-offset_left = -430.0
-offset_top = -379.0
-offset_right = -270.0
-offset_bottom = -356.0
+[node name="BurnUpgrd" type="HBoxContainer" parent="Node2D/UpgradesGroup/VBoxContainer" unique_id=1831635997]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=643536829]
+layout_mode = 2
 text = "Slower Burning Time"
 
-[node name="Price" type="Label" parent="Node2D/UpgradesGroup/BurnUpgrd" unique_id=692793365]
-offset_left = -248.0
-offset_top = -376.0
-offset_right = -105.0
-offset_bottom = -353.0
+[node name="Spacer" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=1540094821]
+layout_mode = 2
+text = "                         "
+
+[node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=692793365]
+layout_mode = 2
 text = "$ 100"
+
+[node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=481267961]
+layout_mode = 2
+text = "                         "
+
+[node name="burnBtn" type="Button" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=477488492]
+layout_mode = 2
+text = "Buy"
+metadata/_edit_use_anchors_ = true
 
 [node name="Resources" type="Button" parent="Node2D" unique_id=1671092552]
 offset_left = -294.0
@@ -147,129 +151,133 @@ text = "Resources"
 metadata/_edit_use_anchors_ = true
 
 [node name="ResourceGroup" type="CanvasGroup" parent="Node2D" unique_id=494400270]
+visible = false
+position = Vector2(5, -13)
 
-[node name="Fishball" type="Node2D" parent="Node2D/ResourceGroup" unique_id=614580309]
+[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/ResourceGroup" unique_id=511594472]
+offset_left = -409.0
+offset_top = -549.0
+offset_right = -189.0
+offset_bottom = -378.0
 
-[node name="Button" type="Button" parent="Node2D/ResourceGroup/Fishball" unique_id=1278367637]
-offset_left = -67.0
-offset_top = -544.0
-offset_right = 15.0
-offset_bottom = -513.0
-text = "Buy"
-metadata/_edit_use_anchors_ = true
+[node name="Fishball" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer" unique_id=1376009133]
+layout_mode = 2
 
-[node name="Label" type="Label" parent="Node2D/ResourceGroup/Fishball" unique_id=925773244]
-offset_left = -425.0
-offset_top = -543.0
-offset_right = -282.0
-offset_bottom = -520.0
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Fishball" unique_id=925773244]
+layout_mode = 2
 text = "Fishball Stock"
 
-[node name="Price" type="Label" parent="Node2D/ResourceGroup/Fishball" unique_id=1080631662]
-offset_left = -251.0
-offset_top = -538.0
-offset_right = -108.0
-offset_bottom = -515.0
+[node name="Spacer" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Fishball" unique_id=1175729078]
+layout_mode = 2
+text = "                      "
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Fishball" unique_id=1080631662]
+layout_mode = 2
 text = "$ 100"
 
-[node name="Kikiam" type="Node2D" parent="Node2D/ResourceGroup" unique_id=962826441]
+[node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Fishball" unique_id=23251496]
+layout_mode = 2
+text = "                       "
 
-[node name="Button" type="Button" parent="Node2D/ResourceGroup/Kikiam" unique_id=1562697292]
-offset_left = -65.0
-offset_top = -494.0
-offset_right = 17.0
-offset_bottom = -463.0
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/VBoxContainer/Fishball" unique_id=1278367637]
+layout_mode = 2
 text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Label" type="Label" parent="Node2D/ResourceGroup/Kikiam" unique_id=1901504048]
-offset_left = -424.0
-offset_top = -491.0
-offset_right = -286.0
-offset_bottom = -468.0
+[node name="Kikiam" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer" unique_id=2003787019]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kikiam" unique_id=1901504048]
+layout_mode = 2
 text = "Kikiam Stock"
 
-[node name="Price" type="Label" parent="Node2D/ResourceGroup/Kikiam" unique_id=1557554053]
-offset_left = -251.0
-offset_top = -488.0
-offset_right = -108.0
-offset_bottom = -465.0
+[node name="Spacer" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kikiam" unique_id=1694486622]
+layout_mode = 2
+text = "                       "
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kikiam" unique_id=1557554053]
+layout_mode = 2
 text = "$ 100"
 
-[node name="Kwek2" type="Node2D" parent="Node2D/ResourceGroup" unique_id=671070446]
+[node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kikiam" unique_id=417377119]
+layout_mode = 2
+text = "                       "
 
-[node name="Button" type="Button" parent="Node2D/ResourceGroup/Kwek2" unique_id=830115476]
-offset_left = -62.0
-offset_top = -434.0
-offset_right = 20.0
-offset_bottom = -403.0
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/VBoxContainer/Kikiam" unique_id=1562697292]
+layout_mode = 2
 text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Label" type="Label" parent="Node2D/ResourceGroup/Kwek2" unique_id=1294680169]
-offset_left = -429.0
-offset_top = -437.0
-offset_right = -314.0
-offset_bottom = -414.0
+[node name="Kwek2" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer" unique_id=1000292721]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kwek2" unique_id=1294680169]
+layout_mode = 2
 text = "Kwek-kwek stock"
 
-[node name="Price" type="Label" parent="Node2D/ResourceGroup/Kwek2" unique_id=268937186]
-offset_left = -251.0
-offset_top = -439.0
-offset_right = -108.0
-offset_bottom = -416.0
+[node name="Spacer" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kwek2" unique_id=2132492720]
+layout_mode = 2
+text = "               "
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kwek2" unique_id=268937186]
+layout_mode = 2
 text = "$ 100"
 
-[node name="Sauce" type="Node2D" parent="Node2D/ResourceGroup" unique_id=1615384658]
+[node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kwek2" unique_id=38805921]
+layout_mode = 2
+text = "                       "
 
-[node name="Button" type="Button" parent="Node2D/ResourceGroup/Sauce" unique_id=1935727647]
-offset_left = -63.0
-offset_top = -381.0
-offset_right = 19.0
-offset_bottom = -350.0
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/VBoxContainer/Kwek2" unique_id=830115476]
+layout_mode = 2
 text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Label" type="Label" parent="Node2D/ResourceGroup/Sauce" unique_id=10943122]
-offset_left = -430.0
-offset_top = -379.0
-offset_right = -270.0
-offset_bottom = -356.0
+[node name="Sauce" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer" unique_id=1512335391]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Sauce" unique_id=10943122]
+layout_mode = 2
 text = "Sauce"
 
-[node name="Price" type="Label" parent="Node2D/ResourceGroup/Sauce" unique_id=794033985]
-offset_left = -248.0
-offset_top = -376.0
-offset_right = -105.0
-offset_bottom = -353.0
+[node name="Spacer" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Sauce" unique_id=718308634]
+layout_mode = 2
+text = "                                    "
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Sauce" unique_id=794033985]
+layout_mode = 2
 text = "$ 100"
 
-[node name="Palamig" type="Node2D" parent="Node2D/ResourceGroup" unique_id=492550189]
-position = Vector2(1, 50)
+[node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Sauce" unique_id=125994112]
+layout_mode = 2
+text = "                       "
 
-[node name="Button" type="Button" parent="Node2D/ResourceGroup/Palamig" unique_id=841145799]
-offset_left = -63.0
-offset_top = -381.0
-offset_right = 19.0
-offset_bottom = -350.0
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/VBoxContainer/Sauce" unique_id=1935727647]
+layout_mode = 2
 text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Label" type="Label" parent="Node2D/ResourceGroup/Palamig" unique_id=102356992]
-offset_left = -430.0
-offset_top = -379.0
-offset_right = -270.0
-offset_bottom = -356.0
-text = "Palamig"
-metadata/_edit_use_anchors_ = true
+[node name="Palamig" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer" unique_id=622611046]
+layout_mode = 2
 
-[node name="Price" type="Label" parent="Node2D/ResourceGroup/Palamig" unique_id=636221258]
-offset_left = -248.0
-offset_top = -376.0
-offset_right = -105.0
-offset_bottom = -353.0
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Palamig" unique_id=102356992]
+layout_mode = 2
+text = "Palamig"
+
+[node name="Spacer" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Palamig" unique_id=1529303665]
+layout_mode = 2
+text = "                                "
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Palamig" unique_id=636221258]
+layout_mode = 2
 text = "$ 100"
-metadata/_edit_use_anchors_ = true
+
+[node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Palamig" unique_id=1423337787]
+layout_mode = 2
+text = "                       "
+
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/VBoxContainer/Palamig" unique_id=841145799]
+layout_mode = 2
+text = "Buy"
 
 [node name="Family" type="Button" parent="Node2D" unique_id=361599361]
 offset_left = -175.0
@@ -281,38 +289,128 @@ metadata/_edit_use_anchors_ = true
 
 [node name="FamilyGroup" type="CanvasGroup" parent="Node2D" unique_id=1163707389]
 visible = false
+position = Vector2(-209, -534)
 
-[node name="fam" type="Button" parent="Node2D/FamilyGroup" unique_id=1692411914]
-offset_left = -175.0
-offset_top = -540.0
-offset_right = -87.0
-offset_bottom = -509.0
-text = "Family"
-metadata/_edit_use_anchors_ = true
+[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/FamilyGroup" unique_id=2098986779]
+offset_left = -197.0
+offset_top = -28.0
+offset_right = 154.0
+offset_bottom = 212.0
 
-[node name="fam2" type="Button" parent="Node2D/FamilyGroup" unique_id=243422942]
-offset_left = -176.0
-offset_top = -499.0
-offset_right = -88.0
-offset_bottom = -468.0
-text = "Family"
-metadata/_edit_use_anchors_ = true
+[node name="Electricity" type="HBoxContainer" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=547100195]
+layout_mode = 2
 
-[node name="fam3" type="Button" parent="Node2D/FamilyGroup" unique_id=393636900]
-offset_left = -180.0
-offset_top = -470.0
-offset_right = -92.0
-offset_bottom = -439.0
-text = "Family"
-metadata/_edit_use_anchors_ = true
+[node name="Label" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Electricity" unique_id=1288512520]
+layout_mode = 2
+text = "Electricity"
 
-[node name="fam4" type="Button" parent="Node2D/FamilyGroup" unique_id=1683178216]
-offset_left = -179.0
-offset_top = -428.0
-offset_right = -91.0
-offset_bottom = -397.0
-text = "Family"
-metadata/_edit_use_anchors_ = true
+[node name="Spacer" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Electricity" unique_id=1042526277]
+layout_mode = 2
+text = "                      "
+
+[node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Electricity" unique_id=2094282141]
+layout_mode = 2
+text = "$100"
+
+[node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Electricity" unique_id=92422364]
+layout_mode = 2
+text = "                    "
+
+[node name="Button" type="Button" parent="Node2D/FamilyGroup/VBoxContainer/Electricity" unique_id=1290578342]
+layout_mode = 2
+text = "Buy"
+
+[node name="Water" type="HBoxContainer" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=92324221]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Water" unique_id=1178966353]
+layout_mode = 2
+text = "Water"
+
+[node name="Spacer" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Water" unique_id=1487036640]
+layout_mode = 2
+text = "                              "
+
+[node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Water" unique_id=2125099689]
+layout_mode = 2
+text = "$100"
+
+[node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Water" unique_id=1988265474]
+layout_mode = 2
+text = "                    "
+
+[node name="Button" type="Button" parent="Node2D/FamilyGroup/VBoxContainer/Water" unique_id=3346254]
+layout_mode = 2
+text = "Buy"
+
+[node name="Rent" type="HBoxContainer" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=164550279]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Rent" unique_id=1624275259]
+layout_mode = 2
+text = "Rent"
+
+[node name="Spacer" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Rent" unique_id=442157452]
+layout_mode = 2
+text = "                                "
+
+[node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Rent" unique_id=1439481335]
+layout_mode = 2
+text = "$100"
+
+[node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Rent" unique_id=1229657044]
+layout_mode = 2
+text = "                     "
+
+[node name="Button" type="Button" parent="Node2D/FamilyGroup/VBoxContainer/Rent" unique_id=1649529340]
+layout_mode = 2
+text = "Buy"
+
+[node name="Food" type="HBoxContainer" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=1372810852]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Food" unique_id=925608490]
+layout_mode = 2
+text = "Food"
+
+[node name="Spacer" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Food" unique_id=292575655]
+layout_mode = 2
+text = "                               "
+
+[node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Food" unique_id=615231970]
+layout_mode = 2
+text = "$100"
+
+[node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Food" unique_id=1471463325]
+layout_mode = 2
+text = "                     "
+
+[node name="Button" type="Button" parent="Node2D/FamilyGroup/VBoxContainer/Food" unique_id=1923707671]
+layout_mode = 2
+text = "Buy"
+
+[node name="Medicine" type="HBoxContainer" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=1831567636]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Medicine" unique_id=368354271]
+layout_mode = 2
+text = "Medicine"
+
+[node name="Spacer" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Medicine" unique_id=1982395590]
+layout_mode = 2
+text = "                        "
+
+[node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Medicine" unique_id=1837453622]
+layout_mode = 2
+text = "$100"
+
+[node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Medicine" unique_id=560384034]
+layout_mode = 2
+text = "                     "
+
+[node name="Button" type="Button" parent="Node2D/FamilyGroup/VBoxContainer/Medicine" unique_id=1584836129]
+layout_mode = 2
+text = "Buy"
 
 [node name="Misc" type="Button" parent="Node2D" unique_id=602819624]
 offset_left = -55.0
@@ -323,38 +421,83 @@ text = "Misc."
 metadata/_edit_use_anchors_ = true
 
 [node name="MiscGroup" type="CanvasGroup" parent="Node2D" unique_id=328044440]
-visible = false
 
-[node name="Misc2" type="Button" parent="Node2D/MiscGroup" unique_id=587078441]
-offset_left = -58.0
-offset_top = -548.0
-offset_right = 30.0
-offset_bottom = -517.0
-text = "Misc."
+[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/MiscGroup" unique_id=616868786]
+offset_left = -405.0
+offset_top = -562.0
+offset_right = -16.0
+offset_bottom = -461.0
+
+[node name="Anting2" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=1702457408]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=2108607646]
+layout_mode = 2
+text = "Fishball Stock"
+
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=370398410]
+layout_mode = 2
+text = "                      "
+
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=517326087]
+layout_mode = 2
+text = "$ 100"
+
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=832704377]
+layout_mode = 2
+text = "                       "
+
+[node name="Button" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=2002300616]
+layout_mode = 2
+text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Misc3" type="Button" parent="Node2D/MiscGroup" unique_id=519239740]
-offset_left = -58.0
-offset_top = -498.0
-offset_right = 30.0
-offset_bottom = -467.0
-text = "Misc."
+[node name="Weather" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=360911844]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1443726510]
+layout_mode = 2
+text = "Kikiam Stock"
+
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=548921598]
+layout_mode = 2
+text = "                       "
+
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=355834479]
+layout_mode = 2
+text = "$ 100"
+
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1624335634]
+layout_mode = 2
+text = "                       "
+
+[node name="Button" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1274891083]
+layout_mode = 2
+text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Misc4" type="Button" parent="Node2D/MiscGroup" unique_id=1936917195]
-offset_left = -58.0
-offset_top = -468.0
-offset_right = 30.0
-offset_bottom = -437.0
-text = "Misc."
-metadata/_edit_use_anchors_ = true
+[node name="Gamble" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=124490726]
+layout_mode = 2
 
-[node name="Misc5" type="Button" parent="Node2D/MiscGroup" unique_id=1200972253]
-offset_left = -58.0
-offset_top = -436.0
-offset_right = 30.0
-offset_bottom = -405.0
-text = "Misc."
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1325931007]
+layout_mode = 2
+text = "Kwek-kwek stock"
+
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1645104393]
+layout_mode = 2
+text = "               "
+
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=716471082]
+layout_mode = 2
+text = "$ 100"
+
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1697950572]
+layout_mode = 2
+text = "                       "
+
+[node name="Button" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1279583]
+layout_mode = 2
+text = "Buy"
 metadata/_edit_use_anchors_ = true
 
 [node name="CanvasGroup" type="CanvasGroup" parent="Node2D" unique_id=960918305]
@@ -380,15 +523,15 @@ offset_bottom = 210.0
 metadata/_edit_use_anchors_ = true
 
 [connection signal="pressed" from="Node2D/Upgrades" to="Node2D" method="_on_upgrades_pressed"]
-[connection signal="pressed" from="Node2D/UpgradesGroup/PalamigUpgrd/palamigBtn" to="Node2D" method="_on_palamig_btn_pressed"]
-[connection signal="pressed" from="Node2D/UpgradesGroup/ContainerUpgrd/containerBtn" to="Node2D" method="_on_container_btn_pressed"]
-[connection signal="pressed" from="Node2D/UpgradesGroup/CookingUpgrd/cookingBtn" to="Node2D" method="_on_cooking_btn_pressed"]
-[connection signal="pressed" from="Node2D/UpgradesGroup/BurnUpgrd/burnBtn" to="Node2D" method="_on_burn_btn_pressed"]
+[connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd/palamigBtn" to="Node2D" method="_on_palamig_btn_pressed"]
+[connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd/containerBtn" to="Node2D" method="_on_container_btn_pressed"]
+[connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd/cookingBtn" to="Node2D" method="_on_cooking_btn_pressed"]
+[connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd/burnBtn" to="Node2D" method="_on_burn_btn_pressed"]
 [connection signal="pressed" from="Node2D/Resources" to="Node2D" method="_on_resources_pressed"]
-[connection signal="pressed" from="Node2D/ResourceGroup/Fishball/Button" to="Node2D" method="_on_upg_pressed"]
-[connection signal="pressed" from="Node2D/ResourceGroup/Kikiam/Button" to="Node2D" method="_on_upg_pressed"]
-[connection signal="pressed" from="Node2D/ResourceGroup/Kwek2/Button" to="Node2D" method="_on_upg_pressed"]
-[connection signal="pressed" from="Node2D/ResourceGroup/Sauce/Button" to="Node2D" method="_on_upg_pressed"]
-[connection signal="pressed" from="Node2D/ResourceGroup/Palamig/Button" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Fishball/Button" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kikiam/Button" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/Button" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Sauce/Button" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Palamig/Button" to="Node2D" method="_on_upg_pressed"]
 [connection signal="pressed" from="Node2D/Family" to="Node2D" method="_on_family_pressed"]
 [connection signal="pressed" from="Node2D/Misc" to="Node2D" method="_on_misc_pressed"]

@@ -14,10 +14,6 @@ var kikiamStock : int = 0
 var boughtSauce : bool = false
 var palamigStock : int = 0
 
-
-var kwekPurchasable : bool = daysPassed >= 1
-var palamigPurchasable : bool = daysPassed >= 1
-
 var kikiamPurchasable : bool = daysPassed >= 2
 # CIRCUMSTANCES
 
