@@ -3,7 +3,7 @@ extends Node
 # PLAYER STATS
 
 var daysPassed : int = 0
-var playerMoney : int = 100
+var playerMoney : int = 500
 var luck : float = 1.0
 
 # RESOURSES
@@ -11,7 +11,9 @@ var luck : float = 1.0
 var fishballStock : int = 0
 var kwekwekStock : int = 0
 var kikiamStock : int = 0
+var boughtSauce : bool = false
 var palamigStock : int = 0
+
 
 var kwekPurchasable : bool = daysPassed >= 1
 var palamigPurchasable : bool = daysPassed >= 1
@@ -67,6 +69,12 @@ var pre_day_events := {
 }
 
 # UPGRADES
+var upgradePrices : Dictionary = {
+	"palamig" : 100,
+	"container" : 100,
+	"cook" : 100,
+	"burn" : 100,
+}
 var palamigUP : bool = false
 var containerUP : bool = false
 var cookUP : bool = false

@@ -39,37 +39,104 @@ offset_bottom = -583.0
 text = "Upgrades"
 metadata/_edit_use_anchors_ = true
 
-[node name="Upg" type="Button" parent="Node2D" unique_id=18477544]
-offset_left = -414.0
+[node name="UpgradesGroup" type="CanvasGroup" parent="Node2D" unique_id=906747410]
+visible = false
+
+[node name="PalamigUpgrd" type="Node2D" parent="Node2D/UpgradesGroup" unique_id=979218905]
+
+[node name="palamigBtn" type="Button" parent="Node2D/UpgradesGroup/PalamigUpgrd" unique_id=18477544]
+offset_left = -67.0
+offset_top = -544.0
+offset_right = 15.0
+offset_bottom = -513.0
+text = "Buy"
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="Node2D/UpgradesGroup/PalamigUpgrd" unique_id=767199564]
+offset_left = -425.0
 offset_top = -543.0
-offset_right = -332.0
-offset_bottom = -512.0
-text = "Upgrades"
+offset_right = -282.0
+offset_bottom = -520.0
+text = "Palamig Container"
+
+[node name="Price" type="Label" parent="Node2D/UpgradesGroup/PalamigUpgrd" unique_id=1038436901]
+offset_left = -251.0
+offset_top = -538.0
+offset_right = -108.0
+offset_bottom = -515.0
+text = "$ 100"
+
+[node name="ContainerUpgrd" type="Node2D" parent="Node2D/UpgradesGroup" unique_id=775908871]
+
+[node name="containerBtn" type="Button" parent="Node2D/UpgradesGroup/ContainerUpgrd" unique_id=67443543]
+offset_left = -65.0
+offset_top = -494.0
+offset_right = 17.0
+offset_bottom = -463.0
+text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Upg2" type="Button" parent="Node2D" unique_id=448923621]
-offset_left = -410.0
-offset_top = -511.0
-offset_right = -328.0
-offset_bottom = -480.0
-text = "Upgrades"
+[node name="Label" type="Label" parent="Node2D/UpgradesGroup/ContainerUpgrd" unique_id=1129557279]
+offset_left = -424.0
+offset_top = -491.0
+offset_right = -286.0
+offset_bottom = -468.0
+text = "Bigger Containers"
+
+[node name="Price" type="Label" parent="Node2D/UpgradesGroup/ContainerUpgrd" unique_id=942770667]
+offset_left = -251.0
+offset_top = -488.0
+offset_right = -108.0
+offset_bottom = -465.0
+text = "$ 100"
+
+[node name="CookingUpgrd" type="Node2D" parent="Node2D/UpgradesGroup" unique_id=187247858]
+
+[node name="cookingBtn" type="Button" parent="Node2D/UpgradesGroup/CookingUpgrd" unique_id=19958877]
+offset_left = -62.0
+offset_top = -434.0
+offset_right = 20.0
+offset_bottom = -403.0
+text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Upg3" type="Button" parent="Node2D" unique_id=558685364]
-offset_left = -411.0
-offset_top = -470.0
-offset_right = -329.0
-offset_bottom = -439.0
-text = "Upgrades"
+[node name="Label" type="Label" parent="Node2D/UpgradesGroup/CookingUpgrd" unique_id=1273436772]
+offset_left = -429.0
+offset_top = -437.0
+offset_right = -314.0
+offset_bottom = -414.0
+text = "Faster Cooking"
+
+[node name="Price" type="Label" parent="Node2D/UpgradesGroup/CookingUpgrd" unique_id=455282992]
+offset_left = -251.0
+offset_top = -439.0
+offset_right = -108.0
+offset_bottom = -416.0
+text = "$ 100"
+
+[node name="BurnUpgrd" type="Node2D" parent="Node2D/UpgradesGroup" unique_id=1563121313]
+
+[node name="burnBtn" type="Button" parent="Node2D/UpgradesGroup/BurnUpgrd" unique_id=477488492]
+offset_left = -63.0
+offset_top = -381.0
+offset_right = 19.0
+offset_bottom = -350.0
+text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Upg4" type="Button" parent="Node2D" unique_id=1886365862]
-offset_left = -411.0
-offset_top = -422.0
-offset_right = -329.0
-offset_bottom = -391.0
-text = "Upgrades"
-metadata/_edit_use_anchors_ = true
+[node name="Label" type="Label" parent="Node2D/UpgradesGroup/BurnUpgrd" unique_id=643536829]
+offset_left = -430.0
+offset_top = -379.0
+offset_right = -270.0
+offset_bottom = -356.0
+text = "Slower Burning Time"
+
+[node name="Price" type="Label" parent="Node2D/UpgradesGroup/BurnUpgrd" unique_id=692793365]
+offset_left = -248.0
+offset_top = -376.0
+offset_right = -105.0
+offset_bottom = -353.0
+text = "$ 100"
 
 [node name="Resources" type="Button" parent="Node2D" unique_id=1671092552]
 offset_left = -294.0
@@ -79,36 +146,129 @@ offset_bottom = -583.0
 text = "Resources"
 metadata/_edit_use_anchors_ = true
 
-[node name="Res" type="Button" parent="Node2D" unique_id=769644544]
-offset_left = -295.0
-offset_top = -548.0
-offset_right = -207.0
-offset_bottom = -517.0
-text = "Resources"
+[node name="ResourceGroup" type="CanvasGroup" parent="Node2D" unique_id=494400270]
+
+[node name="Fishball" type="Node2D" parent="Node2D/ResourceGroup" unique_id=614580309]
+
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/Fishball" unique_id=1278367637]
+offset_left = -67.0
+offset_top = -544.0
+offset_right = 15.0
+offset_bottom = -513.0
+text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Res2" type="Button" parent="Node2D" unique_id=519721452]
-offset_left = -294.0
-offset_top = -506.0
-offset_right = -206.0
-offset_bottom = -475.0
-text = "Resources"
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/Fishball" unique_id=925773244]
+offset_left = -425.0
+offset_top = -543.0
+offset_right = -282.0
+offset_bottom = -520.0
+text = "Fishball Stock"
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/Fishball" unique_id=1080631662]
+offset_left = -251.0
+offset_top = -538.0
+offset_right = -108.0
+offset_bottom = -515.0
+text = "$ 100"
+
+[node name="Kikiam" type="Node2D" parent="Node2D/ResourceGroup" unique_id=962826441]
+
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/Kikiam" unique_id=1562697292]
+offset_left = -65.0
+offset_top = -494.0
+offset_right = 17.0
+offset_bottom = -463.0
+text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Res3" type="Button" parent="Node2D" unique_id=252878708]
-offset_left = -295.0
-offset_top = -465.0
-offset_right = -207.0
-offset_bottom = -434.0
-text = "Resources"
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/Kikiam" unique_id=1901504048]
+offset_left = -424.0
+offset_top = -491.0
+offset_right = -286.0
+offset_bottom = -468.0
+text = "Kikiam Stock"
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/Kikiam" unique_id=1557554053]
+offset_left = -251.0
+offset_top = -488.0
+offset_right = -108.0
+offset_bottom = -465.0
+text = "$ 100"
+
+[node name="Kwek2" type="Node2D" parent="Node2D/ResourceGroup" unique_id=671070446]
+
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/Kwek2" unique_id=830115476]
+offset_left = -62.0
+offset_top = -434.0
+offset_right = 20.0
+offset_bottom = -403.0
+text = "Buy"
 metadata/_edit_use_anchors_ = true
 
-[node name="Res4" type="Button" parent="Node2D" unique_id=20948343]
-offset_left = -295.0
-offset_top = -425.0
-offset_right = -207.0
-offset_bottom = -394.0
-text = "Resources"
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/Kwek2" unique_id=1294680169]
+offset_left = -429.0
+offset_top = -437.0
+offset_right = -314.0
+offset_bottom = -414.0
+text = "Kwek-kwek stock"
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/Kwek2" unique_id=268937186]
+offset_left = -251.0
+offset_top = -439.0
+offset_right = -108.0
+offset_bottom = -416.0
+text = "$ 100"
+
+[node name="Sauce" type="Node2D" parent="Node2D/ResourceGroup" unique_id=1615384658]
+
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/Sauce" unique_id=1935727647]
+offset_left = -63.0
+offset_top = -381.0
+offset_right = 19.0
+offset_bottom = -350.0
+text = "Buy"
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/Sauce" unique_id=10943122]
+offset_left = -430.0
+offset_top = -379.0
+offset_right = -270.0
+offset_bottom = -356.0
+text = "Sauce"
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/Sauce" unique_id=794033985]
+offset_left = -248.0
+offset_top = -376.0
+offset_right = -105.0
+offset_bottom = -353.0
+text = "$ 100"
+
+[node name="Palamig" type="Node2D" parent="Node2D/ResourceGroup" unique_id=492550189]
+position = Vector2(1, 50)
+
+[node name="Button" type="Button" parent="Node2D/ResourceGroup/Palamig" unique_id=841145799]
+offset_left = -63.0
+offset_top = -381.0
+offset_right = 19.0
+offset_bottom = -350.0
+text = "Buy"
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/Palamig" unique_id=102356992]
+offset_left = -430.0
+offset_top = -379.0
+offset_right = -270.0
+offset_bottom = -356.0
+text = "Palamig"
+metadata/_edit_use_anchors_ = true
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/Palamig" unique_id=636221258]
+offset_left = -248.0
+offset_top = -376.0
+offset_right = -105.0
+offset_bottom = -353.0
+text = "$ 100"
 metadata/_edit_use_anchors_ = true
 
 [node name="Family" type="Button" parent="Node2D" unique_id=361599361]
@@ -119,7 +279,10 @@ offset_bottom = -583.0
 text = "Family"
 metadata/_edit_use_anchors_ = true
 
-[node name="fam" type="Button" parent="Node2D" unique_id=1692411914]
+[node name="FamilyGroup" type="CanvasGroup" parent="Node2D" unique_id=1163707389]
+visible = false
+
+[node name="fam" type="Button" parent="Node2D/FamilyGroup" unique_id=1692411914]
 offset_left = -175.0
 offset_top = -540.0
 offset_right = -87.0
@@ -127,7 +290,7 @@ offset_bottom = -509.0
 text = "Family"
 metadata/_edit_use_anchors_ = true
 
-[node name="fam2" type="Button" parent="Node2D" unique_id=243422942]
+[node name="fam2" type="Button" parent="Node2D/FamilyGroup" unique_id=243422942]
 offset_left = -176.0
 offset_top = -499.0
 offset_right = -88.0
@@ -135,7 +298,7 @@ offset_bottom = -468.0
 text = "Family"
 metadata/_edit_use_anchors_ = true
 
-[node name="fam3" type="Button" parent="Node2D" unique_id=393636900]
+[node name="fam3" type="Button" parent="Node2D/FamilyGroup" unique_id=393636900]
 offset_left = -180.0
 offset_top = -470.0
 offset_right = -92.0
@@ -143,7 +306,7 @@ offset_bottom = -439.0
 text = "Family"
 metadata/_edit_use_anchors_ = true
 
-[node name="fam4" type="Button" parent="Node2D" unique_id=1683178216]
+[node name="fam4" type="Button" parent="Node2D/FamilyGroup" unique_id=1683178216]
 offset_left = -179.0
 offset_top = -428.0
 offset_right = -91.0
@@ -159,7 +322,10 @@ offset_bottom = -583.0
 text = "Misc."
 metadata/_edit_use_anchors_ = true
 
-[node name="Misc2" type="Button" parent="Node2D" unique_id=587078441]
+[node name="MiscGroup" type="CanvasGroup" parent="Node2D" unique_id=328044440]
+visible = false
+
+[node name="Misc2" type="Button" parent="Node2D/MiscGroup" unique_id=587078441]
 offset_left = -58.0
 offset_top = -548.0
 offset_right = 30.0
@@ -167,7 +333,7 @@ offset_bottom = -517.0
 text = "Misc."
 metadata/_edit_use_anchors_ = true
 
-[node name="Misc3" type="Button" parent="Node2D" unique_id=519239740]
+[node name="Misc3" type="Button" parent="Node2D/MiscGroup" unique_id=519239740]
 offset_left = -58.0
 offset_top = -498.0
 offset_right = 30.0
@@ -175,7 +341,7 @@ offset_bottom = -467.0
 text = "Misc."
 metadata/_edit_use_anchors_ = true
 
-[node name="Misc4" type="Button" parent="Node2D" unique_id=1936917195]
+[node name="Misc4" type="Button" parent="Node2D/MiscGroup" unique_id=1936917195]
 offset_left = -58.0
 offset_top = -468.0
 offset_right = 30.0
@@ -183,7 +349,7 @@ offset_bottom = -437.0
 text = "Misc."
 metadata/_edit_use_anchors_ = true
 
-[node name="Misc5" type="Button" parent="Node2D" unique_id=1200972253]
+[node name="Misc5" type="Button" parent="Node2D/MiscGroup" unique_id=1200972253]
 offset_left = -58.0
 offset_top = -436.0
 offset_right = 30.0
@@ -191,19 +357,38 @@ offset_bottom = -405.0
 text = "Misc."
 metadata/_edit_use_anchors_ = true
 
-[node name="Label" type="Label" parent="Node2D" unique_id=666033550]
-offset_left = 349.0
-offset_top = -610.0
-offset_right = 411.0
-offset_bottom = -587.0
+[node name="CanvasGroup" type="CanvasGroup" parent="Node2D" unique_id=960918305]
+position = Vector2(349, -610)
+
+[node name="Money" type="Label" parent="Node2D/CanvasGroup" unique_id=666033550]
+offset_right = 62.0
+offset_bottom = 23.0
+metadata/_edit_use_anchors_ = true
+
+[node name="Resources" type="Label" parent="Node2D/CanvasGroup" unique_id=1968668440]
+offset_left = -76.0
+offset_top = 43.0
+offset_right = -14.0
+offset_bottom = 66.0
+metadata/_edit_use_anchors_ = true
+
+[node name="Upgrades" type="Label" parent="Node2D/CanvasGroup" unique_id=228320218]
+offset_left = -74.0
+offset_top = 187.0
+offset_right = -12.0
+offset_bottom = 210.0
 metadata/_edit_use_anchors_ = true
 
 [connection signal="pressed" from="Node2D/Upgrades" to="Node2D" method="_on_upgrades_pressed"]
-[connection signal="pressed" from="Node2D/Upg" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/UpgradesGroup/PalamigUpgrd/palamigBtn" to="Node2D" method="_on_palamig_btn_pressed"]
+[connection signal="pressed" from="Node2D/UpgradesGroup/ContainerUpgrd/containerBtn" to="Node2D" method="_on_container_btn_pressed"]
+[connection signal="pressed" from="Node2D/UpgradesGroup/CookingUpgrd/cookingBtn" to="Node2D" method="_on_cooking_btn_pressed"]
+[connection signal="pressed" from="Node2D/UpgradesGroup/BurnUpgrd/burnBtn" to="Node2D" method="_on_burn_btn_pressed"]
 [connection signal="pressed" from="Node2D/Resources" to="Node2D" method="_on_resources_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/Fishball/Button" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/Kikiam/Button" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/Kwek2/Button" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/Sauce/Button" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/Palamig/Button" to="Node2D" method="_on_upg_pressed"]
 [connection signal="pressed" from="Node2D/Family" to="Node2D" method="_on_family_pressed"]
 [connection signal="pressed" from="Node2D/Misc" to="Node2D" method="_on_misc_pressed"]
-[connection signal="pressed" from="Node2D/Res" to="Node2D" method="_on_res_pressed"]
-[connection signal="pressed" from="Node2D/Res2" to="Node2D" method="_on_res2_pressed"]
-[connection signal="pressed" from="Node2D/Res3" to="Node2D" method="_on_res3_pressed"]
-[connection signal="pressed" from="Node2D/Res4" to="Node2D" method="_on_res4_pressed"]
