@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=3 uid="uid://dni3ummbqg1vf"]
+
+[ext_resource type="Script" uid="uid://bt548r5fktbp7" path="res://Scenes/Menu/Credit/credit.gd" id="1_1ohj4"]
+[ext_resource type="Texture2D" uid="uid://cjchqlju7161c" path="res://Scenes/Menu/additionalBG/credits.png" id="2_mg35v"]
+[ext_resource type="Texture2D" uid="uid://j8023t33uuex" path="res://Scenes/Menu/Buttons/back.png" id="3_j2thi"]
+[ext_resource type="Texture2D" uid="uid://tbschv58t4mv" path="res://Scenes/Menu/Buttons/back_pressed.png" id="4_1nqx7"]
+[ext_resource type="Texture2D" uid="uid://b8j5l7syma6ck" path="res://Scenes/Menu/Buttons/back_highlight.png" id="5_srnxx"]
+
+[node name="credit" type="Node2D"]
+script = ExtResource("1_1ohj4")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -5.0
+offset_top = 3.0
+offset_right = 477.0
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_mg35v")
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Back" type="TextureButton" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 1519.0
+offset_top = 961.0
+offset_right = 1719.0
+offset_bottom = 1021.0
+scale = Vector2(2, 2)
+texture_normal = ExtResource("3_j2thi")
+texture_pressed = ExtResource("4_1nqx7")
+texture_hover = ExtResource("5_srnxx")
+
+[connection signal="pressed" from="CanvasLayer/Control/Back" to="." method="_on_back_pressed"]

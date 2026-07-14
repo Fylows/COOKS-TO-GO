@@ -38,9 +38,11 @@ func roll_pre_day() -> String:
 
 	return ""
 	
+# Gives new day event, raining or awasan
 func newDay() -> String:
 	return roll_pre_day()
 
+# Gives post day events and resets essentials and resources
 func endDay() -> Array:
 	roll_post_day()
 	var postDayEvents : Array = []
@@ -49,4 +51,22 @@ func endDay() -> Array:
 		if (e.active):
 			postDayEvents.append(key)
 	PlayerStats.daysPassed += 1
+	resetStats()
 	return postDayEvents
+
+
+func resetStats() -> void:
+	# Reset Essentials
+	PlayerStats.paidElectricity = false
+	PlayerStats.paidWater = false
+	PlayerStats.paidRent = false
+	PlayerStats.paidFood= false
+	PlayerStats.paidMedicine = false
+		
+
+	# Reset Resouces
+	PlayerStats.fishballStock = 0
+	PlayerStats.kwekwekStock = 0
+	PlayerStats.kikiamStock = 0
+	PlayerStats.boughtSauce = false
+	PlayerStats.palamigStock = 0
