@@ -1,4 +1,4 @@
-extends Node2D
+extends PanelContainer
 class_name Order
 
 # FOOD ITEMS
@@ -10,7 +10,7 @@ var palamig_count : int = 0
 
 # for Label child node
 # use label child node for less assets
-@onready var order_label : Label = $Label
+@onready var order_label: Label = $MarginContainer/VBoxContainer/Label
 
 ## Create order instance
 func setup_order(fb: int, kk: int, ki: int, bm: int, pal: int) -> void:

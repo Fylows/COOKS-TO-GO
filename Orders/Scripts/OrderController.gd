@@ -1,4 +1,4 @@
-extends Node2D
+extends MarginContainer
 class_name OrderController
 
 const ORDER_SCENE: PackedScene = preload("res://Orders/Scenes/Order.tscn")
@@ -10,6 +10,7 @@ const SELL_PRICE_PER_ITEM: int = 5
 
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
 @onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
+@onready var order_list: HBoxContainer = $OrderList
 
 ## Helper function for generating random food quantity
 func get_random_food_quantity(days_passed: int) -> int:
@@ -20,14 +21,6 @@ func get_random_food_quantity(days_passed: int) -> int:
 	)
 
 	return randi_range(FOOD_MIN_QUANTITY, maximum_quantity)
-
-## Order position helper function for creating order cards inside OrderContainer scene
-func position_orders() -> void:
-	var spacing: float = 325.0
-
-	for index: int in range(get_child_count()):
-		var order: Node2D = get_child(index)
-		order.position = Vector2(index * spacing, 0)
 		
 ## Create orders based on unlock food items with scaling quantity based on days
 func create_order(days_passed: int) -> Order:
@@ -69,7 +62,7 @@ func create_order(days_passed: int) -> Order:
 				palamig_count = quantity
 
 	var new_order: Order = ORDER_SCENE.instantiate()
-	add_child(new_order)
+	order_list.add_child(new_order)
 
 	new_order.setup_order(
 		fishball_count,
@@ -78,8 +71,6 @@ func create_order(days_passed: int) -> Order:
 		betamax_count,
 		palamig_count
 	)
-
-	position_orders()
 	
 	return new_order
 
@@ -116,12 +107,14 @@ func cancel_order(order: Order) -> void:
 	order.queue_free()
 
 # Quick test
-#func _ready() -> void:
-	#var order0: Order = create_order(0)
-	#var order1: Order = create_order(1)
-	#var order2: Order = create_order(2)
-	#
-	#await get_tree().create_timer(5.0).timeout
-	#cancel_order(order0)
-	#await get_tree().create_timer(3.0).timeout
-	#var order3: Order = create_order(3)
+func _ready() -> void:
+	var order0: Order = create_order(0)
+	var order1: Order = create_order(1)
+	var order2: Order = create_order(2)
+	
+	await get_tree().create_timer(2.0).timeout
+	cancel_order(order0)
+	await get_tree().create_timer(2.0).timeout
+	var order3: Order = create_order(3)
+	var order4: Order = create_order(3)
+	var order5: Order = create_order(3)
