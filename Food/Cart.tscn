@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://dbt2yevcoxgpe"]
+
+[ext_resource type="Script" uid="uid://br8ap87vd11cs" path="res://Food/Scripts/CookingController.gd" id="1_c1gv1"]
+[ext_resource type="Texture2D" uid="uid://bgof78vvjak18" path="res://Food/Assets/Sprites/cart_main.PNG" id="2_cfyva"]
+[ext_resource type="PackedScene" uid="uid://wnp3aymsq7yn" path="res://Food/Visuals/FoodItem2D.tscn" id="3_cfyva"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_n2fls"]
+radius = 224.55774
+
+[node name="Cart2D" type="Node2D" unique_id=1057474929]
+script = ExtResource("1_c1gv1")
+
+[node name="CartMain" type="Sprite2D" parent="." unique_id=1216639026]
+position = Vector2(975.99994, 676)
+scale = Vector2(0.9978993, 0.77399313)
+texture = ExtResource("2_cfyva")
+
+[node name="Area2D" type="Area2D" parent="CartMain" unique_id=1817041459]
+position = Vector2(-101.212524, 248.06427)
+scale = Vector2(1.0021051, 1.2920011)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CartMain/Area2D" unique_id=2121156886]
+visible = false
+position = Vector2(-15.000004, 82.999916)
+scale = Vector2(1.3866657, 0.88093936)
+shape = SubResource("CircleShape2D_n2fls")
+debug_color = Color(0.7292633, 0.4713059, 0.14347473, 0.41960785)
+
+[node name="FoodItems2D" parent="." unique_id=1936758307 instance=ExtResource("3_cfyva")]
+position = Vector2(347, 511)
+
+[connection signal="area_entered" from="CartMain/Area2D" to="." method="_on_area_2d_area_entered"]
