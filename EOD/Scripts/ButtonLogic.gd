@@ -52,8 +52,6 @@ func _on_family_pressed() -> void:
 func _on_misc_pressed() -> void:
 	showOpt("misc")
 
-
-
 # BUYING LOGIC
 
 # UPGRADES

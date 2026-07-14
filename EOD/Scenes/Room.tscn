@@ -187,7 +187,6 @@ layout_mode = 2
 text = "Buy"
 
 [node name="UpgradesGroup" type="CanvasGroup" parent="Node2D" unique_id=906747410]
-visible = false
 position = Vector2(5, -7)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/UpgradesGroup" unique_id=982042350]
@@ -219,6 +218,30 @@ text = "                         "
 layout_mode = 2
 text = "Buy"
 
+[node name="BurnUpgrd" type="HBoxContainer" parent="Node2D/UpgradesGroup/VBoxContainer" unique_id=1831635997]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=643536829]
+layout_mode = 2
+text = "Slower Burning Time"
+
+[node name="Spacer" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=1540094821]
+layout_mode = 2
+text = "                         "
+
+[node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=692793365]
+layout_mode = 2
+text = "$ 200"
+
+[node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=481267961]
+layout_mode = 2
+text = "                         "
+
+[node name="burnBtn" type="Button" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=477488492]
+layout_mode = 2
+text = "Buy"
+metadata/_edit_use_anchors_ = true
+
 [node name="ContainerUpgrd" type="HBoxContainer" parent="Node2D/UpgradesGroup/VBoxContainer" unique_id=526581853]
 layout_mode = 2
 
@@ -232,7 +255,7 @@ text = "                              "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=942770667]
 layout_mode = 2
-text = "$ 100"
+text = "$ 250"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=2133625966]
 layout_mode = 2
@@ -255,7 +278,7 @@ text = "                                    "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=455282992]
 layout_mode = 2
-text = "$ 100"
+text = "$ 500"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=1295428735]
 layout_mode = 2
@@ -265,31 +288,8 @@ text = "                         "
 layout_mode = 2
 text = "Buy"
 
-[node name="BurnUpgrd" type="HBoxContainer" parent="Node2D/UpgradesGroup/VBoxContainer" unique_id=1831635997]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=643536829]
-layout_mode = 2
-text = "Slower Burning Time"
-
-[node name="Spacer" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=1540094821]
-layout_mode = 2
-text = "                         "
-
-[node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=692793365]
-layout_mode = 2
-text = "$ 100"
-
-[node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=481267961]
-layout_mode = 2
-text = "                         "
-
-[node name="burnBtn" type="Button" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=477488492]
-layout_mode = 2
-text = "Buy"
-metadata/_edit_use_anchors_ = true
-
 [node name="FamilyGroup" type="CanvasGroup" parent="Node2D" unique_id=1163707389]
+visible = false
 position = Vector2(-209, -534)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/FamilyGroup" unique_id=2098986779]
@@ -534,9 +534,9 @@ text = "Start New Day"
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Sauce/buySauce" to="Node2D" method="_on_buy_sauce_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Palamig/buyPalamig" to="Node2D" method="_on_buy_palamig_pressed"]
 [connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd/palamigBtn" to="Node2D" method="_on_palamig_btn_pressed"]
+[connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd/burnBtn" to="Node2D" method="_on_burn_btn_pressed"]
 [connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd/containerBtn" to="Node2D" method="_on_container_btn_pressed"]
 [connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd/cookingBtn" to="Node2D" method="_on_cooking_btn_pressed"]
-[connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd/burnBtn" to="Node2D" method="_on_burn_btn_pressed"]
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Electricity/electicityBtn" to="Node2D" method="_on_electicity_btn_pressed"]
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Water/waterBtn" to="Node2D" method="_on_water_btn_pressed"]
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Rent/rentBtn" to="Node2D" method="_on_rent_btn_pressed"]

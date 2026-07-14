@@ -67,9 +67,9 @@ var pre_day_events := {
 # UPGRADES
 var upgradePrices : Dictionary = {
 	"palamig" : 100,
-	"container" : 100,
-	"cook" : 100,
-	"burn" : 100,
+	"container" : 250,
+	"cook" : 500,
+	"burn" : 200,
 }
 var palamigUP : bool = false
 var containerUP : bool = false
