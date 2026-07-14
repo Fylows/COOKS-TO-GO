@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://iq1mcvj1proc"]
+
+[ext_resource type="Script" uid="uid://d2fr3vhmi6x0p" path="res://Orders/Scripts/OrderController.gd" id="1_jdj8n"]
+
+[node name="OrderContainer" type="Node2D" unique_id=1832358502]
+script = ExtResource("1_jdj8n")

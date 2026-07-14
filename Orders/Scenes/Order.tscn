@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bgnw0t3nktf6b"]
+
+[ext_resource type="Script" uid="uid://c6okljdi8k41s" path="res://Orders/Scripts/OrderModel.gd" id="1_h4v0o"]
+[ext_resource type="Texture2D" uid="uid://dhqrqboqprwo4" path="res://Orders/Assets/order_card.png" id="2_sj65x"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_7gp5a"]
+font_size = 40
+font_color = Color(0, 0, 0, 1)
+
+[node name="Order" type="Node2D" unique_id=2012838902]
+script = ExtResource("1_h4v0o")
+
+[node name="OrderSprite" type="Sprite2D" parent="." unique_id=1681509553]
+texture = ExtResource("2_sj65x")
+centered = false
+
+[node name="Label" type="Label" parent="." unique_id=471257839]
+offset_left = 26.0
+offset_top = 89.0
+offset_right = 273.0
+offset_bottom = 277.0
+label_settings = SubResource("LabelSettings_7gp5a")
+metadata/_edit_use_anchors_ = true
