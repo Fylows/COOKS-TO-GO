@@ -22,7 +22,9 @@ func _ready() -> void:
 		"family": family,
 		"misc": misc
 	}
-	showOpt("upgrades")
+	showOpt("resources")
+	if (PlayerStats.get("palamigUP") != true):
+		$ResourceGroup/VBoxContainer/Palamig.visible = false
 	if (PlayerStats.kikiamPurchasable != true):
 		$ResourceGroup/VBoxContainer/Kikiam.visible = false
 func _process(delta: float) -> void:
@@ -54,14 +56,11 @@ func _on_misc_pressed() -> void:
 
 # BUYING LOGIC
 
-func subtractMoney(amount: int) -> void:
-	PlayerStats.playerMoney -= amount
-
 # UPGRADES
 
 func buyUpgrade(upgrade_price : int, upgrade_name : String) -> void:
 	if (PlayerStats.playerMoney >= upgrade_price and PlayerStats.get(upgrade_name) != true):
-		subtractMoney(upgrade_price)
+		PlayerStatController.subtractMoney(upgrade_price)
 		PlayerStats.set(upgrade_name, true)
 		update_resource_visibility()
 
@@ -81,22 +80,43 @@ func update_resource_visibility() -> void:
 	$ResourceGroup/VBoxContainer/Palamig.visible = PlayerStats.palamigUP
 	
 # RESOURCES
-const RESOURCE_PRICE: int = 10
+const RESOURCE_PRICE: Dictionary = {
+	"fishball" : 50,
+	"kikiam" : 75,
+	"kwek2" : 150,
+	"sauce" : 100,
+	"palamig" : 75
+}
 
-func buyResource(stock_var: String, unlock_day: int) -> void:
-	if PlayerStats.daysPassed < unlock_day or PlayerStats.playerMoney < RESOURCE_PRICE:
+const STOCK_AMOUNT = 10
+
+func buyResource(price : int, stock_var: String) -> void:
+	if PlayerStats.playerMoney < price:
 		return
-	PlayerStatController.subtractMoney(RESOURCE_PRICE)
-	PlayerStats.set(stock_var, PlayerStats.get(stock_var) + 1)
+	PlayerStatController.subtractMoney(price)
+	if (stock_var == "sauce"): 
+		PlayerStats.boughtSauce = true
+		return
+	PlayerStats.set(stock_var, PlayerStats.get(stock_var) + STOCK_AMOUNT)
 
-func _on_res_pressed() -> void:
-	buyResource("fishballStock", 0)
 
-func _on_res2_pressed() -> void:
-	buyResource("kwekwekStock", 1)
+func _on_buy_fishball_pressed() -> void:
+	buyResource(RESOURCE_PRICE["fishball"],"fishballStock")
 
-func _on_res3_pressed() -> void:
-	buyResource("kikiamStock", 2)
 
-func _on_res4_pressed() -> void:
-	buyResource("palamigStock", 1)
+func _on_buy_kikiam_pressed() -> void:
+	buyResource(RESOURCE_PRICE["kikiam"],"kikiamStock")
+
+
+func _on_buy_sauce_pressed() -> void:
+	if (PlayerStats.boughtSauce):
+		return
+	buyResource(RESOURCE_PRICE["sauce"],"sauce")
+
+
+func _on_buy_palamig_pressed() -> void:
+	buyResource(RESOURCE_PRICE["palamig"],"palamigStock")
+
+
+func _on_buys_kwek_2_pressed() -> void:
+	buyResource(RESOURCE_PRICE["kwek2"],"kwekwekStock")
