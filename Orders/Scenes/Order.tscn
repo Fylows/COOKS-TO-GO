@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://bgnw0t3nktf6b"]
+
+[ext_resource type="Script" uid="uid://c6okljdi8k41s" path="res://Orders/Scripts/OrderModel.gd" id="1_h4v0o"]
+[ext_resource type="Texture2D" uid="uid://dhqrqboqprwo4" path="res://Orders/Assets/order_card.png" id="2_sj65x"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_7gp5a"]
+font_size = 20
+font_color = Color(0, 0, 0, 1)
+
+[node name="Order" type="PanelContainer" unique_id=401757635]
+propagate_maximum_size = false
+offset_right = 180.0
+offset_bottom = 240.0
+script = ExtResource("1_h4v0o")
+
+[node name="OrderCard" type="TextureRect" parent="." unique_id=529697832]
+custom_minimum_size = Vector2(180, 240)
+layout_mode = 2
+texture = ExtResource("2_sj65x")
+expand_mode = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1497188304]
+layout_mode = 2
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 25
+theme_override_constants/margin_bottom = 25
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=317997920]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer" unique_id=471257839]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_7gp5a")
+autowrap_mode = 3
+metadata/_edit_use_anchors_ = true
+
+[node name="ButtonContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1601016186]
+layout_mode = 2
+alignment = 1
