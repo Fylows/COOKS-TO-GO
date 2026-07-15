@@ -73,7 +73,7 @@ func _refresh_title_state() -> void:
 		high_score_label.visible = false
 		high_score_label.text = ""
 	if endings_button:
-		endings_button.text = "Gallery"
+		endings_button.visible = false
 	_rebuild_gallery_rows()
 
 
@@ -84,12 +84,14 @@ func _setup_endings_progress_panel() -> void:
 		endings_collection_label = endings_progress_panel.find_child("CollectionLabel", true, false) as Label
 		endings_headline_label = endings_progress_panel.find_child("HeadlineLabel", true, false) as Label
 		endings_sub_label = endings_progress_panel.find_child("SubLabel", true, false) as Label
+		_wire_endings_panel_click()
+		_place_endings_panel(column)
 		return
 
 	endings_progress_panel = PanelContainer.new()
 	endings_progress_panel.name = "EndingsProgressPanel"
 	endings_progress_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	endings_progress_panel.custom_minimum_size = Vector2(420, 0)
+	endings_progress_panel.custom_minimum_size = Vector2(280, 0)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.04, 0.03, 0.05, 0.96)
 	style.border_color = Color(0.45, 0.08, 0.1, 1)
@@ -100,6 +102,7 @@ func _setup_endings_progress_panel() -> void:
 
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 4)
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	endings_progress_panel.add_child(vbox)
 
 	endings_collection_label = Label.new()
@@ -107,6 +110,7 @@ func _setup_endings_progress_panel() -> void:
 	endings_collection_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	endings_collection_label.add_theme_font_size_override("font_size", 13)
 	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
+	endings_collection_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(endings_collection_label)
 
 	endings_headline_label = Label.new()
@@ -115,18 +119,58 @@ func _setup_endings_progress_panel() -> void:
 	endings_headline_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	endings_headline_label.add_theme_font_size_override("font_size", 22)
 	endings_headline_label.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
+	endings_headline_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(endings_headline_label)
 
 	endings_sub_label = Label.new()
 	endings_sub_label.name = "SubLabel"
 	endings_sub_label.visible = false
+	endings_sub_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(endings_sub_label)
 
-	# Place above high score (same slot the old endings text used).
-	var hs := column.get_node_or_null("HighScoreLabel")
 	column.add_child(endings_progress_panel)
-	if hs:
-		column.move_child(endings_progress_panel, hs.get_index())
+	_place_endings_panel(column)
+	_wire_endings_panel_click()
+
+
+func _place_endings_panel(column: VBoxContainer) -> void:
+	if endings_progress_panel == null or endings_progress_panel.get_parent() != column:
+		return
+	# Under name / New Game, above Music/SFX. Not a stray mid-stack button.
+	var audio := column.get_node_or_null("AudioToggles")
+	if audio:
+		column.move_child(endings_progress_panel, audio.get_index())
+
+
+func _wire_endings_panel_click() -> void:
+	if endings_progress_panel == null:
+		return
+	endings_progress_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	endings_progress_panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	endings_progress_panel.focus_mode = Control.FOCUS_NONE
+	if not endings_progress_panel.gui_input.is_connected(_on_endings_panel_gui_input):
+		endings_progress_panel.gui_input.connect(_on_endings_panel_gui_input)
+	if not endings_progress_panel.mouse_entered.is_connected(_on_endings_mouse_entered):
+		endings_progress_panel.mouse_entered.connect(_on_endings_mouse_entered)
+	if not endings_progress_panel.mouse_entered.is_connected(_on_endings_panel_hover_on):
+		endings_progress_panel.mouse_entered.connect(_on_endings_panel_hover_on)
+	if not endings_progress_panel.mouse_exited.is_connected(_on_endings_panel_hover_off):
+		endings_progress_panel.mouse_exited.connect(_on_endings_panel_hover_off)
+
+
+func _on_endings_panel_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_on_endings_pressed()
+
+
+func _on_endings_panel_hover_on() -> void:
+	if endings_progress_panel:
+		endings_progress_panel.modulate = Color(1.08, 1.08, 1.08, 1.0)
+
+
+func _on_endings_panel_hover_off() -> void:
+	if endings_progress_panel:
+		endings_progress_panel.modulate = Color.WHITE
 
 
 func _refresh_endings_progress_panel() -> void:
@@ -135,7 +179,7 @@ func _refresh_endings_progress_panel() -> void:
 	var n := ScoreController.unlocked_ending_count()
 	var total := EndingBank.count()
 	var style := endings_progress_panel.get_theme_stylebox("panel") as StyleBoxFlat
-	endings_collection_label.text = "Endings"
+	endings_collection_label.text = "Gallery"
 	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
 	if n <= 0:
 		endings_headline_label.text = "%d locked" % total
@@ -159,29 +203,12 @@ func _refresh_endings_progress_panel() -> void:
 
 
 func _setup_endings_button() -> void:
+	# Old mid-column Gallery button. Panel is the door now.
 	var column: VBoxContainer = $UiLayer/CenterRoot/Column
 	endings_button = column.get_node_or_null("EndingsButton") as Button
 	if endings_button:
-		if not endings_button.pressed.is_connected(_on_endings_pressed):
-			endings_button.pressed.connect(_on_endings_pressed)
-		return
-	endings_button = Button.new()
-	endings_button.name = "EndingsButton"
-	endings_button.focus_mode = Control.FOCUS_NONE
-	endings_button.custom_minimum_size = Vector2(220, 40)
-	endings_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	endings_button.add_theme_font_size_override("font_size", 18)
-	endings_button.add_theme_color_override("font_color", Color(0.94, 0.96, 1.0))
-	endings_button.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.55))
-	endings_button.pressed.connect(_on_endings_pressed)
-	endings_button.mouse_entered.connect(_on_endings_mouse_entered)
-	# Sit under Restart / above audio.
-	var audio := column.get_node_or_null("AudioToggles")
-	if audio:
-		column.add_child(endings_button)
-		column.move_child(endings_button, audio.get_index())
-	else:
-		column.add_child(endings_button)
+		endings_button.visible = false
+		endings_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _setup_endings_gallery() -> void:
