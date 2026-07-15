@@ -54,21 +54,26 @@ theme_override_constants/margin_bottom = 28
 
 [node name="VBox" type="VBoxContainer" parent="CenterRoot/MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 20
 
-[node name="StepLabel" type="Label" parent="CenterRoot/MarginContainer/VBox"]
+[node name="Header" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StepLabel" type="Label" parent="CenterRoot/MarginContainer/VBox/Header"]
 layout_mode = 2
 size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.95, 0.9, 0.8, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.98, 0.94, 0.86, 1)
+theme_override_font_sizes/font_size = 32
 text = "Pour one cup"
 horizontal_alignment = 1
 
-[node name="TargetHint" type="Label" parent="CenterRoot/MarginContainer/VBox"]
+[node name="TargetHint" type="Label" parent="CenterRoot/MarginContainer/VBox/Header"]
 custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
 size_flags_vertical = 0
-theme_override_colors/font_color = Color(0.75, 0.73, 0.66, 1)
+theme_override_colors/font_color = Color(0.62, 0.6, 0.55, 1)
+theme_override_font_sizes/font_size = 17
 text = "Hold the palamig jug. Release at the cup's green line."
 horizontal_alignment = 1
 autowrap_mode = 3
@@ -78,7 +83,7 @@ layout_mode = 2
 size_flags_vertical = 0
 
 [node name="WorkArea" type="Control" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost"]
-custom_minimum_size = Vector2(300, 360)
+custom_minimum_size = Vector2(300, 330)
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("2_visuals")
@@ -124,20 +129,6 @@ fill_cavity_bottom = 0.92
 fill_width_top_frac = 0.791
 fill_width_bottom_frac = 0.5
 
-[node name="JugLabel" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
-layout_mode = 0
-offset_right = 180.0
-offset_bottom = 20.0
-text = "Dispenser"
-horizontal_alignment = 1
-
-[node name="CupLabel" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
-layout_mode = 0
-offset_right = 90.0
-offset_bottom = 20.0
-text = "Customer's cup"
-horizontal_alignment = 1
-
 [node name="EffectsLayer" type="Control" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea"]
 layout_mode = 1
 anchors_preset = 15
@@ -156,12 +147,11 @@ end_cap_mode = 2
 default_color = Color(0.78, 0.45, 0.16, 0.95)
 
 [node name="FeedbackLabel" type="Label" parent="CenterRoot/MarginContainer/VBox"]
-custom_minimum_size = Vector2(460, 32)
+custom_minimum_size = Vector2(460, 28)
 layout_mode = 2
 size_flags_vertical = 0
-theme_override_constants/line_spacing = 4
-theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
-text = "Serve the customer one cup."
+theme_override_colors/font_color = Color(0.95, 0.78, 0.45, 1)
+theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -169,12 +159,13 @@ autowrap_mode = 3
 visible = false
 layout_mode = 2
 size_flags_vertical = 0
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
 [node name="OrderTitle" type="Label" parent="CenterRoot/MarginContainer/VBox/OrderProgressPanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
-text = "Cups to serve"
+theme_override_colors/font_color = Color(0.72, 0.7, 0.64, 1)
+theme_override_font_sizes/font_size = 15
+text = "CUPS TO SERVE"
 horizontal_alignment = 1
 
 [node name="OrderCupRow" type="HBoxContainer" parent="CenterRoot/MarginContainer/VBox/OrderProgressPanel"]

@@ -30,8 +30,8 @@ var order_completed: bool = false
 const CUP_ICON_DONE := preload("res://Shared/Assets/Palamig/cup_full.PNG")
 const CUP_ICON_TODO := preload("res://Shared/Assets/Palamig/cup.PNG")
 
-@onready var step_label: Label = $CenterRoot/MarginContainer/VBox/StepLabel
-@onready var target_hint: Label = $CenterRoot/MarginContainer/VBox/TargetHint
+@onready var step_label: Label = $CenterRoot/MarginContainer/VBox/Header/StepLabel
+@onready var target_hint: Label = $CenterRoot/MarginContainer/VBox/Header/TargetHint
 @onready var feedback_label: Label = $CenterRoot/MarginContainer/VBox/FeedbackLabel
 @onready var order_progress_panel: VBoxContainer = $CenterRoot/MarginContainer/VBox/OrderProgressPanel
 @onready var order_cup_row: HBoxContainer = $CenterRoot/MarginContainer/VBox/OrderProgressPanel/OrderCupRow
@@ -79,6 +79,7 @@ func _reset_session() -> void:
 	total_money_lost = 0
 	cup_fill = 0.0
 	is_pouring = false
+	feedback_label.text = ""
 	if results_modal:
 		results_modal.hide()
 	if order_cups_total > 0:

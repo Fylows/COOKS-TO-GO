@@ -9,8 +9,6 @@ const TEX_CUP_FRAME := preload("res://Shared/Assets/Palamig/cup.PNG")
 
 @onready var tub_area: VBoxContainer = $ContentRow/TubArea
 @onready var serve_area: VBoxContainer = $ContentRow/ServeArea
-@onready var jug_label: Label = $ContentRow/JugLabel
-@onready var cup_label: Label = $ContentRow/CupLabel
 @onready var jug: FillVessel = $ContentRow/TubArea/BigTub
 @onready var cup: FillVessel = $ContentRow/ServeArea/Cup
 @onready var effects: Control = $EffectsLayer
@@ -19,7 +17,6 @@ const TEX_CUP_FRAME := preload("res://Shared/Assets/Palamig/cup.PNG")
 const JUG_SIZE := Vector2(180, 220)
 const CUP_SIZE := Vector2(90, 140)
 const CUP_BELOW_TAP := 10.0
-const LABEL_GAP := 10.0
 
 var _game: Node
 
@@ -42,12 +39,6 @@ func _layout_pour_scene() -> void:
 	var tap_x := jug_x + JUG_SIZE.x * tap_uv_x
 	var tap_y := JUG_SIZE.y * jug.tap_uv_max.y
 	serve_area.position = Vector2(tap_x - CUP_SIZE.x * 0.5, tap_y + CUP_BELOW_TAP)
-
-	var labels_y := maxf(JUG_SIZE.y, serve_area.position.y + CUP_SIZE.y) + LABEL_GAP
-	jug_label.position = Vector2(jug_x, labels_y)
-	jug_label.size = Vector2(JUG_SIZE.x, 20.0)
-	cup_label.position = Vector2(serve_area.position.x, labels_y)
-	cup_label.size = Vector2(CUP_SIZE.x, 20.0)
 
 
 func _process(_delta: float) -> void:
