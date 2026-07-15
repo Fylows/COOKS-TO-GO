@@ -241,7 +241,9 @@ func _on_palamig_order_started(order: Order) -> void:
 
 
 func _on_palamig_done(_earned: int, _lost: int) -> void:
-	palamig_game.hide()
+	if palamig_game:
+		palamig_game.set_process_input(false)
+		palamig_game.hide()
 
 	if pending_palamig_order == null:
 		return
