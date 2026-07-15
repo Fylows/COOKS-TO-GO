@@ -69,9 +69,7 @@ func can_start_day() -> bool:
 	return start_day_block_reason().is_empty()
 
 
-func start_day_block_reason() -> String:
-	if GameStateController.is_game_over:
-		return GameStateController.reason
+func blocking_issue() -> String:
 	if not PlayerStats.paidTindahanApp:
 		var app_price: int = PlayerStatController.essential_cost("tindahanApp")
 		if PlayerStats.playerMoney < app_price:
@@ -87,6 +85,12 @@ func start_day_block_reason() -> String:
 			return "Need %d Pesos for medicine." % price
 		return "Buy medicine on the Family tab first."
 	return ""
+
+
+func start_day_block_reason() -> String:
+	if GameStateController.is_game_over:
+		return GameStateController.reason
+	return blocking_issue()
 
 
 func try_buy_medicine() -> bool:
