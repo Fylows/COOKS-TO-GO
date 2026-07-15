@@ -12,7 +12,7 @@ const FOOD_TEXTURES: Dictionary = {
 	"fishball": preload("res://Shared/Assets/Fishball/Fishball_Cooked.png"),
 	"kwekwek": preload("res://Shared/Assets/Kwekwek/Kwekwek_Cooked.png"),
 	"kikiam": preload("res://Shared/Assets/Kikiam/Kikiam_Cooked.png"),
-	"palamig": preload("res://Shared/Assets/Palamig/Palamig.png")
+	"palamig": preload("res://Shared/Assets/Palamig/cup_full.PNG")
 }
 
 const FADE_IN_DURATION: float = 0.25
