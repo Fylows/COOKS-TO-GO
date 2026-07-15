@@ -59,8 +59,8 @@ func _add_toggle(label: String, pressed: bool, setter: Callable) -> void:
 	var button := Button.new()
 	button.focus_mode = Control.FOCUS_NONE
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
-	button.custom_minimum_size = Vector2(132, 36)
-	button.add_theme_font_size_override("font_size", 16)
+	button.custom_minimum_size = Vector2(160, 44)
+	button.add_theme_font_size_override("font_size", 20)
 	button.set_meta("enabled", pressed)
 	_refresh_button(button, label, pressed)
 	button.pressed.connect(func() -> void:

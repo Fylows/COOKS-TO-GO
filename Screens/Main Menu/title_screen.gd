@@ -61,6 +61,7 @@ func _refresh_title_state() -> void:
 		restart_button.text = "New Game"
 	if hint_label:
 		hint_label.text = "Vendor name for your stall."
+		hint_label.add_theme_font_size_override("font_size", 20)
 	_refresh_endings_progress_panel()
 	var records := ScoreController.format_high_scores()
 	if not records.is_empty():
@@ -72,8 +73,11 @@ func _refresh_title_state() -> void:
 	else:
 		high_score_label.visible = false
 		high_score_label.text = ""
-	if endings_button:
-		endings_button.visible = false
+	if high_score_label:
+		high_score_label.add_theme_font_size_override("font_size", 22)
+	if endings_button and is_instance_valid(endings_button):
+		endings_button.queue_free()
+		endings_button = null
 	_rebuild_gallery_rows()
 
 
@@ -91,7 +95,7 @@ func _setup_endings_progress_panel() -> void:
 	endings_progress_panel = PanelContainer.new()
 	endings_progress_panel.name = "EndingsProgressPanel"
 	endings_progress_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	endings_progress_panel.custom_minimum_size = Vector2(280, 0)
+	endings_progress_panel.custom_minimum_size = Vector2(320, 0)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.04, 0.03, 0.05, 0.96)
 	style.border_color = Color(0.45, 0.08, 0.1, 1)
@@ -108,7 +112,7 @@ func _setup_endings_progress_panel() -> void:
 	endings_collection_label = Label.new()
 	endings_collection_label.name = "CollectionLabel"
 	endings_collection_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	endings_collection_label.add_theme_font_size_override("font_size", 13)
+	endings_collection_label.add_theme_font_size_override("font_size", 18)
 	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
 	endings_collection_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(endings_collection_label)
@@ -117,7 +121,7 @@ func _setup_endings_progress_panel() -> void:
 	endings_headline_label.name = "HeadlineLabel"
 	endings_headline_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	endings_headline_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	endings_headline_label.add_theme_font_size_override("font_size", 22)
+	endings_headline_label.add_theme_font_size_override("font_size", 28)
 	endings_headline_label.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
 	endings_headline_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(endings_headline_label)
@@ -180,7 +184,9 @@ func _refresh_endings_progress_panel() -> void:
 	var total := EndingBank.count()
 	var style := endings_progress_panel.get_theme_stylebox("panel") as StyleBoxFlat
 	endings_collection_label.text = "Gallery"
+	endings_collection_label.add_theme_font_size_override("font_size", 18)
 	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
+	endings_headline_label.add_theme_font_size_override("font_size", 28)
 	if n <= 0:
 		endings_headline_label.text = "%d locked" % total
 		endings_headline_label.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
@@ -200,15 +206,15 @@ func _refresh_endings_progress_panel() -> void:
 	if endings_sub_label:
 		endings_sub_label.visible = false
 	endings_progress_panel.visible = true
+	endings_progress_panel.custom_minimum_size = Vector2(320, 0)
 
 
 func _setup_endings_button() -> void:
-	# Old mid-column Gallery button. Panel is the door now.
 	var column: VBoxContainer = $UiLayer/CenterRoot/Column
-	endings_button = column.get_node_or_null("EndingsButton") as Button
-	if endings_button:
-		endings_button.visible = false
-		endings_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var stale := column.get_node_or_null("EndingsButton")
+	if stale:
+		stale.queue_free()
+	endings_button = null
 
 
 func _setup_endings_gallery() -> void:
