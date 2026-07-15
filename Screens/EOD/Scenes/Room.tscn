@@ -470,6 +470,29 @@ layout_mode = 2
 text = "Buy"
 metadata/_edit_use_anchors_ = true
 
+[node name="JuanAngat" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "JuanAngat Paldo Loan+"
+
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "              "
+
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "+300, owe 400"
+
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "                       "
+
+[node name="loanBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "Borrow"
+
 [node name="Gamble" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=124490726]
 layout_mode = 2
 
@@ -544,4 +567,5 @@ text = "Start New Day"
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Medicine/medBtn" to="Node2D" method="_on_med_btn_pressed"]
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Anting2/antingBtn" to="Node2D" method="_on_anting_btn_pressed"]
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Weather/weatherBtn" to="Node2D" method="_on_weather_btn_pressed"]
+[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/JuanAngat/loanBtn" to="Node2D" method="_on_loan_btn_pressed"]
 [connection signal="pressed" from="Node2D/New Day" to="Node2D" method="_on_new_day_pressed"]

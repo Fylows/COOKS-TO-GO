@@ -50,6 +50,7 @@ func newDay() -> String:
 
 # Gives post day events and resets essentials and resources
 func endDay() -> Array:
+	LoanController.collect_payment()
 	FamilyStateController.process_end_of_day()
 	roll_post_day()
 	var postDayEvents : Array = []

@@ -100,3 +100,4 @@ var miscPrice : Dictionary = {
 
 var boughtAnting2 : bool = false
 var boughtSubscription : bool = false
+var loan_balance : int = 0

@@ -28,9 +28,13 @@ func _ready() -> void:
 		$ResourceGroup/VBoxContainer/Palamig.visible = false
 	if (PlayerStats.kikiamPurchasable != true):
 		$ResourceGroup/VBoxContainer/Kikiam.visible = false
+	_refresh_loan_btn()
+
 func _process(delta: float) -> void:
 	position = base_position + camera.offset * parallax_strength
-	$Stats/Money.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
+	var money_line := PlayerStatController.format_pesos(PlayerStats.playerMoney)
+	var loan_line := LoanController.status_text()
+	$Stats/Money.text = money_line if loan_line.is_empty() else "%s\n%s" % [money_line, loan_line]
 	var text = ("Palamig: %s" % PlayerStats.palamigStock) if PlayerStats.palamigUP else ""
 	$Stats/Resources.text = "Fishball: %d\nKikiam: %d\nKwek-Kwek: %d\nSauce: %s\n%s" % [PlayerStats.fishballStock, PlayerStats.kikiamStock, PlayerStats.kwekwekStock, PlayerStats.boughtSauce, text]
 	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s\n\nFamily\n%s" % [
@@ -195,9 +199,26 @@ func _on_weather_btn_pressed() -> void:
 	$MiscGroup/VBoxContainer/Weather/weatherBtn.text = "bought"
 
 
+func _on_loan_btn_pressed() -> void:
+	if LoanController.try_borrow():
+		_refresh_loan_btn()
+
+
+func _refresh_loan_btn() -> void:
+	var btn: Button = $MiscGroup/VBoxContainer/JuanAngat/loanBtn
+	if PlayerStats.loan_balance > 0:
+		btn.text = "Owe %d" % PlayerStats.loan_balance
+		btn.disabled = true
+	else:
+		btn.text = "Borrow"
+		btn.disabled = false
+
+
 func _on_new_day_pressed() -> void:
 	if not FamilyStateController.can_start_day():
 		showOpt("family")
+		if LoanController.can_borrow() and FamilyStateController.is_family_sick:
+			showOpt("misc")
 		return
 	PlayerStatController.newDay()
 	get_tree().change_scene_to_file("res://Screens/Game/Scenes/GameScreen.tscn")

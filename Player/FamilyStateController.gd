@@ -86,6 +86,8 @@ func status_text() -> String:
 		var price: int = PlayerStats.essentialPrice["medicine"]
 		if PlayerStats.playerMoney < price:
 			lines.append("Sick. Need %d Pesos for medicine." % price)
+			if LoanController.can_borrow():
+				lines.append("JuanAngat Paldo Loan+ is in Misc.")
 		else:
 			lines.append("Sick. Buy medicine.")
 	elif consecutive_unpaid_rent_days > 0:
