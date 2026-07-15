@@ -4,7 +4,7 @@ extends Node2D
 @onready var bgm = $bgm
 
 func _ready() -> void:
-	bgm.play()
+	BgmController.play_track("title")
 func _on_start_pressed() -> void:
 	get_tree().change_scene_to_file("res://Screens/EOD/Scenes/Room.tscn")
 	pass

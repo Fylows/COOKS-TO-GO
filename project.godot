@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 PlayerStats="*uid://cirurloxsm83l"
 PlayerStatController="*uid://bf0kj6i3ab5cb"
+BgmController="*res://Audio/BgmController.gd"
 Dialogic="*uid://ds2q0uclmolvu"
 
 [dialogic]

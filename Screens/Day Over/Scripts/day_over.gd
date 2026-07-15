@@ -18,4 +18,6 @@ func _on_button_pressed() -> void:
 
 
 func _on_visibility_changed() -> void:
-	$AnimationPlayer.play("blur")
+	if visible:
+		BgmController.play_track("day_over")
+		$AnimationPlayer.play("blur")

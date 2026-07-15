@@ -12,6 +12,7 @@ var pending_palamig_order: Order
 
 func _ready() -> void:
 	day_over.visible = false
+	BgmController.play_track("stall")
 	order_controller.palamig_order_started.connect(_on_palamig_order_started)
 	_setup_palamig_game()
 

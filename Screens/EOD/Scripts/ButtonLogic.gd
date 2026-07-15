@@ -15,6 +15,7 @@ var categories: Dictionary
 
 func _ready() -> void:
 	get_tree().paused = false
+	BgmController.play_track("eod")
 	camera = get_node(camera_path)
 	base_position = position
 	categories = {
