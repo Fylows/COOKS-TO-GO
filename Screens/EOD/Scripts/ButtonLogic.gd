@@ -693,7 +693,7 @@ func go_home(current_group: CanvasGroup) -> void:
 func _on_home_btn_pressed() -> void:
 	if page != home:
 		go_home(page)
-		$"../Canvas/Control/HomeTooltip".toggle(false)
+		$"../Canvas/Control/HomeTooltip".hide()
 		return
 	if GameStateController.evaluate():
 		return
@@ -728,13 +728,11 @@ func _on_home_btn_pressed() -> void:
 
 
 func _on_home_btn_mouse_entered() -> void:
-	if page != home:
-		$"../Canvas/Control/HomeTooltip".toggle(true)
+	pass
 
 
 func _on_home_btn_mouse_exited() -> void:
-	if page != home:
-		$"../Canvas/Control/HomeTooltip".toggle(false)
+	$"../Canvas/Control/HomeTooltip".hide()
 
 
 func _refresh_sbatter_btn() -> void:
@@ -1361,6 +1359,12 @@ func _setup_new_day_hint() -> void:
 func _setup_bed_button_caption() -> void:
 	if bed_action_caption:
 		return
+	# Caption is the label. Kill the hover clone.
+	var tip := $"../Canvas/Control/HomeTooltip"
+	if tip:
+		tip.hide()
+		tip.set_process_input(false)
+	$HomeBtn.tooltip_text = ""
 	bed_action_caption = PanelContainer.new()
 	bed_action_caption.name = "BedActionCaption"
 	bed_action_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1392,14 +1396,9 @@ func _layout_bed_button_caption() -> void:
 	var sz := bed_action_caption.get_combined_minimum_size()
 	if sz.x < 1.0:
 		sz = bed_action_caption.size
-	# Sit on the HomeBtn hit target (scaled 8x over the phone home circle).
 	var home_btn := $HomeBtn as Control
-	var btn_tl := Vector2(home_btn.offset_left, home_btn.offset_top)
-	var btn_size := Vector2(
-		home_btn.offset_right - home_btn.offset_left,
-		home_btn.offset_bottom - home_btn.offset_top
-	) * home_btn.scale
-	var center := btn_tl + btn_size * 0.5 + Vector2(-6.0, -10.0)
+	# Center on the scaled hit target over the phone home circle.
+	var center := home_btn.position + home_btn.size * home_btn.scale * 0.5
 	bed_action_caption.position = center - sz * 0.5
 
 
