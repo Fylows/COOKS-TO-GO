@@ -83,11 +83,9 @@ func _reset_session() -> void:
 	if results_modal:
 		results_modal.hide()
 	if order_cups_total > 0:
-		jug_capacity = jug_cups
-		if stats and stats.palamigStock > 0:
-			jug_capacity = stats.palamigStock
+		jug_capacity = stats.palamigStock if stats else 0
 		cups_remaining = jug_capacity
-		current_step = Step.POUR
+		current_step = Step.POUR if cups_remaining > 0 else Step.EMPTY
 	elif stats:
 		jug_capacity = maxi(stats.palamigStock, 0)
 		cups_remaining = jug_capacity
@@ -139,7 +137,13 @@ func _exit_to_game() -> void:
 		cup_fill = 0.0
 	if results_modal and results_modal.visible:
 		results_modal.hide()
+	_sync_stock()
 	minigame_finished.emit(total_money_earned, total_money_lost)
+
+
+func _sync_stock() -> void:
+	if stats:
+		stats.palamigStock = maxi(cups_remaining, 0)
 
 
 func _on_jug_input(event: InputEvent) -> void:
@@ -184,7 +188,9 @@ func jug_fill_ratio() -> float:
 
 func _start_pour() -> void:
 	if current_step == Step.EMPTY or cups_remaining <= 0:
-		feedback_label.text = "Out of palamig. Tap Back to return to orders."
+		current_step = Step.EMPTY
+		feedback_label.text = "Out of palamig. Back to cart to restock."
+		_update_ui()
 		return
 	cup_fill = 0.0
 	is_pouring = true
@@ -201,11 +207,7 @@ func _stop_pour() -> void:
 		return
 
 	cups_remaining -= 1
-	if stats:
-		if order_cups_total == 0:
-			stats.palamigStock = cups_remaining
-		elif stats.palamigStock > 0:
-			stats.palamigStock = maxi(stats.palamigStock - 1, 0)
+	_sync_stock()
 	# spilled cup is never a sale, even if the target sits close to the brim
 	var spilled := cup_fill >= 100.0
 	if not spilled and absf(cup_fill - target_fill) <= fill_tolerance:
@@ -239,7 +241,9 @@ func _stop_pour() -> void:
 
 	if cups_remaining <= 0:
 		current_step = Step.EMPTY
+		_sync_stock()
 		if order_cups_total > 0:
+			feedback_label.text = "Out of palamig. Back to cart to restock."
 			_update_ui()
 			minigame_finished.emit(total_money_earned, total_money_lost)
 		else:
@@ -256,8 +260,12 @@ func _randomize_target() -> void:
 
 func _update_ui() -> void:
 	if order_cups_total > 0:
-		step_label.text = "Serve %d cups" % order_cups_total
-		target_hint.text = "Hold the tap. Release at the green line."
+		if current_step == Step.EMPTY:
+			step_label.text = "Out of palamig"
+			target_hint.text = "Back to cart to restock, or wait for the order timer."
+		else:
+			step_label.text = "Serve %d cups" % order_cups_total
+			target_hint.text = "Hold the tap. Release at the green line."
 		order_progress_panel.show()
 		_rebuild_order_cups()
 	else:
@@ -274,6 +282,8 @@ func _update_ui() -> void:
 	jug_bar.max_value = maxf(jug_capacity, 1)
 	jug_bar.value = cups_remaining
 	jug_value.text = "%d cups" % cups_remaining
+	if not is_pouring and feedback_label.text == "Pouring...":
+		feedback_label.text = ""
 
 
 func _rebuild_order_cups() -> void:

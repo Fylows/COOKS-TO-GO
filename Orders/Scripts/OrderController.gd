@@ -148,6 +148,8 @@ func _on_confirm_requested(order: Order) -> void:
 		return
 
 	if order.is_palamig_order():
+		if not stats or stats.palamigStock <= 0:
+			return
 		order.stop_countdown()
 		palamig_order_started.emit(order)
 		return
