@@ -16,12 +16,13 @@ func try_borrow() -> bool:
 	return true
 
 
-func collect_payment() -> void:
+func collect_payment() -> int:
 	if PlayerStats.loan_balance <= 0:
-		return
+		return 0
 	var pay := mini(PlayerStats.playerMoney, PlayerStats.loan_balance)
 	PlayerStats.playerMoney -= pay
 	PlayerStats.loan_balance -= pay
+	return pay
 
 
 func status_text() -> String:
