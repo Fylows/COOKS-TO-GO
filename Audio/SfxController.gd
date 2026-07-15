@@ -38,6 +38,8 @@ func _ensure_player() -> void:
 
 
 func play(key: String) -> void:
+	if not AudioSettings.sfx_enabled:
+		return
 	if key not in SOUNDS:
 		return
 	_ensure_player()

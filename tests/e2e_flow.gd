@@ -141,9 +141,10 @@ func _test_day_over_to_eod() -> void:
 	_log("Step %d: day over -> EOD" % _step)
 	paused = false
 	var days_before: int = _stats().daysPassed
+	var stock_before: int = _stats().fishballStock
 	_stat_ctrl().endDay()
 	_assert(_stats().daysPassed == days_before + 1, "daysPassed incremented after endDay")
-	_assert(_stats().fishballStock == 0, "stock reset after endDay")
+	_assert(_stats().fishballStock == stock_before, "stock carries overnight")
 
 
 func _test_family_gate() -> void:

@@ -84,10 +84,10 @@ theme_override_font_sizes/font_size = 17
 text = "Fishball: 0"
 
 [node name="AudioToggles" type="HBoxContainer" parent="HUD"]
-offset_left = 24.0
-offset_top = 1036.0
-offset_right = 280.0
-offset_bottom = 1068.0
+offset_left = 500.0
+offset_top = 16.0
+offset_right = 820.0
+offset_bottom = 56.0
 script = ExtResource("6_audio")
 
 [node name="MoneyPopupLayer" type="Control" parent="HUD"]

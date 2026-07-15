@@ -12,6 +12,10 @@ func _ready() -> void:
 	if shot_dir.is_empty():
 		shot_dir = "user://shots"
 	DirAccess.make_dir_recursive_absolute(shot_dir)
+	var stats: Node = get_node_or_null("/root/PlayerStats")
+	if stats:
+		stats.palamigStock = 10
+		stats.palamigUP = true
 	game = preload("res://Palamig/Scenes/palamig_minigame.tscn").instantiate()
 	add_child(game)
 	# ignore real mouse/keyboard while the test runs, a stray click can hang a pour

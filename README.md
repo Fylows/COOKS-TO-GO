@@ -100,7 +100,7 @@ BGM pitch drops slightly when your balance is low.
 
 ### 5. Day over
 
-Shows balance and leftover stock. **Continue** advances the calendar, collects loan payments, rolls family/post-day events, and resets nightly stock and bill flags.
+Shows balance and leftover stock. **Continue** advances the calendar, collects loan payments, rolls family/post-day events, and resets bill flags. Leftover stock carries to the next day.
 
 ## Controls (in-game)
 

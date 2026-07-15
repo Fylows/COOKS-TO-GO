@@ -11,11 +11,14 @@ var sbatter_bet_count : int = 0
 var luck : float = 1.0
 
 # RESOURSES
+# Starter kit so day 1 can open without a mandatory first shop run.
+const START_FISHBALL := 20
+const START_KWEKWEK := 10
 
-var fishballStock : int = 0
-var kwekwekStock : int = 0
+var fishballStock : int = START_FISHBALL
+var kwekwekStock : int = START_KWEKWEK
 var kikiamStock : int = 0
-var boughtSauce : bool = false
+var boughtSauce : bool = true
 var palamigStock : int = 0
 
 var kikiamPurchasable : bool = daysPassed >= 2
@@ -124,10 +127,10 @@ func reset_new_game() -> void:
 	sbatter_won = false
 	sbatter_bet_count = 0
 	luck = 1.0
-	fishballStock = 0
-	kwekwekStock = 0
+	fishballStock = START_FISHBALL
+	kwekwekStock = START_KWEKWEK
 	kikiamStock = 0
-	boughtSauce = false
+	boughtSauce = true
 	palamigStock = 0
 	kikiamPurchasable = false
 	palamigUP = false
