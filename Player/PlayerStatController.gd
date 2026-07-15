@@ -4,8 +4,11 @@ const TITLE_SCENE := "res://Screens/Main Menu/Title_Screen/title_screen.tscn"
 const Economy := preload("res://Player/EconomyBalance.gd")
 
 var last_night_report: PackedStringArray = []
+var morning_forecast: String = ""
 var _night_stolen: int = 0
 var _night_gained: int = 0
+var _night_stock_stolen: int = 0
+
 
 static func format_pesos(amount: int) -> String:
 	return "₱%d" % amount
@@ -81,6 +84,9 @@ func roll_pre_day() -> String:
 		PlayerStats.pre_day_events[key].active = false
 		var e = PlayerStats.pre_day_events[key]
 		var w = max(0.0, e.base_weight + PlayerStats.luck * e.luck_factor + PlayerStats.daysPassed * e.day_factor)
+		# Weather app: slightly better odds of a clean forecast day, still can rain.
+		if PlayerStats.boughtSubscription and key == "none":
+			w *= 1.35
 		weights[key] = w
 		total_weight += w
 
@@ -88,20 +94,125 @@ func roll_pre_day() -> String:
 	for key in weights.keys():
 		if roll < weights[key]:
 			PlayerStats.pre_day_events[key].active = true
+			_refresh_morning_forecast()
 			return key
 		roll -= weights[key]
 
+	_refresh_morning_forecast()
 	return ""
-	
+
+
+func weather_key() -> String:
+	if PlayerStats.pre_day_events.willRain.active:
+		return "willRain"
+	if PlayerStats.pre_day_events.awasan.active:
+		return "awasan"
+	if PlayerStats.pre_day_events.none.active:
+		return "none"
+	return ""
+
+
+func weather_title() -> String:
+	match weather_key():
+		"willRain":
+			return "Ulan"
+		"awasan":
+			return "Init"
+		"none":
+			return "Clear"
+		_:
+			return ""
+
+
+## Overnight phone copy: one lore line for tomorrow's open.
+func morning_forecast_line() -> String:
+	match weather_key():
+		"willRain":
+			return "Bukas uulan. Konti lang ang lalabas, slow day sa cart."
+		"awasan":
+			return "Bukas ang init. Kung may palamig ka, uubusin nila."
+		"none":
+			return "Bukas maganda ang panahon. Normal lang ang araw."
+		_:
+			return ""
+
+
+## Stall-day flash: you are already under that weather.
+func stall_weather_line() -> String:
+	match weather_key():
+		"willRain":
+			return "Umuulan. Customers papasok nang mabagal."
+		"awasan":
+			return "Ang init ngayon. Palamig ang bida."
+		"none":
+			return "Okay ang panahon. Magbenta ka nang todo."
+		_:
+			return ""
+
+
+func weather_effect_blurb() -> String:
+	# Kept for any old callers; prefer morning_forecast_line / stall_weather_line.
+	return morning_forecast_line()
+
+
+func spawn_interval_multiplier() -> float:
+	match weather_key():
+		"willRain":
+			return 1.7
+		"awasan":
+			return 0.65
+		_:
+			return 1.0
+
+
+func order_lifetime_multiplier() -> float:
+	match weather_key():
+		"willRain":
+			return 0.85
+		"awasan":
+			return 0.8
+		_:
+			return 1.0
+
+
+func palamig_order_bias() -> float:
+	# Extra weight when picking palamig on hot days (0..1 chance to force-prefer).
+	if weather_key() == "awasan" and PlayerStats.palamigUP and PlayerStats.palamigStock > 0:
+		return 0.55
+	return 0.0
+
+
+func _refresh_morning_forecast() -> void:
+	morning_forecast = morning_forecast_line()
+
+
+func morning_briefing_lines() -> PackedStringArray:
+	var lines: PackedStringArray = PackedStringArray()
+	for line in last_night_report:
+		if line == "Quiet night." or line == "Tahimik lang kagabi.":
+			continue
+		lines.append(line)
+		if lines.size() >= 2:
+			break
+	if not morning_forecast.is_empty():
+		lines.append(morning_forecast)
+	return lines
+
+
 # Gives new day event, raining or awasan
 func newDay() -> String:
-	return roll_pre_day()
+	var key := weather_key()
+	if key.is_empty():
+		return roll_pre_day()
+	_refresh_morning_forecast()
+	return key
 
 # Gives post day events and resets essentials and resources
 func endDay() -> Array:
 	last_night_report.clear()
 	_night_stolen = 0
 	_night_gained = 0
+	_night_stock_stolen = 0
 	var loan_paid := LoanController.collect_payment()
 	FamilyStateController.process_end_of_day()
 	roll_post_day()
@@ -119,6 +230,9 @@ func endDay() -> Array:
 	resetStats()
 	# Evaluate after overnight drain + daily flag reset so softlocks match the morning gate.
 	GameStateController.evaluate()
+	if not GameStateController.is_game_over:
+		roll_pre_day()
+		GameStateController.evaluate_wins()
 	return postDayEvents
 
 
@@ -131,6 +245,10 @@ func apply_post_day_events() -> void:
 		if stolen > 0:
 			_night_stolen = stolen
 			subtractMoney(stolen)
+		var stock_take := mini(PlayerStats.fishballStock, 4 + PlayerStats.daysPassed)
+		if stock_take > 0:
+			PlayerStats.fishballStock -= stock_take
+			_night_stock_stolen = stock_take
 	if PlayerStats.post_day_events.extraMoney.active:
 		var gained := Economy.extra_money_gain(PlayerStats.daysPassed)
 		_night_gained = gained
@@ -139,21 +257,23 @@ func apply_post_day_events() -> void:
 
 func _build_night_report(loan_paid: int) -> void:
 	if loan_paid > 0:
-		last_night_report.append("JuanAngat collected %s." % format_pesos(loan_paid))
+		last_night_report.append("JuanAngat kumuha −%s" % format_pesos(loan_paid))
 	if PlayerStats.post_day_events.sickChild.active:
-		last_night_report.append("Your child got sick overnight.")
+		last_night_report.append("Anak may lagnat kagabi")
 	if PlayerStats.post_day_events.nanakawan.active and _night_stolen > 0:
-		last_night_report.append("May nanakaw sa tindahan. −%s." % format_pesos(_night_stolen))
+		last_night_report.append("Nanakawan −%s" % format_pesos(_night_stolen))
 	elif PlayerStats.post_day_events.nanakawan.active:
-		last_night_report.append("May nanakaw sa tindahan. Walang nakuha.")
+		last_night_report.append("May magnanakaw (walang nakuha)")
+	if _night_stock_stolen > 0:
+		last_night_report.append("Nawala −%d fishball" % _night_stock_stolen)
 	if PlayerStats.post_day_events.extraMoney.active and _night_gained > 0:
-		last_night_report.append("May naiwan sa mesa. +%s." % format_pesos(_night_gained))
+		last_night_report.append("May naiwan +%s" % format_pesos(_night_gained))
 	if last_night_report.is_empty():
-		last_night_report.append("Quiet night.")
+		last_night_report.append("Tahimik lang kagabi.")
 
 
 func resetStats() -> void:
-	# Daily bills only — stock and sauce carry overnight.
+	# Daily bills only. Stock and sauce carry overnight.
 	PlayerStats.paidElectricity = false
 	PlayerStats.paidWater = false
 	PlayerStats.paidRent = false
@@ -164,6 +284,7 @@ func resetStats() -> void:
 
 func restart_game() -> void:
 	last_night_report.clear()
+	morning_forecast = ""
 	ScoreController.on_run_end()
 	PlayerStats.reset_new_game()
 	FamilyStateController.reset_for_new_game()

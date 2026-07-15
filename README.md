@@ -1,18 +1,20 @@
 # COOKS TO GO
 
-A Godot 4.7 street-food cart sim built for a game jam. You run a fishball stall, buy stock and pay bills on your phone each night, then serve timed customer orders during the day. Money is in **₱ (Pesos)**.
+Pay the phone bill that keeps your stall “visible,” or lose the tarp — and maybe the roof — before the first fishball hits the oil.
+
+A Godot 4.7 street-food cart sim built for a game jam. You run a fishball stall, buy stock and pay bills on your phone each night, then serve timed customer orders during the day. Money is in **₱ (Pesos)**. Store copy lives in [`ITCH.md`](ITCH.md).
 
 <p align="center">
-  <img src="docs/pr-screenshots/01_title_name_panel.png" alt="Title screen" width="720" />
+  <img src="docs/pr-screenshots/01_title_endings_progress.png" alt="Title screen with endings progress" width="720" />
 </p>
 
-| Night shop (Resources) | Stall HUD |
+| Night shop | Stall day |
 |:---:|:---:|
-| ![EOD phone Resources](docs/pr-screenshots/02_eod_phone.png) | ![Stall day HUD](docs/pr-screenshots/03_stall_hud.png) |
+| ![EOD must-pay home](docs/pr-screenshots/02_eod_must_pay_home.png) | ![Stall weather + serve](docs/pr-screenshots/03_stall_weather_serve.png) |
 
-| Phone home (unread badges) | Misc tab |
+| First-night coach | Endings gallery |
 |:---:|:---:|
-| ![EOD home badges](docs/pr-screenshots/02b_eod_home_badges.png) | ![EOD Misc prices](docs/pr-screenshots/02c_eod_misc_prices.png) |
+| ![First night](docs/pr-screenshots/02b_eod_first_night.png) | ![Gallery](docs/pr-screenshots/01b_title_endings_gallery.png) |
 
 ## Requirements
 
@@ -33,7 +35,7 @@ Headless smoke test (economy + day loop, no GPU):
 godot4 --headless --audio-driver Dummy --path . --script res://tests/e2e_flow.gd
 ```
 
-Expected last line: `=== ALL 5 STEPS PASSED ===`
+Expected last line: `=== ALL 6 STEPS PASSED ===`
 
 ## Game loop
 
@@ -53,7 +55,7 @@ stateDiagram-v2
   Title --> EOD: Play
   EOD --> Stall: Go to bed / Start day
   Stall --> DayOver: Timer or End Day
-  DayOver --> EOD: Continue
+  DayOver --> EOD: Go Home
   EOD --> Title: Main Menu or Start over
   Stall --> Stall: Pause / orders / palamig
 ```
@@ -61,7 +63,8 @@ stateDiagram-v2
 ### 1. Title screen
 
 - Enter your vendor name (optional; defaults to your OS username).
-- **Play** opens the end-of-day shop.
+- **Play** opens the end-of-day shop (first night coaches: pay app → buy stock → start day).
+- **Endings** / gallery card opens locked silhouettes with unlock hints (15 total).
 - **Restart** resets all progress and returns to the title screen.
 - **Credits** lists attributions.
 - **Quit** exits.
@@ -126,10 +129,11 @@ Unpaid rent three nights in a row → homelessness (higher sickness risk). Skipp
 - **Pause / Play** — freezes the timer and order countdowns.
 - **End Day** — end early and open the day-over screen.
 - **Order cards** — up to five at once; green/yellow/red bar is time left.
-  - **Confirm** — sells if you have stock (₱5 per item for fishball/kwek-kwek/kikiam).
-  - **Cancel** — dismiss the order.
+  - **Serve** — sells if you have stock (₱5 per item for fishball/kwek-kwek/kikiam).
+  - **Pass** — dismiss the order.
   - **Palamig-only orders** — opens the pour minigame (₱30 per cup served).
 - **Money popups** — `+/- ₱` floats below the card; no running total during play.
+- **Barangay Feed** — Taglish chismis strip that reacts to your run.
 
 BGM mood is sampled from your balance when a track starts (poor nights sound less jolly).
 
@@ -142,7 +146,7 @@ BGM mood is sampled from your balance when a track starts (poor nights sound les
 
 ### 5. Day over
 
-Shows balance and leftover stock. **Continue** advances the calendar, collects loan payments, rolls family/post-day events, and resets bill flags. Leftover stock carries to the next day.
+Graphic wallet + stock chips. **Go Home** advances the calendar, collects loan payments, rolls family/post-day events, and resets bill flags. Leftover stock carries to the next day.
 
 ## Controls (in-game)
 
@@ -185,11 +189,11 @@ flowchart TB
 
 ```
 Audio/           BgmController, SfxController, music & SFX
-Orders/          Order cards, spawning, confirm/cancel
+Orders/          Order cards, spawning, Serve/Pass
 Palamig/         Pour minigame
-Player/          Stats, family state, loan, Sbatter
+Player/          Stats, family state, loan, Sbatter, endings, lore
 Screens/
-  Main Menu/     Title, credits
+  Main Menu/     Title, credits, endings gallery
   EOD/           Night shop (phone UI)
   Game/          Daytime stall
   Day Over/      End-of-day summary
@@ -205,9 +209,18 @@ docs/pr-screenshots/  README captures
 
 ## Known gaps (jam scope)
 
-- Pre/post-day random events (`willRain`, `nanakawan`, etc.) roll but do not change gameplay yet.
 - Frying, trash, and storage actions have SFX hooks but no stall gameplay.
 - Customer voice lines are not implemented.
+
+## Endings
+
+- **10 bad endings** — cause-picked game overs (rent, sickness, app fee, Sbatter, loans).
+- **5 good endings** — survive a week, clear debt with cash left, finish the cart upgrades, keep a roof for 10 days, or pay food/water/power for 7 nights straight.
+
+## Overnight & weather
+
+Post-day rolls (theft, leftover cash, sickness) change money/stock and show on the EOD **morning briefing**.
+Pre-day weather (ulan / hot rush / ordinary) changes order spawn rate, patience, and palamig demand, with a stall banner when the day opens. Weather app subscription improves the chance of an ordinary day and labels the forecast.
 
 ## License
 

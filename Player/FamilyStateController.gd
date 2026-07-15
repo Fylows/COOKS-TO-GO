@@ -17,6 +17,7 @@ var consecutive_unpaid_rent_days: int = 0
 
 func process_end_of_day() -> void:
 	_update_rent_streak()
+	_update_basics_streak()
 	_apply_unpaid_risk()
 	_roll_sickness()
 
@@ -29,6 +30,14 @@ func _update_rent_streak() -> void:
 		consecutive_unpaid_rent_days += 1
 		if consecutive_unpaid_rent_days >= RENT_STREAK_FOR_HOMELESS:
 			is_homeless = true
+			PlayerStats.ever_homeless = true
+
+
+func _update_basics_streak() -> void:
+	if PlayerStats.paidFood and PlayerStats.paidWater and PlayerStats.paidElectricity:
+		PlayerStats.consecutive_basics_streak += 1
+	else:
+		PlayerStats.consecutive_basics_streak = 0
 
 
 func _apply_unpaid_risk() -> void:
@@ -74,23 +83,26 @@ func blocking_issue() -> String:
 	if not PlayerStats.paidTindahanApp:
 		var app_price: int = PlayerStatController.essential_cost("tindahanApp")
 		if PlayerStats.playerMoney < app_price:
-			return "Need %s for today's Tindahan App subscription." % PlayerStatController.format_pesos(app_price)
-		return "Pay today's Tindahan App subscription on the Resources tab."
+			return "App needs %s" % PlayerStatController.format_pesos(app_price)
+		return "Resources → Subscribe"
 	if is_family_sick:
 		var price: int = PlayerStatController.essential_cost("medicine")
 		if PlayerStats.paidMedicine:
-			return "Family is still sick."
+			return "Family still sick"
 		if PlayerStats.playerMoney < price:
 			if LoanController.can_borrow():
-				return "Need %s for medicine. Borrow from JuanAngat (Misc tab)." % PlayerStatController.format_pesos(price)
-			return "Need %s for medicine." % PlayerStatController.format_pesos(price)
-		return "Buy medicine on the Family tab first."
+				return "Meds need %s · Misc → Loan" % PlayerStatController.format_pesos(price)
+			return "Meds need %s" % PlayerStatController.format_pesos(price)
+		return "Family → Buy medicine"
 	return ""
 
 
 func start_day_block_reason() -> String:
 	if GameStateController.is_game_over:
-		return GameStateController.reason
+		if not GameStateController.ending_id.is_empty():
+			const EndingBank := preload("res://Player/EndingBank.gd")
+			return EndingBank.title_for(GameStateController.ending_id)
+		return "Wala na."
 	return blocking_issue()
 
 

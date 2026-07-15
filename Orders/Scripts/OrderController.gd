@@ -91,6 +91,12 @@ func create_order(days_passed: int) -> Order:
 
 	# Keep previous implementation as array of string for future scalability
 	var selected_food: Array[String] = [available_food.pick_random()]
+	if (
+		PlayerStatController.palamig_order_bias() > 0.0
+		and available_food.has("palamig")
+		and randf() < PlayerStatController.palamig_order_bias()
+	):
+		selected_food = ["palamig"]
 
 	var fishball_count : int = 0
 	var kwekwek_count : int = 0
@@ -124,7 +130,9 @@ func create_order(days_passed: int) -> Order:
 		kikiam_count,
 		palamig_count
 	)
-	new_order.start_countdown(get_order_lifetime_seconds(days_passed))
+	new_order.start_countdown(
+		get_order_lifetime_seconds(days_passed) * PlayerStatController.order_lifetime_multiplier()
+	)
 	if _orders_paused:
 		new_order.set_countdown_paused(true)
 	
@@ -228,7 +236,8 @@ func get_spawn_interval_seconds(days_passed: int) -> float:
 	var decrease: int = floori(float(maxi(days_passed, 0)) / ORDER_SPAWN_INTERVAL_DECREASE_DAYS)
 	var min_seconds: int = maxi(ORDER_SPAWN_INTERVAL_MIN_SECONDS - decrease, 1)
 	var max_seconds: int = maxi(ORDER_SPAWN_INTERVAL_MAX_SECONDS - decrease, min_seconds)
-	return randf_range(float(min_seconds), float(max_seconds))
+	var base := randf_range(float(min_seconds), float(max_seconds))
+	return maxf(0.4, base * PlayerStatController.spawn_interval_multiplier())
 
 
 func start_order_spawning(days_passed: int) -> void:

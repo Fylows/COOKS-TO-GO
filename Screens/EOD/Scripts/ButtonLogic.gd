@@ -1,6 +1,7 @@
 extends Node2D
 
 const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
+const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
 const SHOP_TEXT := Color(0.92, 0.95, 1.0)
 const SHOP_PRICE := Color(1.0, 0.86, 0.42)
 const SHOP_BTN_BG := Color(0.14, 0.36, 0.58)
@@ -61,9 +62,15 @@ var stock_hud: PanelContainer
 var stock_hud_label: Label
 var restart_button: Button
 var lore_feed: Label
+var briefing_panel: PanelContainer
+var briefing_label: Label
+var must_pay_strip: PanelContainer
+var must_pay_label: Label
+var tutorial_panel: PanelContainer
+var tutorial_label: Label
 var _starting_day: bool = false
 var phone_screen_back: ColorRect
-# Apps opened this EOD — badge clears once the player checks them.
+# Apps opened this EOD. Badge clears once the player checks them.
 var _apps_checked: Dictionary = {}
 
 func _ready() -> void:
@@ -97,9 +104,14 @@ func _ready() -> void:
 	_setup_stock_hud()
 	_setup_restart_hud()
 	_setup_lore_feed()
+	_setup_morning_briefing()
+	_setup_must_pay_strip()
+	_setup_first_night_coach()
 	_setup_meta_labels()
-	if not PlayerStats.paidTindahanApp and not GameStateController.is_game_over:
-		# First-run / morning gate: open Resources so Subscribe is obvious.
+	if _first_night_active():
+		call_deferred("_begin_first_night_path")
+	elif not PlayerStats.paidTindahanApp and not GameStateController.is_game_over:
+		# Later mornings: open Resources so Subscribe is obvious.
 		call_deferred("showOpt", "resources")
 	if DayTransition.consume_fade_in():
 		call_deferred("_fade_in_after_transition")
@@ -109,6 +121,10 @@ func _ready() -> void:
 func _check_game_over() -> void:
 	if GameStateController.evaluate():
 		_present_game_over()
+		return
+	if GameStateController.evaluate_wins():
+		return
+	_refresh_morning_briefing()
 
 
 func _present_game_over() -> void:
@@ -275,6 +291,7 @@ func showOpt(opt: String) -> void:
 		categories[key].visible = (key == opt)
 	_refresh_tab_header(opt)
 	_refresh_bed_button_caption()
+	_refresh_must_pay_strip()
 	if phone_screen_back:
 		phone_screen_back.visible = true
 	call_deferred("_layout_phone_chrome")
@@ -307,6 +324,7 @@ func buyUpgrade(upgrade_price : int, upgrade_name : String) -> void:
 	PlayerStats.set(upgrade_name, true)
 	update_resource_visibility()
 	_refresh_upgrade_buttons()
+	GameStateController.evaluate_wins()
 
 func _on_palamig_btn_pressed() -> void:
 	if PlayerStats.get("palamigUP"):
@@ -431,8 +449,10 @@ func buyResource(price : int, stock_var: String) -> void:
 	PlayerStatController.subtractMoney(price)
 	if (stock_var == "sauce"): 
 		PlayerStats.boughtSauce = true
+		_on_tutorial_stock_bought()
 		return
 	PlayerStats.set(stock_var, PlayerStats.get(stock_var) + STOCK_AMOUNT)
+	_on_tutorial_stock_bought()
 
 
 func _on_buy_fishball_pressed() -> void:
@@ -479,6 +499,8 @@ func _on_app_sub_btn_pressed() -> void:
 		if btn:
 			btn.text = "paid"
 		_refresh_shop_lock_state()
+		_refresh_first_night_coach()
+		_refresh_must_pay_strip()
 
 
 func _refresh_tindahan_app_btn() -> void:
@@ -524,6 +546,10 @@ func buyEssentials(price : int, essential: String) -> bool:
 		return false
 	PlayerStatController.subtractMoney(price)
 	PlayerStats.set(essential, true)
+	if essential == "paidRent":
+		FamilyStateController.on_rent_paid()
+	_refresh_must_pay_strip()
+	_refresh_new_day_hint()
 	return true
 
 
@@ -550,13 +576,14 @@ func _on_rent_btn_pressed() -> void:
 	if PlayerStats.get("paidRent"):
 		return
 	if buyEssentials(_essential_cost("rent"), "paidRent"):
-		FamilyStateController.on_rent_paid()
 		_mark_row_bought($FamilyGroup/VBoxContainer/Rent)
 
 
 func _on_med_btn_pressed() -> void:
 	if FamilyStateController.try_buy_medicine():
 		_mark_row_bought($FamilyGroup/VBoxContainer/Medicine)
+		_refresh_must_pay_strip()
+		_refresh_new_day_hint()
 
 
 func _on_food_btn_pressed() -> void:
@@ -656,6 +683,9 @@ func go_home(current_group: CanvasGroup) -> void:
 	_refresh_new_day_hint()
 	_refresh_bed_button_caption()
 	_refresh_app_badges()
+	_refresh_morning_briefing()
+	_refresh_must_pay_strip()
+	_refresh_first_night_coach()
 	if phone_screen_back:
 		phone_screen_back.visible = false
 
@@ -663,7 +693,7 @@ func go_home(current_group: CanvasGroup) -> void:
 func _on_home_btn_pressed() -> void:
 	if page != home:
 		go_home(page)
-		$"../Canvas/Control/HomeTooltip".toggle(false)
+		$"../Canvas/Control/HomeTooltip".hide()
 		return
 	if GameStateController.evaluate():
 		return
@@ -686,6 +716,9 @@ func _on_home_btn_pressed() -> void:
 		return
 	_starting_day = true
 	$"../Canvas/Control/NextDayTooltip".hide()
+	if _first_night_active():
+		PlayerStats.first_night_done = true
+		_refresh_first_night_coach()
 	PlayerStatController.newDay()
 	await DayTransition.transition_to_scene(
 		"res://Screens/Game/Scenes/GameScreen.tscn",
@@ -695,13 +728,11 @@ func _on_home_btn_pressed() -> void:
 
 
 func _on_home_btn_mouse_entered() -> void:
-	if page != home:
-		$"../Canvas/Control/HomeTooltip".toggle(true)
+	pass
 
 
 func _on_home_btn_mouse_exited() -> void:
-	if page != home:
-		$"../Canvas/Control/HomeTooltip".toggle(false)
+	$"../Canvas/Control/HomeTooltip".hide()
 
 
 func _refresh_sbatter_btn() -> void:
@@ -1088,6 +1119,7 @@ func _wire_app_icon_hover(btn: TextureButton) -> void:
 		_set_app_icon_hover(btn, base_scale, false)
 	)
 	btn.button_down.connect(func() -> void:
+		UiMotion._kill_meta(btn, &"_ui_hover_tween")
 		btn.scale = base_scale * 0.94
 		btn.modulate = Color(0.82, 0.82, 0.82, 1.0)
 	)
@@ -1100,12 +1132,7 @@ func _wire_app_icon_hover(btn: TextureButton) -> void:
 
 
 func _set_app_icon_hover(btn: TextureButton, base_scale: Vector2, hovered: bool) -> void:
-	if hovered:
-		btn.scale = base_scale * 1.12
-		btn.modulate = Color(1.22, 1.22, 1.22, 1.0)
-	else:
-		btn.scale = base_scale
-		btn.modulate = Color.WHITE
+	UiMotion.hover(self, btn, base_scale, hovered)
 
 
 var _app_icon_tooltip: PanelContainer
@@ -1187,7 +1214,8 @@ func _style_shop_row(row: HBoxContainer) -> void:
 	row.add_theme_constant_override("separation", 6)
 	row.custom_minimum_size = Vector2(0, 34)
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.clip_contents = true
+	# Never clip shop copy for alignment. Names wrap; prices/buttons stay full.
+	row.clip_contents = false
 	var name_label: Label = null
 	var price_label: Label = null
 	var action_btn: Button = null
@@ -1208,25 +1236,28 @@ func _style_shop_row(row: HBoxContainer) -> void:
 		elif child is Button:
 			action_btn = child as Button
 	# Labels/buttons report full text as min width and inflate the row past the
-	# glass — wrap them in fixed Controls so the HBox stays ≤ panel width.
+	# glass. Wrap them in fixed Controls so the HBox stays ≤ panel width.
 	if name_label:
 		_style_shop_label(name_label, false)
-		name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-		name_label.clip_text = true
-		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		name_label.clip_text = false
+		name_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		_wrap_shop_cell(row, name_label, "NameWrap", Vector2(24, 28), Control.SIZE_EXPAND_FILL)
+		name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		_wrap_shop_cell(row, name_label, "NameWrap", Vector2(160, 40), Control.SIZE_EXPAND_FILL, false)
 	if price_label:
 		_style_shop_label(price_label, true)
-		# No ellipsis — grow left into the name column instead of "Your nam..."
 		price_label.clip_text = false
 		price_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		_wrap_shop_cell(row, price_label, "PriceWrap", Vector2(168, 28), Control.SIZE_SHRINK_END, false)
+		# Tight: ₱999 fits. Was 168 and ate the name column.
+		_wrap_shop_cell(row, price_label, "PriceWrap", Vector2(88, 28), Control.SIZE_SHRINK_END, false)
 	if action_btn:
 		_style_shop_button(action_btn)
-		action_btn.clip_text = true
-		_wrap_shop_cell(row, action_btn, "BtnWrap", Vector2(96, 30), Control.SIZE_SHRINK_END)
+		action_btn.clip_text = false
+		action_btn.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+		# Wide enough for "Subscribe" at PHONE_FONT_BTN with button padding.
+		_wrap_shop_cell(row, action_btn, "BtnWrap", Vector2(122, 32), Control.SIZE_SHRINK_END, false)
 
 
 ## Caps a shop-row child's layout width. Labels/Buttons ignore custom_minimum_size
@@ -1237,7 +1268,7 @@ func _wrap_shop_cell(
 	wrap_name: String,
 	min_size: Vector2,
 	h_flags: int,
-	clip: bool = true,
+	clip: bool = false,
 ) -> void:
 	var wrap := row.get_node_or_null(wrap_name) as Control
 	if wrap == null:
@@ -1264,7 +1295,8 @@ func _style_shop_label(label: Label, is_price: bool) -> void:
 		SHOP_PRICE if is_price else SHOP_TEXT
 	)
 	label.add_theme_font_size_override("font_size", PHONE_FONT_PRICE if is_price else PHONE_FONT_SHOP)
-	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+	label.clip_text = false
 
 
 func _position_phone_tabs() -> void:
@@ -1299,6 +1331,19 @@ func _style_shop_button(button: Button) -> void:
 	button.add_theme_font_size_override("font_size", PHONE_FONT_BTN)
 	button.add_theme_color_override("font_color", Color.WHITE)
 	button.add_theme_color_override("font_disabled_color", Color(0.92, 0.94, 0.96))
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+
+func _apply_flat_button_styles(button: Button, normal: StyleBoxFlat) -> void:
+	var hover := normal.duplicate() as StyleBoxFlat
+	hover.bg_color = normal.bg_color.lightened(0.18)
+	hover.border_color = normal.border_color.lightened(0.12)
+	var pressed := normal.duplicate() as StyleBoxFlat
+	pressed.bg_color = normal.bg_color.darkened(0.1)
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 
 func _setup_new_day_hint() -> void:
@@ -1332,9 +1377,17 @@ func _setup_new_day_hint() -> void:
 func _setup_bed_button_caption() -> void:
 	if bed_action_caption:
 		return
+	# Caption is the label. Kill the hover clone.
+	var tip := $"../Canvas/Control/HomeTooltip"
+	if tip:
+		tip.hide()
+		tip.set_process_input(false)
+	$HomeBtn.tooltip_text = ""
 	bed_action_caption = PanelContainer.new()
 	bed_action_caption.name = "BedActionCaption"
-	bed_action_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Whole pill is the click target. Tiny HomeBtn alone misses most of the label.
+	bed_action_caption.mouse_filter = Control.MOUSE_FILTER_STOP
+	bed_action_caption.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	bed_action_caption.z_index = 40
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.08, 0.12, 0.28, 0.94)
@@ -1344,7 +1397,14 @@ func _setup_bed_button_caption() -> void:
 	style.set_content_margin_all(10)
 	style.content_margin_left = 14
 	style.content_margin_right = 14
+	var hover := style.duplicate() as StyleBoxFlat
+	hover.bg_color = style.bg_color.lightened(0.2)
+	hover.border_color = Color(1.0, 0.9, 0.55, 0.98)
+	bed_action_caption.set_meta("style_normal", style)
+	bed_action_caption.set_meta("style_hover", hover)
 	bed_action_caption.add_theme_stylebox_override("panel", style)
+	bed_action_caption.mouse_entered.connect(_on_bed_caption_hover_on)
+	bed_action_caption.mouse_exited.connect(_on_bed_caption_hover_off)
 
 	bed_action_label = Label.new()
 	bed_action_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1352,8 +1412,35 @@ func _setup_bed_button_caption() -> void:
 	bed_action_label.add_theme_font_size_override("font_size", PHONE_FONT_BODY)
 	bed_action_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bed_action_caption.add_child(bed_action_label)
+	bed_action_caption.gui_input.connect(_on_bed_caption_gui_input)
 	$HomeBtn.add_sibling(bed_action_caption)
 	_refresh_bed_button_caption()
+
+
+func _on_bed_caption_hover_on() -> void:
+	if bed_action_caption == null:
+		return
+	var hover := bed_action_caption.get_meta("style_hover") as StyleBoxFlat
+	if hover:
+		bed_action_caption.add_theme_stylebox_override("panel", hover)
+	if bed_action_label:
+		bed_action_label.add_theme_color_override("font_color", Color(1.0, 0.94, 0.7))
+	_on_ui_hover()
+
+
+func _on_bed_caption_hover_off() -> void:
+	if bed_action_caption == null:
+		return
+	var normal := bed_action_caption.get_meta("style_normal") as StyleBoxFlat
+	if normal:
+		bed_action_caption.add_theme_stylebox_override("panel", normal)
+	if bed_action_label:
+		bed_action_label.add_theme_color_override("font_color", Color(0.92, 0.96, 1.0))
+
+
+func _on_bed_caption_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_on_home_btn_pressed()
 
 
 func _layout_bed_button_caption() -> void:
@@ -1363,15 +1450,28 @@ func _layout_bed_button_caption() -> void:
 	var sz := bed_action_caption.get_combined_minimum_size()
 	if sz.x < 1.0:
 		sz = bed_action_caption.size
-	# Sit on the HomeBtn hit target (scaled 8x over the phone home circle).
+	# Phone Base at (-27, -254). Home circle on the bezel (~y 208).
+	# Park the pill on the glass above the circle, not on top of it.
+	var phone_x := -27.0
+	var circle := Vector2(phone_x, 208.0)
+	var label_center := Vector2(phone_x, 142.0)
+	bed_action_caption.position = label_center - sz * 0.5
+	# Invisible hit covers pill + home circle.
 	var home_btn := $HomeBtn as Control
-	var btn_tl := Vector2(home_btn.offset_left, home_btn.offset_top)
-	var btn_size := Vector2(
-		home_btn.offset_right - home_btn.offset_left,
-		home_btn.offset_bottom - home_btn.offset_top
-	) * home_btn.scale
-	var center := btn_tl + btn_size * 0.5 + Vector2(-6.0, -10.0)
-	bed_action_caption.position = center - sz * 0.5
+	var pill_tl := bed_action_caption.position
+	var pill_br := pill_tl + sz
+	var circle_half := Vector2(36.0, 36.0)
+	var hit_tl := Vector2(
+		minf(pill_tl.x, circle.x - circle_half.x),
+		minf(pill_tl.y, circle.y - circle_half.y)
+	)
+	var hit_br := Vector2(
+		maxf(pill_br.x, circle.x + circle_half.x),
+		maxf(pill_br.y, circle.y + circle_half.y)
+	)
+	home_btn.scale = Vector2.ONE
+	home_btn.position = hit_tl
+	home_btn.size = hit_br - hit_tl
 
 
 func _setup_stock_hud() -> void:
@@ -1436,6 +1536,302 @@ func _setup_lore_feed() -> void:
 	LoreFeedBar.refresh(lore_feed)
 
 
+func _setup_morning_briefing() -> void:
+	var canvas_layer: CanvasLayer = $"../Canvas"
+	var existing := canvas_layer.get_node_or_null("MorningBriefing") as PanelContainer
+	if existing:
+		briefing_panel = existing
+		briefing_label = briefing_panel.get_node_or_null("BriefingLabel") as Label
+		_refresh_morning_briefing()
+		return
+
+	briefing_panel = PanelContainer.new()
+	briefing_panel.name = "MorningBriefing"
+	briefing_panel.anchor_left = 0.5
+	briefing_panel.anchor_right = 0.5
+	briefing_panel.anchor_top = 1.0
+	briefing_panel.anchor_bottom = 1.0
+	briefing_panel.offset_left = -260.0
+	briefing_panel.offset_right = 260.0
+	briefing_panel.offset_top = -72.0
+	briefing_panel.offset_bottom = -16.0
+	briefing_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	briefing_panel.z_index = 30
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.05, 0.08, 0.14, 0.92)
+	style.border_color = Color(0.95, 0.78, 0.28, 0.85)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(10)
+	briefing_panel.add_theme_stylebox_override("panel", style)
+
+	briefing_label = Label.new()
+	briefing_label.name = "BriefingLabel"
+	briefing_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	briefing_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	briefing_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	briefing_label.add_theme_font_size_override("font_size", 15)
+	briefing_label.add_theme_color_override("font_color", Color(0.92, 0.95, 1.0))
+	briefing_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	briefing_panel.add_child(briefing_label)
+	canvas_layer.add_child(briefing_panel)
+	_refresh_morning_briefing()
+
+
+func _refresh_morning_briefing() -> void:
+	if briefing_panel == null or briefing_label == null:
+		return
+	if _first_night_active():
+		UiMotion.fade_out_then_hide(self, briefing_panel)
+		return
+	var lines := PlayerStatController.morning_briefing_lines()
+	if lines.is_empty():
+		UiMotion.fade_out_then_hide(self, briefing_panel)
+		return
+	briefing_label.text = " · ".join(lines)
+	var style := briefing_panel.get_theme_stylebox("panel") as StyleBoxFlat
+	if style:
+		var blob := briefing_label.text.to_lower()
+		if "nanakaw" in blob or "lagnat" in blob or "−" in briefing_label.text:
+			style.border_color = Color(0.92, 0.35, 0.32, 0.95)
+		elif "+" in briefing_label.text or "naiwan" in blob:
+			style.border_color = Color(0.35, 0.85, 0.5, 0.95)
+		else:
+			style.border_color = Color(0.95, 0.78, 0.28, 0.85)
+	var was_up := briefing_panel.visible and briefing_panel.modulate.a > 0.85
+	if was_up:
+		briefing_panel.visible = true
+		briefing_panel.modulate.a = 1.0
+	else:
+		UiMotion.pop_in(self, briefing_panel)
+
+
+func _setup_must_pay_strip() -> void:
+	var canvas_layer: CanvasLayer = $"../Canvas"
+	var existing := canvas_layer.get_node_or_null("MustPayStrip") as PanelContainer
+	if existing:
+		must_pay_strip = existing
+		must_pay_label = must_pay_strip.get_node_or_null("MustPayLabel") as Label
+		_refresh_must_pay_strip()
+		return
+
+	must_pay_strip = PanelContainer.new()
+	must_pay_strip.name = "MustPayStrip"
+	must_pay_strip.anchor_left = 0.5
+	must_pay_strip.anchor_right = 0.5
+	must_pay_strip.anchor_top = 0.0
+	must_pay_strip.anchor_bottom = 0.0
+	must_pay_strip.offset_left = -280.0
+	must_pay_strip.offset_right = 280.0
+	must_pay_strip.offset_top = 20.0
+	must_pay_strip.offset_bottom = 20.0
+	must_pay_strip.grow_vertical = Control.GROW_DIRECTION_END
+	must_pay_strip.custom_minimum_size = Vector2(0, 0)
+	must_pay_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	must_pay_strip.z_index = 42
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.18, 0.05, 0.06, 0.94)
+	style.border_color = Color(0.92, 0.32, 0.3, 0.95)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(8)
+	must_pay_strip.add_theme_stylebox_override("panel", style)
+
+	must_pay_label = Label.new()
+	must_pay_label.name = "MustPayLabel"
+	must_pay_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	must_pay_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	must_pay_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	must_pay_label.add_theme_font_size_override("font_size", 16)
+	must_pay_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.88))
+	must_pay_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	must_pay_strip.add_child(must_pay_label)
+	canvas_layer.add_child(must_pay_strip)
+	_refresh_must_pay_strip()
+
+
+func _must_pay_lines() -> PackedStringArray:
+	var chips: PackedStringArray = PackedStringArray()
+	if not PlayerStats.paidTindahanApp:
+		chips.append(
+			"App %s" % PlayerStatController.format_pesos(
+				PlayerStatController.essential_cost("tindahanApp")
+			)
+		)
+	if FamilyStateController.is_family_sick and not PlayerStats.paidMedicine:
+		chips.append(
+			"Meds %s" % PlayerStatController.format_pesos(
+				PlayerStatController.essential_cost("medicine")
+			)
+		)
+	if not PlayerStats.paidRent:
+		var toward := FamilyStateController.consecutive_unpaid_rent_days + 1
+		chips.append("Rent %d/3" % toward)
+	return chips
+
+
+func _refresh_must_pay_strip() -> void:
+	if must_pay_strip == null or must_pay_label == null:
+		return
+	var chips := _must_pay_lines()
+	if chips.is_empty() or page != home or _first_night_active():
+		UiMotion.fade_out_then_hide(self, must_pay_strip)
+		return
+	must_pay_label.text = "  ·  ".join(chips)
+	must_pay_strip.reset_size()
+	var half := maxf(must_pay_strip.size.x, 280.0) * 0.5
+	must_pay_strip.offset_left = -half
+	must_pay_strip.offset_right = half
+	var was_up := must_pay_strip.visible and must_pay_strip.modulate.a > 0.85
+	if was_up:
+		must_pay_strip.visible = true
+		must_pay_strip.modulate.a = 1.0
+	else:
+		UiMotion.pop_in(self, must_pay_strip)
+
+
+func _first_night_active() -> bool:
+	return (
+		PlayerStats.daysPassed == 0
+		and not PlayerStats.first_night_done
+		and not GameStateController.is_game_over
+	)
+
+
+func _first_night_step() -> String:
+	if not PlayerStats.paidTindahanApp:
+		return "app"
+	if not PlayerStats.first_night_bought_stock:
+		return "stock"
+	return "start"
+
+
+func _begin_first_night_path() -> void:
+	if not _first_night_active():
+		return
+	match _first_night_step():
+		"app", "stock":
+			showOpt("resources")
+		"start":
+			if page != home:
+				go_home(page)
+	_refresh_first_night_coach()
+
+
+func _on_tutorial_stock_bought() -> void:
+	if not _first_night_active():
+		return
+	if PlayerStats.first_night_bought_stock:
+		return
+	PlayerStats.first_night_bought_stock = true
+	_refresh_first_night_coach()
+	# Nudge home so Start Day is obvious.
+	call_deferred("_tutorial_nudge_home")
+
+
+func _tutorial_nudge_home() -> void:
+	if not _first_night_active() or _first_night_step() != "start":
+		return
+	if page != home:
+		go_home(page)
+	_flash_new_day_hint()
+
+
+func _setup_first_night_coach() -> void:
+	var canvas_layer: CanvasLayer = $"../Canvas"
+	var existing := canvas_layer.get_node_or_null("FirstNightCoach") as PanelContainer
+	if existing:
+		tutorial_panel = existing
+		tutorial_label = tutorial_panel.get_node_or_null("CoachLabel") as Label
+		_refresh_first_night_coach()
+		return
+
+	tutorial_panel = PanelContainer.new()
+	tutorial_panel.name = "FirstNightCoach"
+	tutorial_panel.anchor_left = 0.5
+	tutorial_panel.anchor_right = 0.5
+	tutorial_panel.anchor_top = 0.0
+	tutorial_panel.anchor_bottom = 0.0
+	tutorial_panel.offset_left = -180.0
+	tutorial_panel.offset_right = 180.0
+	tutorial_panel.offset_top = 20.0
+	tutorial_panel.offset_bottom = 20.0
+	tutorial_panel.grow_vertical = Control.GROW_DIRECTION_END
+	tutorial_panel.custom_minimum_size = Vector2(0, 0)
+	tutorial_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tutorial_panel.z_index = 45
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.12, 0.22, 0.96)
+	style.border_color = Color(0.35, 0.78, 1.0, 0.95)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(10)
+	tutorial_panel.add_theme_stylebox_override("panel", style)
+
+	tutorial_label = Label.new()
+	tutorial_label.name = "CoachLabel"
+	tutorial_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tutorial_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	tutorial_label.add_theme_font_size_override("font_size", 16)
+	tutorial_label.add_theme_color_override("font_color", Color(0.94, 0.97, 1.0))
+	tutorial_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tutorial_panel.add_child(tutorial_label)
+	canvas_layer.add_child(tutorial_panel)
+	_refresh_first_night_coach()
+
+
+func _refresh_first_night_coach() -> void:
+	if tutorial_panel == null or tutorial_label == null:
+		return
+	if not _first_night_active():
+		UiMotion.fade_out_then_hide(self, tutorial_panel)
+		_clear_tutorial_row_highlights()
+		return
+	var step := _first_night_step()
+	var prev := tutorial_label.text
+	match step:
+		"app":
+			tutorial_label.text = "1/3 · Subscribe"
+			_highlight_tutorial_row($ResourceGroup/VBoxContainer/AppSubscription, true)
+			_highlight_tutorial_row($ResourceGroup/VBoxContainer/Fishball, false)
+		"stock":
+			tutorial_label.text = "2/3 · Buy fishballs"
+			_highlight_tutorial_row($ResourceGroup/VBoxContainer/AppSubscription, false)
+			_highlight_tutorial_row($ResourceGroup/VBoxContainer/Fishball, true)
+		"start":
+			tutorial_label.text = "3/3 · Go to bed"
+			_clear_tutorial_row_highlights()
+		_:
+			UiMotion.fade_out_then_hide(self, tutorial_panel)
+			return
+	tutorial_panel.reset_size()
+	var half := maxf(tutorial_panel.size.x, 220.0) * 0.5
+	tutorial_panel.offset_left = -half
+	tutorial_panel.offset_right = half
+	var was_up := tutorial_panel.visible and tutorial_panel.modulate.a > 0.85
+	if was_up and prev == tutorial_label.text:
+		tutorial_panel.visible = true
+		tutorial_panel.modulate.a = 1.0
+	else:
+		UiMotion.pop_in(self, tutorial_panel)
+
+
+func _highlight_tutorial_row(row: Node, on: bool) -> void:
+	if row == null:
+		return
+	var btn := _shop_btn(row)
+	if btn:
+		btn.modulate = Color(1.35, 1.2, 0.55) if on else Color.WHITE
+	var label := _shop_label(row)
+	if label:
+		label.modulate = Color(1.25, 1.15, 0.7) if on else Color.WHITE
+
+
+func _clear_tutorial_row_highlights() -> void:
+	_highlight_tutorial_row($ResourceGroup/VBoxContainer/AppSubscription, false)
+	_highlight_tutorial_row($ResourceGroup/VBoxContainer/Fishball, false)
+
+
 func _setup_restart_hud() -> void:
 	var restart_row := $MiscGroup/VBoxContainer.get_node_or_null("RestartRow")
 	if restart_row:
@@ -1467,9 +1863,7 @@ func _setup_restart_hud() -> void:
 	style.set_content_margin_all(10)
 	style.content_margin_left = 16
 	style.content_margin_right = 16
-	restart_button.add_theme_stylebox_override("normal", style)
-	restart_button.add_theme_stylebox_override("hover", style)
-	restart_button.add_theme_stylebox_override("pressed", style)
+	_apply_flat_button_styles(restart_button, style)
 	restart_button.pressed.connect(_on_restart_pressed)
 	restart_button.mouse_entered.connect(_on_ui_hover)
 	canvas_layer.add_child(restart_button)
@@ -1496,9 +1890,7 @@ func _setup_restart_hud() -> void:
 	menu_style.set_content_margin_all(10)
 	menu_style.content_margin_left = 16
 	menu_style.content_margin_right = 16
-	menu_button.add_theme_stylebox_override("normal", menu_style)
-	menu_button.add_theme_stylebox_override("hover", menu_style)
-	menu_button.add_theme_stylebox_override("pressed", menu_style)
+	_apply_flat_button_styles(menu_button, menu_style)
 	menu_button.pressed.connect(_on_main_menu_pressed)
 	menu_button.mouse_entered.connect(_on_ui_hover)
 	canvas_layer.add_child(menu_button)
@@ -1529,11 +1921,19 @@ func _refresh_new_day_hint() -> void:
 	if new_day_hint == null or new_day_hint_pill == null:
 		return
 	if GameStateController.is_game_over:
-		new_day_hint_pill.visible = false
+		UiMotion.fade_out_then_hide(self, new_day_hint_pill)
 		return
 	var reason := FamilyStateController.start_day_block_reason()
 	new_day_hint.text = reason
-	new_day_hint_pill.visible = not reason.is_empty() and page == home
+	if reason.is_empty() or page != home:
+		UiMotion.fade_out_then_hide(self, new_day_hint_pill)
+		return
+	var was_up := new_day_hint_pill.visible and new_day_hint_pill.modulate.a > 0.85
+	if was_up:
+		new_day_hint_pill.visible = true
+		new_day_hint_pill.modulate.a = 1.0
+	else:
+		UiMotion.pop_in(self, new_day_hint_pill)
 
 
 func _flash_new_day_hint() -> void:
