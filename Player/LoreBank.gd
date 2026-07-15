@@ -80,8 +80,8 @@ static func entries() -> Array:
 		{"need": ["anting_owned", "night_theft"], "prio": 56, "bucket": "stall", "line": "Anting-anting busy raw. Nanakawan pa rin."},
 		{"need": ["anting_owned", "night_luck"], "prio": 47, "bucket": "stall", "line": "Anting worked? May naiwan sa mesa. Science unclear."},
 		{"need": ["anting_owned", "cash_broke"], "prio": 49, "bucket": "money", "line": "Charm bought. Wallet still haunted."},
-		{"need": ["weather_app", "rain_day"], "prio": 44, "bucket": "online", "line": "Weather app: ulan. Cart: no roof DLC."},
-		{"need": ["weather_app", "awasan_day"], "prio": 43, "bucket": "online", "line": "Awasan forecast. Customers still dry somehow."},
+		{"need": ["weather_app", "rain_day"], "prio": 44, "bucket": "online", "line": "Weather app called ulan. Spawn rate agrees."},
+		{"need": ["weather_app", "awasan_day"], "prio": 43, "bucket": "online", "line": "Awasan alert. Palamig line already forming."},
 		{"need": ["weather_app", "cash_broke"], "prio": 41, "bucket": "online", "line": "Paid weather app. Can't pay water bill. Nice."},
 		{"need": ["anting_owned", "weather_app"], "prio": 45, "bucket": "online", "line": "Misc tab maxed out. Gameplay buffs: debatable."},
 
@@ -115,7 +115,7 @@ static func entries() -> Array:
 		{"need": ["rain_day", "stall_empty"], "prio": 34, "bucket": "stall", "line": "Ulan + walang stock. Perfect storm, pre."},
 		{"need": ["rain_day", "earn_hot"], "prio": 32, "bucket": "stall", "line": "Ulan pero maraming bumili. Wet hero."},
 		{"need": ["awasan_day", "cash_broke"], "prio": 31, "bucket": "barangay", "line": "Awasan heat. Ice candy dreams, fishball reality."},
-		{"need": ["rain_day", "weather_app"], "prio": 46, "bucket": "online", "line": "App said rain. You still got soaked. Accuracy 50%."},
+		{"need": ["rain_day", "weather_app"], "prio": 46, "bucket": "online", "line": "App said rain. Foot traffic slowed. Worth the ₱50."},
 
 		# --- Tindahan app ---
 		{"need": ["app_unpaid", "cash_ok"], "prio": 33, "bucket": "online", "line": "May pera ka, di ka nag-subscribe. Rebel vendor."},
