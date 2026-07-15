@@ -65,7 +65,7 @@ func _play_appear() -> void:
 func _ensure_action_captions() -> void:
 	_caption_action_button(confirm_button, "Serve")
 	_caption_action_button(cancel_button, "Pass")
-	var box := confirm_button.get_parent() as HBoxContainer
+	var box := get_node_or_null("MarginContainer/VBoxContainer/ButtonContainer") as HBoxContainer
 	if box == null:
 		return
 	var hint := box.get_parent().get_node_or_null("ActionHint") as Label
@@ -77,24 +77,42 @@ func _caption_action_button(btn: TextureButton, caption: String) -> void:
 	if btn == null:
 		return
 	btn.tooltip_text = caption
-	btn.custom_minimum_size = Vector2(52, 44)
-	var existing := btn.get_node_or_null("ActionCaption") as Label
-	if existing:
-		existing.text = caption
+	btn.custom_minimum_size = Vector2(48, 40)
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	# Drop old overlay captions that sat off-center inside the texture.
+	var stale := btn.get_node_or_null("ActionCaption")
+	if stale:
+		stale.queue_free()
+	# Already wrapped: icon above centered caption.
+	var parent := btn.get_parent()
+	if parent is VBoxContainer and str(parent.name).begins_with("ActionCol"):
+		var existing := parent.get_node_or_null("ActionCaption") as Label
+		if existing:
+			existing.text = caption
 		return
+	var box := parent as HBoxContainer
+	if box == null:
+		return
+	var idx := btn.get_index()
+	var col := VBoxContainer.new()
+	col.name = "ActionCol_%s" % caption
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	col.add_theme_constant_override("separation", 2)
+	box.add_child(col)
+	box.move_child(col, idx)
+	btn.reparent(col)
 	var label := Label.new()
 	label.name = "ActionCaption"
 	label.text = caption
-	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	label.offset_top = 22.0
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	label.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.add_theme_font_size_override("font_size", 10)
-	label.add_theme_color_override("font_color", Color(1, 1, 1, 1))
-	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
-	label.add_theme_constant_override("outline_size", 4)
-	btn.add_child(label)
+	label.add_theme_font_size_override("font_size", 11)
+	label.add_theme_color_override("font_color", Color(0.08, 0.06, 0.04, 1))
+	label.add_theme_color_override("font_outline_color", Color(1, 1, 1, 0.85))
+	label.add_theme_constant_override("outline_size", 3)
+	col.add_child(label)
 
 
 func _process(delta: float) -> void:
