@@ -14,13 +14,6 @@ layer = 10
 
 [node name="OrderContainer" parent="HUD" unique_id=908020767 instance=ExtResource("2_vmgo5")]
 
-[node name="PalamigBtn" type="Button" parent="HUD" unique_id=1086686354]
-offset_left = 24.0
-offset_top = 260.0
-offset_right = 160.0
-offset_bottom = 300.0
-text = "Palamig"
-
 [node name="CartMain" type="Sprite2D" parent="." unique_id=481923727]
 position = Vector2(960, 540)
 scale = Vector2(1.2, 1.2)
@@ -38,10 +31,13 @@ offset_right = 278.0
 offset_bottom = 1052.0
 text = "end day"
 
+[node name="DayTimer" type="Timer" parent="." unique_id=1780855486]
+wait_time = 60.0
+one_shot = true
+
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1490396313]
 layer = 999
 
 [node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_co4do")]
 
-[connection signal="pressed" from="HUD/PalamigBtn" to="." method="_on_palamig_btn_pressed"]
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

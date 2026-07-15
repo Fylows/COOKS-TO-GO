@@ -21,46 +21,56 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.18, 0.14, 0.11, 1)
+color = Color(0.18, 0.14, 0.11, 0.92)
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="CenterRoot" type="CenterContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterRoot"]
+layout_mode = 2
+custom_minimum_size = Vector2(520, 0)
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_bottom = 28
 
-[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBox" type="VBoxContainer" parent="CenterRoot/MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
-[node name="StepLabel" type="Label" parent="MarginContainer/VBox"]
+[node name="StepLabel" type="Label" parent="CenterRoot/MarginContainer/VBox"]
 layout_mode = 2
+size_flags_vertical = 0
 theme_override_colors/font_color = Color(0.95, 0.9, 0.8, 1)
 theme_override_font_sizes/font_size = 24
 text = "Pour one cup"
 horizontal_alignment = 1
 
-[node name="TargetHint" type="Label" parent="MarginContainer/VBox"]
+[node name="TargetHint" type="Label" parent="CenterRoot/MarginContainer/VBox"]
+custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
+size_flags_vertical = 0
 theme_override_colors/font_color = Color(0.75, 0.73, 0.66, 1)
 text = "Hold the palamig jug. Release at the cup's green line."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="WorkArea" type="Control" parent="MarginContainer/VBox"]
-custom_minimum_size = Vector2(520, 330)
+[node name="WorkAreaHost" type="CenterContainer" parent="CenterRoot/MarginContainer/VBox"]
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_vertical = 0
+
+[node name="WorkArea" type="Control" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost"]
+custom_minimum_size = Vector2(300, 340)
+layout_mode = 2
 mouse_filter = 2
 script = ExtResource("2_visuals")
 
-[node name="ContentRow" type="Control" parent="MarginContainer/VBox/WorkArea"]
+[node name="ContentRow" type="Control" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -69,52 +79,55 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="TubArea" type="VBoxContainer" parent="MarginContainer/VBox/WorkArea/ContentRow"]
+[node name="TubArea" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
 layout_mode = 0
-offset_left = 466.0
-offset_right = 646.0
-offset_bottom = 252.0
+offset_left = 24.0
+offset_top = 8.0
+offset_right = 204.0
+offset_bottom = 238.0
 theme_override_constants/separation = 6
 mouse_filter = 2
 
-[node name="BigTub" parent="MarginContainer/VBox/WorkArea/ContentRow/TubArea" instance=ExtResource("3_vessel")]
+[node name="BigTub" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/TubArea" instance=ExtResource("3_vessel")]
 custom_minimum_size = Vector2(180, 220)
 layout_mode = 2
+tap_overlay = true
+tap_uv_min = Vector2(0.78, 0.62)
+tap_uv_max = Vector2(1.0, 0.78)
+fill_cavity_top = 0.053
+fill_cavity_bottom = 0.771
+fill_width_top_frac = 0.82
+fill_width_bottom_frac = 0.691
 
-[node name="Tap" type="ColorRect" parent="MarginContainer/VBox/WorkArea/ContentRow/TubArea/BigTub"]
-layout_mode = 0
-offset_left = 178.0
-offset_top = 185.0
-offset_right = 198.0
-offset_bottom = 197.0
-mouse_filter = 2
-color = Color(0.85, 0.85, 0.9, 1)
-
-[node name="Label" type="Label" parent="MarginContainer/VBox/WorkArea/ContentRow/TubArea"]
+[node name="Label" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/TubArea"]
 layout_mode = 2
 text = "Palamig dispenser"
 horizontal_alignment = 1
 
-[node name="ServeArea" type="VBoxContainer" parent="MarginContainer/VBox/WorkArea/ContentRow"]
+[node name="ServeArea" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
 layout_mode = 0
-offset_left = 610.0
-offset_top = 250.0
-offset_right = 700.0
-offset_bottom = 422.0
-theme_override_constants/separation = 6
+offset_left = 155.0
+offset_top = 198.0
+offset_right = 245.0
+offset_bottom = 370.0
+theme_override_constants/separation = 4
 mouse_filter = 2
 
-[node name="Cup" parent="MarginContainer/VBox/WorkArea/ContentRow/ServeArea" instance=ExtResource("3_vessel")]
+[node name="Cup" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/ServeArea" instance=ExtResource("3_vessel")]
 custom_minimum_size = Vector2(90, 140)
 layout_mode = 2
 mouse_filter = 2
+fill_cavity_top = 0.0
+fill_cavity_bottom = 0.944
+fill_width_top_frac = 0.791
+fill_width_bottom_frac = 0.5
 
-[node name="Label" type="Label" parent="MarginContainer/VBox/WorkArea/ContentRow/ServeArea"]
+[node name="Label" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/ServeArea"]
 layout_mode = 2
 text = "Customer's cup"
 horizontal_alignment = 1
 
-[node name="EffectsLayer" type="Control" parent="MarginContainer/VBox/WorkArea"]
+[node name="EffectsLayer" type="Control" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -123,20 +136,104 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Stream" type="Line2D" parent="MarginContainer/VBox/WorkArea/EffectsLayer"]
+[node name="Stream" type="Line2D" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/EffectsLayer"]
 visible = false
 width = 8.0
 default_color = Color(0.78, 0.45, 0.16, 0.95)
 
-[node name="FeedbackLabel" type="Label" parent="MarginContainer/VBox"]
+[node name="FeedbackLabel" type="Label" parent="CenterRoot/MarginContainer/VBox"]
+custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
+size_flags_vertical = 0
 theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
 text = "Serve the customer one cup."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="PenaltyLabel" type="Label" parent="MarginContainer/VBox"]
+[node name="OrderProgressPanel" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox"]
+visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.55, 0.55, 1)
-text = "Earned: P0 | Lost: P0 | Jug: 10 cups"
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="OrderTitle" type="Label" parent="CenterRoot/MarginContainer/VBox/OrderProgressPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
+text = "Cups to serve"
 horizontal_alignment = 1
+
+[node name="OrderCupRow" type="HBoxContainer" parent="CenterRoot/MarginContainer/VBox/OrderProgressPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="StatsPanel" type="PanelContainer" parent="CenterRoot/MarginContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="StatsMargin" type="MarginContainer" parent="CenterRoot/MarginContainer/VBox/StatsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="StatsVBox" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="EarnedRow" type="HBoxContainer" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/EarnedRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.75, 0.9, 0.7, 1)
+text = "Earned"
+
+[node name="Value" type="Label" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/EarnedRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.95, 0.8, 1)
+text = "P0"
+horizontal_alignment = 2
+
+[node name="LostRow" type="HBoxContainer" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/LostRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.65, 0.65, 1)
+text = "Lost"
+
+[node name="Value" type="Label" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/LostRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.75, 0.75, 1)
+text = "P0"
+horizontal_alignment = 2
+
+[node name="JugRow" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="JugHeader" type="HBoxContainer" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/JugRow"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/JugRow/JugHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.78, 0.7, 0.55, 1)
+text = "Dispenser"
+
+[node name="Value" type="Label" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/JugRow/JugHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.82, 0.65, 1)
+text = "10 cups"
+horizontal_alignment = 2
+
+[node name="JugBar" type="ProgressBar" parent="CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/JugRow"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+max_value = 10.0
+value = 10.0
+show_percentage = false

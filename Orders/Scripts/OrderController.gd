@@ -1,6 +1,8 @@
 extends MarginContainer
 class_name OrderController
 
+signal palamig_order_started(order: Order)
+
 const ORDER_SCENE: PackedScene = preload("res://Orders/Scenes/Order.tscn")
 
 const FOOD_QUANTITY_LIST: Array[int] = [1,3,5,7,10]
@@ -18,6 +20,7 @@ const ORDER_SPAWN_INTERVAL_INCREASE_DAYS: int = 3
 
 var order_slots: Array[Control] = []
 var removing_order_ids: Dictionary = {}
+var paused_order_countdown_ids: Dictionary = {}
 
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
 @onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
@@ -104,7 +107,7 @@ func create_order(days_passed: int) -> Order:
 	var new_order: Order = ORDER_SCENE.instantiate()
 	order_slot.add_child(new_order)
 
-	new_order.confirm_requested.connect(confirm_order)
+	new_order.confirm_requested.connect(_on_confirm_requested)
 	new_order.cancel_requested.connect(cancel_order)
 	new_order.expired.connect(_on_order_expired)
 	
@@ -141,6 +144,18 @@ func _remove_order(order: Order, on_removal_claimed: Callable = Callable()) -> b
 	return true
 
 
+func _on_confirm_requested(order: Order) -> void:
+	if not is_instance_valid(order) or order.is_queued_for_deletion():
+		return
+
+	if order.is_palamig_order():
+		order.stop_countdown()
+		palamig_order_started.emit(order)
+		return
+
+	await confirm_order(order)
+
+
 func confirm_order(order: Order) -> bool:
 	if not is_instance_valid(order) or order.is_queued_for_deletion() or not stats or not stat_controller:
 		return false
@@ -175,6 +190,10 @@ func cancel_order(order: Order) -> void:
 	await _remove_order(order)
 
 
+func complete_palamig_order(order: Order) -> void:
+	await _remove_order(order)
+
+
 func _on_order_expired(order: Order) -> void:
 	expire_order(order)
 
@@ -182,6 +201,48 @@ func _on_order_expired(order: Order) -> void:
 func expire_order(order: Order) -> void:
 	await _remove_order(order)
 
+
+func get_active_orders() -> Array[Order]:
+	setup_order_slots()
+
+	var active_orders: Array[Order] = []
+	for order_slot: Control in order_slots:
+		for child: Node in order_slot.get_children():
+			if child is Order:
+				active_orders.append(child as Order)
+
+	return active_orders
+
+
+func pause_active_order_countdowns() -> void:
+	paused_order_countdown_ids.clear()
+
+	for order: Order in get_active_orders():
+		if order.countdown_active:
+			paused_order_countdown_ids[order.get_instance_id()] = true
+			order.stop_countdown()
+
+
+func resume_active_order_countdowns() -> void:
+	for order: Order in get_active_orders():
+		if paused_order_countdown_ids.has(order.get_instance_id()):
+			order.resume_countdown()
+
+	paused_order_countdown_ids.clear()
+
+
+func clear_active_orders() -> void:
+	for order: Order in get_active_orders():
+		if not is_instance_valid(order) or order.is_queued_for_deletion():
+			continue
+
+		order.stop_countdown()
+		order.queue_free()
+
+	removing_order_ids.clear()
+	paused_order_countdown_ids.clear()
+
+## Helper function for calculating the order interval
 func get_order_interval(days_passed: int) -> float:
 	var decrease_steps: int = floori(float(maxi(days_passed, 0)) / ORDER_SPAWN_INTERVAL_INCREASE_DAYS)
 	var interval: float = ORDER_SPAWN_INTERVAL_BASE_SECONDS - decrease_steps
@@ -189,33 +250,34 @@ func get_order_interval(days_passed: int) -> float:
 	
 
 var spawn_orders: bool = false
+var order_spawning_paused: bool = false
 
-func start_order_spawning(days_passed: int) -> void:
-	spawn_orders = true
-	var order_interval: float = get_order_interval(days_passed)
-	while true:
-		create_order(days_passed)
-		await get_tree().create_timer(order_interval).timeout
+
+func pause_order_spawning() -> void:
+	order_spawning_paused = true
+
+
+func resume_order_spawning() -> void:
+	order_spawning_paused = false
 
 
 func stop_order_spawning() -> void:
 	spawn_orders = false
-	
-	
-# Quick test
-func _ready() -> void:
-	setup_order_slots()
+	order_spawning_paused = false
 
-	var order0: Order = create_order(0)
-	await get_tree().create_timer(1.0).timeout
-	var order1: Order = create_order(1)
-	await get_tree().create_timer(1.0).timeout
-	var order2: Order = create_order(2)
-	await get_tree().create_timer(1.0).timeout
-	cancel_order(order0)
-	await get_tree().create_timer(1.0).timeout
-	var order3: Order = create_order(3)
-	await get_tree().create_timer(1.0).timeout
-	var order4: Order = create_order(3)
-	await get_tree().create_timer(1.0).timeout
-	var order5: Order = create_order(1000)
+
+func start_order_spawning(days_passed: int) -> void:
+	if spawn_orders:
+		return
+
+	spawn_orders = true
+	order_spawning_paused = false
+	var order_interval: float = get_order_interval(days_passed)
+	while spawn_orders:
+		await get_tree().create_timer(order_interval, false).timeout
+		if not spawn_orders:
+			break
+		if order_spawning_paused:
+			continue
+
+		create_order(days_passed)

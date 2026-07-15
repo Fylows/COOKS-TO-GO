@@ -13,6 +13,7 @@ func _process(delta: float) -> void:
 
 func _on_button_pressed() -> void:
 	PlayerStatController.resetStats()
+	get_tree().paused = false
 	get_tree().change_scene_to_file("res://Screens/EOD/Scenes/Room.tscn")
 	$AnimationPlayer.play_backwards("blur")
 
