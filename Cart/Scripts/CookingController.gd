@@ -9,6 +9,13 @@ signal item_rejected_overflow
 signal item_rejected_not_found
 signal pan_is_empty
 
+var cooked_stock := {
+	FoodItem.FoodName.FISHBALL: 0,
+	FoodItem.FoodName.KIKIAM: 0,
+	FoodItem.Foodname.BETAMAX: 0,
+	FoodItem.FoodName.KWEKWEK: 0,
+}
+
 var pan_items: Array[FoodItem] = []
 const MAX_CAPACITY: int = 20
 
@@ -91,12 +98,16 @@ func on_food_clicked(food_sprite):
 				
 				FoodItem.CookState.COOKED:
 					take_item_in_pan(item)
+					update_cooked_food_stock(item)
 					item.location = FoodItem.Location.READY
 					food_sprite.global_position = get_random_container_position()
 				
 				FoodItem.CookState.BURNT:
 					take_item_in_pan(item)
 					food_sprite.queue_free()
+					
+update_cooked_food_stock(item) -> void:
+	if item.food_name
 
 func _process(time_elapsed: float) -> void:
 	for item in pan_items:
