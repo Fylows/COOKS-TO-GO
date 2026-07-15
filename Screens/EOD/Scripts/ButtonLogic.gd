@@ -17,6 +17,7 @@ var _active_tab: String = "resources"
 func _ready() -> void:
 	get_tree().paused = false
 	PlayerStats.ensure_player_name()
+	BgmController.play_track("eod")
 	camera = get_node(camera_path)
 	base_position = position
 	categories = {

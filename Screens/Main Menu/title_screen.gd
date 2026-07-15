@@ -7,7 +7,7 @@ var name_field: LineEdit
 
 
 func _ready() -> void:
-	bgm.play()
+	BgmController.play_track("title")
 	PlayerStats.ensure_player_name()
 	name_field = LineEdit.new()
 	name_field.text = PlayerStats.player_name
