@@ -83,17 +83,17 @@ func blocking_issue() -> String:
 	if not PlayerStats.paidTindahanApp:
 		var app_price: int = PlayerStatController.essential_cost("tindahanApp")
 		if PlayerStats.playerMoney < app_price:
-			return "Need %s for today's Tindahan App subscription." % PlayerStatController.format_pesos(app_price)
-		return "Pay today's Tindahan App subscription on the Resources tab."
+			return "App needs %s" % PlayerStatController.format_pesos(app_price)
+		return "Resources → Subscribe"
 	if is_family_sick:
 		var price: int = PlayerStatController.essential_cost("medicine")
 		if PlayerStats.paidMedicine:
-			return "Family is still sick."
+			return "Family still sick"
 		if PlayerStats.playerMoney < price:
 			if LoanController.can_borrow():
-				return "Need %s for medicine. Borrow from JuanAngat (Misc tab)." % PlayerStatController.format_pesos(price)
-			return "Need %s for medicine." % PlayerStatController.format_pesos(price)
-		return "Buy medicine on the Family tab first."
+				return "Meds need %s · Misc → Loan" % PlayerStatController.format_pesos(price)
+			return "Meds need %s" % PlayerStatController.format_pesos(price)
+		return "Family → Buy medicine"
 	return ""
 
 
