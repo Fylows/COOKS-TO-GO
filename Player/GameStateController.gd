@@ -69,7 +69,7 @@ func dismiss_victory() -> void:
 
 
 func _compute_reason() -> String:
-	# Softlock / homeless check only — copy comes from EndingBank.
+	# Softlock / homeless check only. Copy comes from EndingBank.
 	if FamilyStateController.is_homeless:
 		return "homeless"
 	var block := FamilyStateController.blocking_issue()
@@ -174,27 +174,20 @@ func _present_overlay() -> void:
 func _refresh_panel() -> void:
 	var ending_title := EndingBank.title_for(ending_id) if not ending_id.is_empty() else "Wala na"
 	_title.text = ending_title
-	_reason_label.text = reason
-	_detail_label.text = cause_detail
-	if not cause_detail.is_empty():
-		_detail_label.text += "\n%s in the till." % PlayerStatController.format_pesos(PlayerStats.playerMoney)
+	if is_victory_toast:
+		_reason_label.text = cause_detail
 	else:
-		_detail_label.text = "%s in the till." % PlayerStatController.format_pesos(PlayerStats.playerMoney)
+		_reason_label.text = reason
+	_detail_label.text = "%s in the till" % PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	if _ending_label:
-		var kind := "Good ending" if EndingBank.is_good(ending_id) else "Ending"
-		var n := EndingBank.index_of(ending_id) + 1
+		var kind := "GOOD" if EndingBank.is_good(ending_id) else "BAD"
 		var unlocked := ScoreController.unlocked_ending_count()
-		_ending_label.text = "%s %d of %d · Collection %d/%d" % [
-			kind,
-			n,
-			EndingBank.count(),
-			unlocked,
-			EndingBank.count(),
-		]
-	_stats_label.text = "This run: %s\nHigh score: %s" % [
-		ScoreController.format_run_stats(),
-		ScoreController.format_records(),
-	]
+		_ending_label.text = "%s · Collection %d/%d" % [kind, unlocked, EndingBank.count()]
+	if is_victory_toast:
+		_stats_label.visible = false
+	else:
+		_stats_label.visible = true
+		_stats_label.text = ScoreController.format_run_stats()
 
 
 func _build_overlay() -> void:
