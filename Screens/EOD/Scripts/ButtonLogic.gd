@@ -69,7 +69,7 @@ var tutorial_panel: PanelContainer
 var tutorial_label: Label
 var _starting_day: bool = false
 var phone_screen_back: ColorRect
-# Apps opened this EOD — badge clears once the player checks them.
+# Apps opened this EOD. Badge clears once the player checks them.
 var _apps_checked: Dictionary = {}
 
 func _ready() -> void:
@@ -1240,7 +1240,7 @@ func _style_shop_row(row: HBoxContainer) -> void:
 		elif child is Button:
 			action_btn = child as Button
 	# Labels/buttons report full text as min width and inflate the row past the
-	# glass — wrap them in fixed Controls so the HBox stays ≤ panel width.
+	# glass. Wrap them in fixed Controls so the HBox stays ≤ panel width.
 	if name_label:
 		_style_shop_label(name_label, false)
 		name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
@@ -1250,7 +1250,7 @@ func _style_shop_row(row: HBoxContainer) -> void:
 		_wrap_shop_cell(row, name_label, "NameWrap", Vector2(24, 28), Control.SIZE_EXPAND_FILL)
 	if price_label:
 		_style_shop_label(price_label, true)
-		# No ellipsis — grow left into the name column instead of "Your nam..."
+		# No ellipsis. Grow left into the name column instead of "Your nam..."
 		price_label.clip_text = false
 		price_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -1479,26 +1479,30 @@ func _setup_morning_briefing() -> void:
 
 	briefing_panel = PanelContainer.new()
 	briefing_panel.name = "MorningBriefing"
-	briefing_panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	briefing_panel.offset_left = -300.0
-	briefing_panel.offset_right = 300.0
-	briefing_panel.offset_top = -220.0
-	briefing_panel.offset_bottom = -24.0
+	briefing_panel.anchor_left = 0.5
+	briefing_panel.anchor_right = 0.5
+	briefing_panel.anchor_top = 1.0
+	briefing_panel.anchor_bottom = 1.0
+	briefing_panel.offset_left = -260.0
+	briefing_panel.offset_right = 260.0
+	briefing_panel.offset_top = -72.0
+	briefing_panel.offset_bottom = -16.0
 	briefing_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	briefing_panel.z_index = 30
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.08, 0.14, 0.94)
+	style.bg_color = Color(0.05, 0.08, 0.14, 0.92)
 	style.border_color = Color(0.95, 0.78, 0.28, 0.85)
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(10)
 	briefing_panel.add_theme_stylebox_override("panel", style)
 
 	briefing_label = Label.new()
 	briefing_label.name = "BriefingLabel"
 	briefing_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	briefing_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	briefing_label.add_theme_font_size_override("font_size", 17)
+	briefing_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	briefing_label.add_theme_font_size_override("font_size", 15)
 	briefing_label.add_theme_color_override("font_color", Color(0.92, 0.95, 1.0))
 	briefing_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	briefing_panel.add_child(briefing_label)
@@ -1509,18 +1513,21 @@ func _setup_morning_briefing() -> void:
 func _refresh_morning_briefing() -> void:
 	if briefing_panel == null or briefing_label == null:
 		return
+	if _first_night_active():
+		briefing_panel.visible = false
+		return
 	var lines := PlayerStatController.morning_briefing_lines()
 	if lines.is_empty():
-		briefing_label.text = "Quiet morning. Pay the app, then open the stall."
-	else:
-		briefing_label.text = "\n".join(lines)
+		briefing_panel.visible = false
+		return
+	briefing_label.text = " · ".join(lines)
 	briefing_panel.visible = true
 	var style := briefing_panel.get_theme_stylebox("panel") as StyleBoxFlat
 	if style:
-		var report := "\n".join(PlayerStatController.last_night_report)
-		if "Ninakaw" in report or "nanakaw" in report.to_lower() or "sick" in report.to_lower():
+		var blob := briefing_label.text.to_lower()
+		if "nanakaw" in blob or "lagnat" in blob or "−" in briefing_label.text:
 			style.border_color = Color(0.92, 0.35, 0.32, 0.95)
-		elif "+" in report or "naiwan" in report.to_lower():
+		elif "+" in briefing_label.text or "naiwan" in blob:
 			style.border_color = Color(0.35, 0.85, 0.5, 0.95)
 		else:
 			style.border_color = Color(0.95, 0.78, 0.28, 0.85)
@@ -1541,12 +1548,12 @@ func _setup_must_pay_strip() -> void:
 	must_pay_strip.anchor_right = 0.5
 	must_pay_strip.anchor_top = 0.0
 	must_pay_strip.anchor_bottom = 0.0
-	must_pay_strip.offset_left = -320.0
-	must_pay_strip.offset_right = 320.0
-	must_pay_strip.offset_top = 152.0
-	must_pay_strip.offset_bottom = 152.0
-	must_pay_strip.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	must_pay_strip.custom_minimum_size = Vector2(640, 0)
+	must_pay_strip.offset_left = -280.0
+	must_pay_strip.offset_right = 280.0
+	must_pay_strip.offset_top = 20.0
+	must_pay_strip.offset_bottom = 20.0
+	must_pay_strip.grow_vertical = Control.GROW_DIRECTION_END
+	must_pay_strip.custom_minimum_size = Vector2(0, 0)
 	must_pay_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	must_pay_strip.z_index = 42
 	var style := StyleBoxFlat.new()
@@ -1554,14 +1561,15 @@ func _setup_must_pay_strip() -> void:
 	style.border_color = Color(0.92, 0.32, 0.3, 0.95)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(6)
-	style.set_content_margin_all(10)
+	style.set_content_margin_all(8)
 	must_pay_strip.add_theme_stylebox_override("panel", style)
 
 	must_pay_label = Label.new()
 	must_pay_label.name = "MustPayLabel"
-	must_pay_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	must_pay_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	must_pay_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	must_pay_label.add_theme_font_size_override("font_size", 17)
+	must_pay_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	must_pay_label.add_theme_font_size_override("font_size", 16)
 	must_pay_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.88))
 	must_pay_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	must_pay_strip.add_child(must_pay_label)
@@ -1570,40 +1578,38 @@ func _setup_must_pay_strip() -> void:
 
 
 func _must_pay_lines() -> PackedStringArray:
-	var lines: PackedStringArray = PackedStringArray()
+	var chips: PackedStringArray = PackedStringArray()
 	if not PlayerStats.paidTindahanApp:
-		lines.append(
-			"App · %s due today" % PlayerStatController.format_pesos(
+		chips.append(
+			"App %s" % PlayerStatController.format_pesos(
 				PlayerStatController.essential_cost("tindahanApp")
 			)
 		)
 	if FamilyStateController.is_family_sick and not PlayerStats.paidMedicine:
-		lines.append(
-			"Medicine · %s" % PlayerStatController.format_pesos(
+		chips.append(
+			"Meds %s" % PlayerStatController.format_pesos(
 				PlayerStatController.essential_cost("medicine")
 			)
 		)
 	if not PlayerStats.paidRent:
 		var toward := FamilyStateController.consecutive_unpaid_rent_days + 1
-		var note := "Rent · night %d of 3 unpaid" % toward
-		if toward >= 3:
-			note += " — eviction if you sleep"
-		elif toward == 2:
-			note += " — one left"
-		lines.append(note)
-	return lines
+		chips.append("Rent %d/3" % toward)
+	return chips
 
 
 func _refresh_must_pay_strip() -> void:
 	if must_pay_strip == null or must_pay_label == null:
 		return
-	var lines := _must_pay_lines()
-	if lines.is_empty() or page != home:
+	var chips := _must_pay_lines()
+	if chips.is_empty() or page != home or _first_night_active():
 		must_pay_strip.visible = false
 		return
-	must_pay_label.text = "Must pay\n" + "\n".join(lines)
+	must_pay_label.text = "  ·  ".join(chips)
 	must_pay_strip.visible = true
 	must_pay_strip.reset_size()
+	var half := maxf(must_pay_strip.size.x, 280.0) * 0.5
+	must_pay_strip.offset_left = -half
+	must_pay_strip.offset_right = half
 
 
 func _first_night_active() -> bool:
@@ -1664,11 +1670,16 @@ func _setup_first_night_coach() -> void:
 
 	tutorial_panel = PanelContainer.new()
 	tutorial_panel.name = "FirstNightCoach"
-	tutorial_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	tutorial_panel.offset_left = -340.0
-	tutorial_panel.offset_right = 340.0
-	tutorial_panel.offset_top = 28.0
-	tutorial_panel.offset_bottom = 140.0
+	tutorial_panel.anchor_left = 0.5
+	tutorial_panel.anchor_right = 0.5
+	tutorial_panel.anchor_top = 0.0
+	tutorial_panel.anchor_bottom = 0.0
+	tutorial_panel.offset_left = -180.0
+	tutorial_panel.offset_right = 180.0
+	tutorial_panel.offset_top = 20.0
+	tutorial_panel.offset_bottom = 20.0
+	tutorial_panel.grow_vertical = Control.GROW_DIRECTION_END
+	tutorial_panel.custom_minimum_size = Vector2(0, 0)
 	tutorial_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tutorial_panel.z_index = 45
 	var style := StyleBoxFlat.new()
@@ -1676,14 +1687,14 @@ func _setup_first_night_coach() -> void:
 	style.border_color = Color(0.35, 0.78, 1.0, 0.95)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(8)
-	style.set_content_margin_all(14)
+	style.set_content_margin_all(10)
 	tutorial_panel.add_theme_stylebox_override("panel", style)
 
 	tutorial_label = Label.new()
 	tutorial_label.name = "CoachLabel"
 	tutorial_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tutorial_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	tutorial_label.add_theme_font_size_override("font_size", 18)
+	tutorial_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	tutorial_label.add_theme_font_size_override("font_size", 16)
 	tutorial_label.add_theme_color_override("font_color", Color(0.94, 0.97, 1.0))
 	tutorial_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tutorial_panel.add_child(tutorial_label)
@@ -1702,27 +1713,23 @@ func _refresh_first_night_coach() -> void:
 	var step := _first_night_step()
 	match step:
 		"app":
-			tutorial_label.text = (
-				"First night — 1 of 3\n"
-				+ "Subscribe to Tindahan App on Resources. No fee, no stall."
-			)
+			tutorial_label.text = "1/3 · Subscribe"
 			_highlight_tutorial_row($ResourceGroup/VBoxContainer/AppSubscription, true)
 			_highlight_tutorial_row($ResourceGroup/VBoxContainer/Fishball, false)
 		"stock":
-			tutorial_label.text = (
-				"First night — 2 of 3\n"
-				+ "Buy fishball stock. Starter kit is thin; restock before morning."
-			)
+			tutorial_label.text = "2/3 · Buy fishballs"
 			_highlight_tutorial_row($ResourceGroup/VBoxContainer/AppSubscription, false)
 			_highlight_tutorial_row($ResourceGroup/VBoxContainer/Fishball, true)
 		"start":
-			tutorial_label.text = (
-				"First night — 3 of 3\n"
-				+ "Back on Home, tap Go to bed to open the stall."
-			)
+			tutorial_label.text = "3/3 · Go to bed"
 			_clear_tutorial_row_highlights()
 		_:
 			tutorial_panel.visible = false
+	if tutorial_panel.visible:
+		tutorial_panel.reset_size()
+		var half := maxf(tutorial_panel.size.x, 220.0) * 0.5
+		tutorial_panel.offset_left = -half
+		tutorial_panel.offset_right = half
 
 
 func _highlight_tutorial_row(row: Node, on: bool) -> void:
