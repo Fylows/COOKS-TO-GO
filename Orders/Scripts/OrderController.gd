@@ -12,6 +12,8 @@ const ORDER_START_LIFETIME_SECONDS: float = 20.0
 const ORDER_MIN_LIFETIME_SECONDS: float = 8.0
 const ORDER_LIFETIME_DECREASE: float = 2.0
 const ORDER_LIFETIME_DECREASE_INTERVAL: int = 3
+const ORDER_SPAWN_INTERVAL_MIN: int = 1
+const ORDER_SPAWN_INTERVAL_MAX: int = 5
 
 var order_slots: Array[Control] = []
 var removing_order_ids: Dictionary = {}
