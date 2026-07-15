@@ -18,6 +18,8 @@ func toggleUpgrade(upgrade: String) -> bool:
 
 func roll_post_day() -> void:
 	for key in PlayerStats.post_day_events.keys():
+		if key == "sickChild":
+			continue
 		var e = PlayerStats.post_day_events[key]
 		var chance = clamp(e.base_chance + PlayerStats.luck * e.luck_factor + PlayerStats.daysPassed * e.day_factor, 0.0, 1.0)
 		e.active = randf() < chance
@@ -48,6 +50,7 @@ func newDay() -> String:
 
 # Gives post day events and resets essentials and resources
 func endDay() -> Array:
+	FamilyStateController.process_end_of_day()
 	roll_post_day()
 	var postDayEvents : Array = []
 	for key in PlayerStats.post_day_events.keys():
@@ -55,6 +58,7 @@ func endDay() -> Array:
 		if (e.active):
 			postDayEvents.append(key)
 	PlayerStats.daysPassed += 1
+	PlayerStats.kikiamPurchasable = PlayerStats.daysPassed >= 2
 	resetStats()
 	return postDayEvents
 

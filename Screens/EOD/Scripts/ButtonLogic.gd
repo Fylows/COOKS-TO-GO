@@ -33,7 +33,15 @@ func _process(delta: float) -> void:
 	$Stats/Money.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	var text = ("Palamig: %s" % PlayerStats.palamigStock) if PlayerStats.palamigUP else ""
 	$Stats/Resources.text = "Fishball: %d\nKikiam: %d\nKwek-Kwek: %d\nSauce: %s\n%s" % [PlayerStats.fishballStock, PlayerStats.kikiamStock, PlayerStats.kwekwekStock, PlayerStats.boughtSauce, text]
-	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s" % [PlayerStats.palamigUP, PlayerStats.containerUP, PlayerStats.cookUP, PlayerStats.burnUP]
+	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s\n\nFamily\n%s" % [
+		PlayerStats.palamigUP,
+		PlayerStats.containerUP,
+		PlayerStats.cookUP,
+		PlayerStats.burnUP,
+		FamilyStateController.status_text(),
+	]
+	var med_btn: Button = $FamilyGroup/VBoxContainer/Medicine/medBtn
+	med_btn.disabled = not FamilyStateController.is_family_sick
 
 func showOpt(opt: String) -> void:
 	for key in categories.keys():
@@ -129,44 +137,45 @@ func _on_buys_kwek_2_pressed() -> void:
 
 # FAMILY GROUP
 
-func buyEssentials(price : int, essential: String) -> void:
+func buyEssentials(price : int, essential: String) -> bool:
 	if PlayerStats.playerMoney < price or PlayerStats.get(essential):
-		return
+		return false
 	PlayerStatController.subtractMoney(price)
-	PlayerStats.set(essential,true)
+	PlayerStats.set(essential, true)
+	return true
 
 
 func _on_electicity_btn_pressed() -> void:
 	if PlayerStats.get("paidElectricity"):
 		return
-	$FamilyGroup/VBoxContainer/Electricity/electicityBtn.text = "bought"
-	buyEssentials(PlayerStats.essentialPrice["electricity"], "paidElecticity")
+	if buyEssentials(PlayerStats.essentialPrice["electricity"], "paidElectricity"):
+		$FamilyGroup/VBoxContainer/Electricity/electicityBtn.text = "bought"
 
 func _on_water_btn_pressed() -> void:
 	if PlayerStats.get("paidWater"):
 		return
-	$FamilyGroup/VBoxContainer/Water/waterBtn.text = "bought"
-	buyEssentials(PlayerStats.essentialPrice["water"], "paidWater")
+	if buyEssentials(PlayerStats.essentialPrice["water"], "paidWater"):
+		$FamilyGroup/VBoxContainer/Water/waterBtn.text = "bought"
+
 
 func _on_rent_btn_pressed() -> void:
 	if PlayerStats.get("paidRent"):
 		return
-	buyEssentials(PlayerStats.essentialPrice["rent"], "paidRent")
-	$FamilyGroup/VBoxContainer/Rent/rentBtn.text = "bought"
+	if buyEssentials(PlayerStats.essentialPrice["rent"], "paidRent"):
+		FamilyStateController.on_rent_paid()
+		$FamilyGroup/VBoxContainer/Rent/rentBtn.text = "bought"
 
 
 func _on_med_btn_pressed() -> void:
-	if PlayerStats.get("paidMedicine"):
-		return
-	buyEssentials(PlayerStats.essentialPrice["medicine"], "paidMedicine")
-	$FamilyGroup/VBoxContainer/Medicine/medBtn.text = "bought"
+	if FamilyStateController.try_buy_medicine():
+		$FamilyGroup/VBoxContainer/Medicine/medBtn.text = "bought"
 
 
 func _on_food_btn_pressed() -> void:
 	if PlayerStats.get("paidFood"):
 		return
-	buyEssentials(PlayerStats.essentialPrice["food"], "paidFood")
-	$FamilyGroup/VBoxContainer/Food/foodBtn.text = "bought"
+	if buyEssentials(PlayerStats.essentialPrice["food"], "paidFood"):
+		$FamilyGroup/VBoxContainer/Food/foodBtn.text = "bought"
 
 
 # MISC
@@ -187,5 +196,8 @@ func _on_weather_btn_pressed() -> void:
 
 
 func _on_new_day_pressed() -> void:
+	if not FamilyStateController.can_start_day():
+		showOpt("family")
+		return
 	PlayerStatController.newDay()
 	get_tree().change_scene_to_file("res://Screens/Game/Scenes/GameScreen.tscn")
