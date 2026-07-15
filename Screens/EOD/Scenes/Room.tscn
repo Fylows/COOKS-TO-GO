@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="1_fduob"]
 [ext_resource type="Texture2D" uid="uid://reasrtc01oir" path="res://Screens/EOD/Assets/Tindahal_FINAL_1.0_CLOSEDwBOOK.png" id="2_bl1sv"]
 [ext_resource type="Script" uid="uid://coab1l62jxgr1" path="res://Screens/EOD/Scripts/ButtonLogic.gd" id="3_qfuc6"]
+[ext_resource type="Script" path="res://Screens/Shared/AudioToggles.gd" id="4_audio"]
 
 [sub_resource type="Gradient" id="Gradient_s6ai5"]
 offsets = PackedFloat32Array(0.87650603, 1)
@@ -65,6 +66,30 @@ offset_left = -409.0
 offset_top = -549.0
 offset_right = -189.0
 offset_bottom = -378.0
+theme_override_constants/separation = 6
+
+[node name="AppSubscription" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "Tindahan App Subscription"
+
+[node name="Spacer" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "        "
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "30 Pesos / day"
+
+[node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "      "
+
+[node name="appSubBtn" type="Button" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "Subscribe"
 
 [node name="Fishball" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer" unique_id=1376009133]
 layout_mode = 2
@@ -194,6 +219,7 @@ offset_left = -410.0
 offset_top = -556.0
 offset_right = -163.0
 offset_bottom = -420.0
+theme_override_constants/separation = 6
 
 [node name="PalamigUpgrd" type="HBoxContainer" parent="Node2D/UpgradesGroup/VBoxContainer" unique_id=945310509]
 layout_mode = 2
@@ -290,13 +316,14 @@ text = "Buy"
 
 [node name="FamilyGroup" type="CanvasGroup" parent="Node2D" unique_id=1163707389]
 visible = false
-position = Vector2(-209, -534)
+position = Vector2(5, -13)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/FamilyGroup" unique_id=2098986779]
-offset_left = -197.0
-offset_top = -28.0
-offset_right = 154.0
-offset_bottom = 212.0
+offset_left = -409.0
+offset_top = -549.0
+offset_right = -189.0
+offset_bottom = -300.0
+theme_override_constants/separation = 6
 
 [node name="FamilyStatus" type="Label" parent="Node2D/FamilyGroup/VBoxContainer"]
 layout_mode = 2
@@ -421,12 +448,14 @@ text = "Buy"
 
 [node name="MiscGroup" type="CanvasGroup" parent="Node2D" unique_id=328044440]
 visible = false
+position = Vector2(5, -13)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/MiscGroup" unique_id=616868786]
-offset_left = -405.0
-offset_top = -562.0
-offset_right = -16.0
-offset_bottom = -461.0
+offset_left = -409.0
+offset_top = -549.0
+offset_right = -189.0
+offset_bottom = -378.0
+theme_override_constants/separation = 6
 
 [node name="Anting2" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=1702457408]
 layout_mode = 2
@@ -527,22 +556,33 @@ metadata/_edit_use_anchors_ = true
 layout_mode = 2
 autowrap_mode = 3
 
+[node name="RestartRow" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/RestartRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Start over"
+
+[node name="restartBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/RestartRow"]
+layout_mode = 2
+text = "Restart"
+
 [node name="Stats" type="CanvasGroup" parent="Node2D" unique_id=960918305]
 position = Vector2(349, -610)
 
 [node name="Money" type="Label" parent="Node2D/Stats" unique_id=666033550]
 custom_minimum_size = Vector2(220, 0)
 offset_right = 220.0
-offset_bottom = 80.0
+offset_bottom = 110.0
 autowrap_mode = 3
 metadata/_edit_use_anchors_ = true
 
 [node name="Resources" type="Label" parent="Node2D/Stats" unique_id=1968668440]
 custom_minimum_size = Vector2(220, 0)
-offset_left = -76.0
-offset_top = 43.0
-offset_right = 144.0
-offset_bottom = 160.0
+	offset_left = -76.0
+	offset_top = 118.0
+	offset_right = 144.0
+	offset_bottom = 235.0
 autowrap_mode = 3
 metadata/_edit_use_anchors_ = true
 
@@ -562,10 +602,26 @@ offset_right = 62.0
 offset_bottom = 39.0
 text = "Start New Day"
 
+[node name="Restart Game" type="Button" parent="Node2D"]
+offset_left = -37.0
+offset_top = 46.0
+offset_right = 37.0
+offset_bottom = 76.0
+text = "Restart"
+
+[node name="AudioToggles" type="HBoxContainer" parent="Node2D"]
+offset_left = -120.0
+offset_top = 82.0
+offset_right = 120.0
+offset_bottom = 114.0
+alignment = 1
+script = ExtResource("4_audio")
+
 [connection signal="pressed" from="Node2D/MenuOptions/Resources" to="Node2D" method="_on_resources_pressed"]
 [connection signal="pressed" from="Node2D/MenuOptions/Upgrades" to="Node2D" method="_on_upgrades_pressed"]
 [connection signal="pressed" from="Node2D/MenuOptions/Family" to="Node2D" method="_on_family_pressed"]
 [connection signal="pressed" from="Node2D/MenuOptions/Misc" to="Node2D" method="_on_misc_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/AppSubscription/appSubBtn" to="Node2D" method="_on_app_sub_btn_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Fishball/buyFishball" to="Node2D" method="_on_buy_fishball_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kikiam/buyKikiam" to="Node2D" method="_on_buy_kikiam_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_buys_kwek_2_pressed"]
@@ -584,4 +640,6 @@ text = "Start New Day"
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Weather/weatherBtn" to="Node2D" method="_on_weather_btn_pressed"]
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/JuanAngat/loanBtn" to="Node2D" method="_on_loan_btn_pressed"]
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Gamble/gambleBtn" to="Node2D" method="_on_sbatter_btn_pressed"]
+[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/RestartRow/restartBtn" to="Node2D" method="_on_restart_pressed"]
 [connection signal="pressed" from="Node2D/New Day" to="Node2D" method="_on_new_day_pressed"]
+[connection signal="pressed" from="Node2D/Restart Game" to="Node2D" method="_on_restart_pressed"]

@@ -11,6 +11,39 @@
 [ext_resource type="Texture2D" uid="uid://dg22txshbim16" path="res://Screens/Main Menu/Buttons/credits.png" id="9_gj5p0"]
 [ext_resource type="Texture2D" uid="uid://d4mqh0qh1xw86" path="res://Screens/Main Menu/Buttons/credits_pressed.png" id="10_e8jtp"]
 [ext_resource type="Texture2D" uid="uid://cioe5yp524fot" path="res://Screens/Main Menu/Buttons/credits_highlight.png" id="11_mw5eg"]
+[ext_resource type="Script" path="res://Screens/Shared/AudioToggles.gd" id="12_audio"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_name_panel"]
+bg_color = Color(0.08, 0.1, 0.16, 0.92)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.95, 0.78, 0.28, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 20.0
+content_margin_top = 16.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_name_field"]
+bg_color = Color(0.14, 0.16, 0.24, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.52, 0.72, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
 
 [node name="title_screen" type="Node2D" unique_id=485187835]
 script = ExtResource("1_pjs3m")
@@ -18,6 +51,73 @@ script = ExtResource("1_pjs3m")
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1973120040]
 position = Vector2(960, 540)
 texture = ExtResource("2_7ynfn")
+
+[node name="UiLayer" type="CanvasLayer" parent="."]
+
+[node name="NamePanel" type="PanelContainer" parent="UiLayer"]
+offset_left = 610.0
+offset_top = 118.0
+offset_right = 1310.0
+offset_bottom = 298.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_name_panel")
+
+[node name="VBox" type="VBoxContainer" parent="UiLayer/NamePanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UiLayer/NamePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.78, 0.28, 1)
+theme_override_font_sizes/font_size = 30
+text = "CHOOSE YOUR NAME"
+horizontal_alignment = 1
+
+[node name="NameField" type="LineEdit" parent="UiLayer/NamePanel/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.97, 1, 1)
+theme_override_colors/caret_color = Color(0.95, 0.78, 0.28, 1)
+theme_override_colors/selection_color = Color(0.22, 0.32, 0.5, 0.55)
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_name_field")
+theme_override_styles/focus = SubResource("StyleBoxFlat_name_field")
+alignment = 1
+placeholder_text = "Type your vendor name..."
+max_length = 24
+
+[node name="HintLabel" type="Label" parent="UiLayer/NamePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.84, 0.95, 1)
+theme_override_font_sizes/font_size = 16
+text = "This is the name customers will see at your stall."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="RestartButton" type="Button" parent="UiLayer"]
+offset_left = 810.0
+offset_top = 308.0
+offset_right = 1110.0
+offset_bottom = 346.0
+theme_override_font_sizes/font_size = 18
+text = "Restart"
+
+[node name="AudioToggles" type="HBoxContainer" parent="UiLayer"]
+offset_left = 820.0
+offset_top = 354.0
+offset_right = 1100.0
+offset_bottom = 386.0
+alignment = 1
+script = ExtResource("12_audio")
+
+[node name="HighScoreLabel" type="Label" parent="UiLayer"]
+offset_left = 660.0
+offset_top = 392.0
+offset_right = 1260.0
+offset_bottom = 420.0
+theme_override_colors/font_color = Color(0.95, 0.78, 0.28, 1)
+theme_override_font_sizes/font_size = 16
+text = "Day 0 · 0 Pesos earned · 0 Pesos peak"
+horizontal_alignment = 1
 
 [node name="button_manager" type="Control" parent="." unique_id=1352815499]
 layout_mode = 3
@@ -36,9 +136,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 175.0
-offset_top = 320.0
+offset_top = 370.0
 offset_right = 335.0
-offset_bottom = 340.0
+offset_bottom = 390.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(2, 2)
@@ -52,9 +152,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 175.0
-offset_top = 449.0
+offset_top = 499.0
 offset_right = 335.0
-offset_bottom = 469.0
+offset_bottom = 519.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(2, 2)
@@ -68,9 +168,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 175.0
-offset_top = 578.0
+offset_top = 628.0
 offset_right = 335.0
-offset_bottom = 598.0
+offset_bottom = 648.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(2, 2)
@@ -90,3 +190,5 @@ texture_hover = ExtResource("8_2in6p")
 [connection signal="pressed" from="button_manager/Credit" to="." method="_on_credit_pressed"]
 [connection signal="mouse_entered" from="button_manager/Quit" to="." method="_on_quit_mouse_entered"]
 [connection signal="pressed" from="button_manager/Quit" to="." method="_on_quit_pressed"]
+[connection signal="mouse_entered" from="UiLayer/RestartButton" to="." method="_on_restart_mouse_entered"]
+[connection signal="pressed" from="UiLayer/RestartButton" to="." method="_on_restart_pressed"]

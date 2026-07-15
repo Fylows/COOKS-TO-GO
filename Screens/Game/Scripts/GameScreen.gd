@@ -1,11 +1,14 @@
 extends Node2D
 
 const PALAMIG_SCENE := preload("res://Palamig/Scenes/palamig_minigame.tscn")
+const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
 const DAY_DURATION_SECONDS := 120.0
 
 @onready var order_controller: OrderController = $HUD/OrderContainer
 @onready var day_over: CanvasLayer = $CanvasLayer
+@onready var day_label: Label = $HUD/DayHud/DayLabel
 @onready var day_timer_label: Label = $HUD/DayHud/TimerLabel
+@onready var stock_label: Label = $HUD/StockHud/VBox/StockLabel
 @onready var pause_button: Button = $HUD/DayHud/PauseButton
 @onready var money_popup_layer: Control = $HUD/MoneyPopupLayer
 
@@ -17,6 +20,7 @@ var _day_seconds_left: float = 0.0
 var _day_active: bool = false
 var _day_paused: bool = false
 var _popup_stagger: Dictionary = {}
+var lore_feed: Label
 
 
 func _ready() -> void:
@@ -26,10 +30,49 @@ func _ready() -> void:
 	order_controller.palamig_order_started.connect(_on_palamig_order_started)
 	order_controller.order_money_earned.connect(_on_order_money_earned)
 	_setup_palamig_game()
+	lore_feed = LoreFeedBar.ensure($HUD, "LoreFeed")
+	var lore_panel: Control = lore_feed.get_parent().get_parent() as Control
+	if lore_panel:
+		lore_panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+		lore_panel.offset_left = 320.0
+		lore_panel.offset_top = -108.0
+		lore_panel.offset_right = -320.0
+		lore_panel.offset_bottom = -16.0
+	await _play_day_start_intro()
 	start_day()
 
 
+func _play_day_start_intro() -> void:
+	var hud_elements: Array[CanvasItem] = [
+		$HUD/DayHud,
+		$HUD/StockHud,
+		$HUD/AudioToggles,
+		$HUD/OrderContainer,
+		$HUD/MoneyPopupLayer,
+	]
+	if lore_feed:
+		var lore_panel := lore_feed.get_parent().get_parent() as CanvasItem
+		if lore_panel:
+			hud_elements.append(lore_panel)
+	for node in hud_elements:
+		node.modulate.a = 0.0
+	$CartMain.modulate.a = 0.0
+	$CartMain.scale = Vector2(0.92, 0.92)
+	if DayTransition.consume_fade_in():
+		await DayTransition.fade_from_black(0.5)
+	var tween := create_tween()
+	tween.set_parallel(true)
+	for node in hud_elements:
+		tween.tween_property(node, "modulate:a", 1.0, 0.4)
+	tween.tween_property($CartMain, "modulate:a", 1.0, 0.5)
+	tween.tween_property($CartMain, "scale", Vector2(1.2, 1.2), 0.5)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	await tween.finished
+
+
 func _process(delta: float) -> void:
+	_update_stock_label()
+	LoreFeedBar.refresh(lore_feed)
 	if not _day_active or _day_paused:
 		return
 	_day_seconds_left = maxf(_day_seconds_left - delta, 0.0)
@@ -44,7 +87,9 @@ func start_day() -> void:
 	_day_active = true
 	_day_seconds_left = DAY_DURATION_SECONDS
 	_popup_stagger.clear()
+	_update_day_label()
 	_update_timer_label()
+	_update_stock_label()
 	pause_button.text = "Pause"
 	order_controller.set_orders_paused(false)
 	order_controller.start_order_spawning(PlayerStats.daysPassed)
@@ -58,8 +103,14 @@ func end_day() -> void:
 	order_controller.set_orders_paused(true)
 	_close_palamig_if_open()
 	SfxController.play_end_of_day()
+	await _play_day_end_transition()
 	get_tree().paused = true
+
+
+func _play_day_end_transition() -> void:
+	await DayTransition.fade_to_black("Day Over", 0.5)
 	dayOverPopup()
+	await DayTransition.fade_from_black(0.4)
 
 
 func pause_day() -> void:
@@ -190,6 +241,14 @@ func _update_timer_label() -> void:
 	day_timer_label.text = "%02d:%02d" % [total_seconds / 60, total_seconds % 60]
 
 
+func _update_day_label() -> void:
+	day_label.text = "Day %d" % PlayerStatController.current_day_number()
+
+
+func _update_stock_label() -> void:
+	stock_label.text = PlayerStatController.format_stock_summary()
+
+
 func dayOverPopup() -> void:
 	day_over.visible = true
 
@@ -203,3 +262,8 @@ func _on_pause_button_pressed() -> void:
 		resume_day()
 	else:
 		pause_day()
+
+
+func _on_restart_pressed() -> void:
+	SfxController.play_click()
+	PlayerStatController.restart_game()
