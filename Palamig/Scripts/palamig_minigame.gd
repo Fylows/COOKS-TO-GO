@@ -26,6 +26,7 @@ var base_target_fill: float
 var order_cups_total: int = 0
 var order_cups_served: int = 0
 var order_completed: bool = false
+var _finish_sent: bool = false
 
 const CUP_ICON_DONE := preload("res://Shared/Assets/Palamig/cup_full.PNG")
 const CUP_ICON_TODO := preload("res://Shared/Assets/Palamig/cup.PNG")
@@ -67,6 +68,7 @@ func begin_order(cups: int) -> void:
 	order_cups_total = cups
 	order_cups_served = 0
 	order_completed = false
+	_finish_sent = false
 	if results_modal:
 		results_modal.hide()
 	_reset_session()
@@ -130,7 +132,7 @@ func _show_results() -> void:
 
 func _close_results() -> void:
 	results_modal.hide()
-	minigame_finished.emit(total_money_earned, total_money_lost)
+	_finish_minigame()
 
 
 func _exit_to_game() -> void:
@@ -141,6 +143,13 @@ func _exit_to_game() -> void:
 	if results_modal and results_modal.visible:
 		results_modal.hide()
 	_sync_stock()
+	_finish_minigame()
+
+
+func _finish_minigame() -> void:
+	if _finish_sent:
+		return
+	_finish_sent = true
 	minigame_finished.emit(total_money_earned, total_money_lost)
 
 
@@ -228,7 +237,7 @@ func _stop_pour() -> void:
 			if order_cups_served >= order_cups_total:
 				order_completed = true
 				_update_ui()
-				minigame_finished.emit(total_money_earned, total_money_lost)
+				_finish_minigame()
 				return
 		else:
 			feedback_label.text = "Cup served! +%s" % PlayerStatController.format_pesos(sale_price)
@@ -250,7 +259,7 @@ func _stop_pour() -> void:
 		if order_cups_total > 0:
 			feedback_label.text = "Out of palamig. Back to cart to restock."
 			_update_ui()
-			minigame_finished.emit(total_money_earned, total_money_lost)
+			_finish_minigame()
 		else:
 			_show_results()
 	else:

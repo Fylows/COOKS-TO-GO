@@ -8,7 +8,7 @@ func addMoney(money: int) -> void:
 	PlayerStats.playerMoney += money
 
 func subtractMoney(money: int) -> void:
-	PlayerStats.playerMoney -= money
+	PlayerStats.playerMoney = maxi(PlayerStats.playerMoney - money, 0)
 
 func toggleUpgrade(upgrade: String) -> bool:
 	if upgrade not in ["palamigUP", "containerUP", "cookUP", "burnUP"]:
