@@ -26,6 +26,8 @@ BgmController="*res://Audio/BgmController.gd"
 SfxController="*res://Audio/SfxController.gd"
 AudioSettings="*res://Audio/AudioSettings.gd"
 ScoreController="*res://Player/ScoreController.gd"
+GameStateController="*res://Player/GameStateController.gd"
+PovertyVignette="*res://Screens/Shared/PovertyVignette.gd"
 DayTransition="*res://Screens/Shared/DayTransition.gd"
 Dialogic="*uid://ds2q0uclmolvu"
 
