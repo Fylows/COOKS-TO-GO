@@ -30,6 +30,7 @@ var fade_tween: Tween
 var countdown_lifetime_seconds: float = 0.0
 var countdown_remaining_seconds: float = 0.0
 var countdown_active: bool = false
+var countdown_paused: bool = false
 var countdown_fill_style: StyleBoxFlat = StyleBoxFlat.new()
 
 
@@ -82,6 +83,7 @@ func update_order_card_ui() -> void:
 		food_sprite.texture = FOOD_TEXTURES["palamig"]
 
 	order_label.text = "\n".join(lines)
+	order_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	food_sprite.show()
 	
 
@@ -94,6 +96,10 @@ func start_countdown(duration_seconds: float) -> void:
 
 func stop_countdown() -> void:
 	countdown_active = false
+
+
+func set_countdown_paused(paused: bool) -> void:
+	countdown_paused = paused
 
 
 func resume_countdown() -> void:
@@ -110,6 +116,8 @@ func is_palamig_order() -> bool:
 
 
 func update_countdown(delta: float) -> void:
+	if countdown_paused:
+		return
 	countdown_remaining_seconds = maxf(countdown_remaining_seconds - delta, 0.0)
 	update_countdown_bar()
 

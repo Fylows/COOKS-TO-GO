@@ -158,49 +158,44 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -250.0
-offset_right = 250.0
-offset_bottom = 250.0
+offset_left = -280.0
+offset_top = -200.0
+offset_right = 280.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Button" type="Button" parent="PanelContainer" unique_id=1888071838]
+[node name="VBox" type="VBoxContainer" parent="PanelContainer"]
 layout_mode = 2
-size_flags_vertical = 8
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="PanelContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Day Over"
+horizontal_alignment = 1
+
+[node name="MoneyLabel" type="Label" parent="PanelContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Balance:"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="StockLabel" type="Label" parent="PanelContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Stock left:"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Button" type="Button" parent="PanelContainer/VBox" unique_id=1888071838]
+layout_mode = 2
+size_flags_horizontal = 4
 text = "Continue"
-
-[node name="Stats" type="VBoxContainer" parent="PanelContainer" unique_id=1657743466]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-
-[node name="fballSold" type="Label" parent="PanelContainer/Stats" unique_id=269168299]
-layout_mode = 2
-text = "Fishball Sold:"
-
-[node name="Label" type="Label" parent="PanelContainer/Stats" unique_id=1456008274]
-layout_mode = 2
-text = "Fishball Sold:"
-
-[node name="fballSold3" type="Label" parent="PanelContainer/Stats" unique_id=930080889]
-layout_mode = 2
-text = "Fishball Sold:"
-
-[node name="fballSold4" type="Label" parent="PanelContainer/Stats" unique_id=1686616300]
-layout_mode = 2
-text = "Fishball Sold:"
-
-[node name="fballSold5" type="Label" parent="PanelContainer/Stats" unique_id=367837874]
-layout_mode = 2
-text = "Fishball Sold:"
-
-[node name="fballSold2" type="Label" parent="PanelContainer/Stats" unique_id=385651322]
-layout_mode = 2
-text = "Fishball Sold:"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1494214977]
 libraries/ = SubResource("AnimationLibrary_pdmli")
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
-[connection signal="pressed" from="PanelContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="PanelContainer/VBox/Button" to="." method="_on_button_pressed"]

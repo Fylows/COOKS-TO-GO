@@ -155,7 +155,7 @@ func _on_confirm_requested(order: Order) -> void:
 		return
 
 	if order.is_palamig_order():
-		if not stats or stats.palamigStock <= 0:
+		if not stats or stats.palamigStock < order.palamig_count:
 			SfxController.play_error()
 			return
 		order.stop_countdown()
@@ -236,8 +236,17 @@ func stop_order_spawning() -> void:
 	_spawning = false
 
 
+func set_orders_paused(paused: bool) -> void:
+	for slot: Control in order_slots:
+		for child in slot.get_children():
+			if child is Order:
+				child.set_countdown_paused(paused)
+
+
 func _spawn_loop() -> void:
 	while _spawning:
-		create_order(_spawn_days)
+		if create_order(_spawn_days) == null:
+			await get_tree().create_timer(0.5).timeout
+			continue
 		var wait_seconds: float = get_spawn_interval_seconds(_spawn_days)
 		await get_tree().create_timer(wait_seconds).timeout

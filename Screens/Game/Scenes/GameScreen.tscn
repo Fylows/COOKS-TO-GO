@@ -28,6 +28,10 @@ text = "02:00"
 layout_mode = 2
 text = "Pause"
 
+[node name="EndDayButton" type="Button" parent="HUD/DayHud"]
+layout_mode = 2
+text = "End Day"
+
 [node name="MoneyPopupLayer" type="Control" parent="HUD"]
 anchors_preset = 0
 offset_right = 1920.0
@@ -50,17 +54,10 @@ position = Vector2(948, 540)
 script = ExtResource("4_kkmty")
 deadZone = 125
 
-[node name="Button" type="Button" parent="." unique_id=1122267757]
-offset_left = 208.0
-offset_top = 1021.0
-offset_right = 278.0
-offset_bottom = 1052.0
-text = "end day"
-
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1490396313]
 layer = 999
 
 [node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_co4do")]
 
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="HUD/DayHud/EndDayButton" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="HUD/DayHud/PauseButton" to="." method="_on_pause_button_pressed"]

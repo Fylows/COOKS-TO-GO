@@ -51,7 +51,12 @@ func _process(delta: float) -> void:
 	]
 	$FamilyGroup/VBoxContainer/FamilyStatus.text = FamilyStateController.status_text()
 	var med_btn: Button = $FamilyGroup/VBoxContainer/Medicine/medBtn
-	med_btn.disabled = not FamilyStateController.is_family_sick
+	var med_price: int = PlayerStats.essentialPrice["medicine"]
+	med_btn.disabled = (
+		not FamilyStateController.is_family_sick
+		or PlayerStats.paidMedicine
+		or PlayerStats.playerMoney < med_price
+	)
 
 func showOpt(opt: String) -> void:
 	_active_tab = opt
@@ -133,6 +138,8 @@ func _on_buy_fishball_pressed() -> void:
 
 
 func _on_buy_kikiam_pressed() -> void:
+	if not PlayerStats.kikiamPurchasable:
+		return
 	buyResource(RESOURCE_PRICE["kikiam"],"kikiamStock")
 
 
@@ -143,6 +150,8 @@ func _on_buy_sauce_pressed() -> void:
 	$ResourceGroup/VBoxContainer/Sauce/buySauce.text = "bought"
 
 func _on_buy_palamig_pressed() -> void:
+	if not PlayerStats.palamigUP:
+		return
 	buyResource(RESOURCE_PRICE["palamig"],"palamigStock")
 
 func _on_buys_kwek_2_pressed() -> void:
