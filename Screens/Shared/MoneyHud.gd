@@ -79,5 +79,5 @@ static func refresh(balance_label: Label, earned_label: Label) -> void:
 			earned_label.text = "Today: +%s" % PlayerStatController.format_pesos(earned)
 			earned_label.add_theme_color_override("font_color", Color(0.45, 0.92, 0.55))
 		else:
-			earned_label.text = "Today: +0 Pesos"
+			earned_label.text = "Today: +%s" % PlayerStatController.format_pesos(0)
 			earned_label.add_theme_color_override("font_color", Color(0.72, 0.76, 0.86))

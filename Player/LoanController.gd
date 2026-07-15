@@ -42,4 +42,4 @@ func collect_payment() -> int:
 func status_text() -> String:
 	if PlayerStats.loan_balance <= 0:
 		return ""
-	return "JuanAngat owed: %d Pesos" % PlayerStats.loan_balance
+	return "JuanAngat owed: %s" % PlayerStatController.format_pesos(PlayerStats.loan_balance)

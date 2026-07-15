@@ -281,7 +281,7 @@ func _show_money_popup(amount: int, slot_index: int) -> void:
 
 	var popup := Label.new()
 	var prefix := "+" if amount > 0 else ""
-	popup.text = "%s%d Pesos" % [prefix, amount]
+	popup.text = "%s%s" % [prefix, PlayerStatController.format_pesos(amount)]
 	popup.add_theme_font_size_override("font_size", 20)
 	popup.add_theme_color_override(
 		"font_color",

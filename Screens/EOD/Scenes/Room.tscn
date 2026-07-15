@@ -74,7 +74,7 @@ text = "        "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
 layout_mode = 2
-text = "30 Pesos / day"
+text = "₱30/day"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
 layout_mode = 2
@@ -97,7 +97,7 @@ text = "                      "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Fishball" unique_id=1080631662]
 layout_mode = 2
-text = "$ 50"
+text = "₱50"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Fishball" unique_id=23251496]
 layout_mode = 2
@@ -121,7 +121,7 @@ text = "                       "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kikiam" unique_id=1557554053]
 layout_mode = 2
-text = "$ 75"
+text = "₱75"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kikiam" unique_id=417377119]
 layout_mode = 2
@@ -145,7 +145,7 @@ text = "               "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kwek2" unique_id=268937186]
 layout_mode = 2
-text = "$ 150"
+text = "₱150"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kwek2" unique_id=38805921]
 layout_mode = 2
@@ -169,7 +169,7 @@ text = "                                    "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Sauce" unique_id=794033985]
 layout_mode = 2
-text = "$ 100"
+text = "₱100"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Sauce" unique_id=125994112]
 layout_mode = 2
@@ -193,7 +193,7 @@ text = "                                "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Palamig" unique_id=636221258]
 layout_mode = 2
-text = "$ 75"
+text = "₱75"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Palamig" unique_id=1423337787]
 layout_mode = 2
@@ -234,7 +234,7 @@ text = "                            "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd" unique_id=1038436901]
 layout_mode = 2
-text = "$ 100"
+text = "₱100"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd" unique_id=376998132]
 layout_mode = 2
@@ -257,7 +257,7 @@ text = "                         "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=692793365]
 layout_mode = 2
-text = "$ 200"
+text = "₱200"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=481267961]
 layout_mode = 2
@@ -281,7 +281,7 @@ text = "                              "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=942770667]
 layout_mode = 2
-text = "$ 250"
+text = "₱250"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=2133625966]
 layout_mode = 2
@@ -304,7 +304,7 @@ text = "                                    "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=455282992]
 layout_mode = 2
-text = "$ 500"
+text = "₱500"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=1295428735]
 layout_mode = 2
@@ -351,7 +351,7 @@ text = "                      "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Electricity" unique_id=2094282141]
 layout_mode = 2
-text = "$150"
+text = "₱150"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Electricity" unique_id=92422364]
 layout_mode = 2
@@ -374,7 +374,7 @@ text = "                              "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Water" unique_id=2125099689]
 layout_mode = 2
-text = "$50"
+text = "₱50"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Water" unique_id=1988265474]
 layout_mode = 2
@@ -397,7 +397,7 @@ text = "                                "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Rent" unique_id=1439481335]
 layout_mode = 2
-text = "$75"
+text = "₱75"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Rent" unique_id=1229657044]
 layout_mode = 2
@@ -420,7 +420,7 @@ text = "                               "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Food" unique_id=615231970]
 layout_mode = 2
-text = "$150"
+text = "₱150"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Food" unique_id=1471463325]
 layout_mode = 2
@@ -443,7 +443,7 @@ text = "                        "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Medicine" unique_id=1837453622]
 layout_mode = 2
-text = "$300"
+text = "₱300"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Medicine" unique_id=560384034]
 layout_mode = 2
@@ -488,7 +488,7 @@ text = "                              "
 
 [node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
 layout_mode = 2
-text = "250 Pesos"
+text = "₱250"
 
 [node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
 layout_mode = 2
@@ -511,7 +511,7 @@ text = "       "
 
 [node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
 layout_mode = 2
-text = "50 Pesos/day"
+text = "₱50/day"
 
 [node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
 layout_mode = 2
@@ -605,10 +605,10 @@ offset_bottom = 150.0
 metadata/_edit_use_anchors_ = true
 
 [node name="HomeBtn" type="Button" parent="Node2D" unique_id=441180160]
-offset_left = -72.0
-offset_top = 178.0
-offset_right = -64.0
-offset_bottom = 186.0
+offset_left = -44.0
+offset_top = 176.0
+offset_right = -36.0
+offset_bottom = 184.0
 scale = Vector2(8, 8)
 
 [node name="MenuOptions" type="HBoxContainer" parent="Node2D" unique_id=1794590763]
