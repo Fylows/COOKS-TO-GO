@@ -5,6 +5,13 @@ enum FoodName {
 	KIKIAM,
 }
 
+enum Location {
+	CART,
+	PAN,
+	READY,
+	TRASHED
+}
+
 enum CookState {
 	RAW,
 	COOKED,
@@ -17,10 +24,12 @@ const FoodData := {
 }
 
 var food_name: FoodName
+var location:= Location.CART
+var visual: Sprite2D
 var curr_cooktime: float = 0.0
 var cook_time: float
 var burn_time: float
-var cook_state: CookState = CookState.RAW
+var cook_state:= CookState.RAW
 
 func _init(name: FoodName):
 	food_name = name

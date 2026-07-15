@@ -1,9 +1,6 @@
 class_name FoodController
 
 static func update_cook_state(item: FoodItem, time_elapsed: float) -> void:
-	if item.cook_state == FoodItem.CookState.CANT_BE_COOKED:
-		return
-	
 	item.curr_cooktime += time_elapsed
 
 	if item.curr_cooktime >= item.burn_time:
