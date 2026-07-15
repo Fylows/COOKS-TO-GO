@@ -61,6 +61,29 @@ offset_top = -295.0
 offset_right = 115.0
 offset_bottom = -124.0
 
+[node name="AppSubscription" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "Tindahan App"
+
+[node name="Spacer" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "        "
+
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "30 Pesos / day"
+
+[node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "      "
+
+[node name="appSubBtn" type="Button" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+layout_mode = 2
+text = "Subscribe"
+
 [node name="Fishball" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer" unique_id=1376009133]
 layout_mode = 2
 
@@ -308,6 +331,13 @@ offset_top = -28.0
 offset_right = 154.0
 offset_bottom = 212.0
 
+[node name="FamilyStatus" type="Label" parent="Node2D/FamilyGroup/VBoxContainer"]
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="TonightBills" type="Label" parent="Node2D/FamilyGroup/VBoxContainer"]
+layout_mode = 2
+
 [node name="Electricity" type="HBoxContainer" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=547100195]
 layout_mode = 2
 
@@ -434,6 +464,125 @@ offset_bottom = 235.56705
 scale = Vector2(-7.678791, -16.375587)
 color = Color(0.92156863, 0.5411765, 0.25882354, 1)
 
+[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/MiscGroup"]
+offset_left = -272.0
+offset_top = -295.0
+offset_right = -52.0
+offset_bottom = -80.0
+theme_override_constants/separation = 6
+
+[node name="RunLog" type="Label" parent="Node2D/MiscGroup/VBoxContainer"]
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="Anting2" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+layout_mode = 2
+text = "Anting Anting"
+
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+layout_mode = 2
+text = "                              "
+
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+layout_mode = 2
+text = "250 Pesos"
+
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+layout_mode = 2
+text = "                       "
+
+[node name="antingBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+layout_mode = 2
+text = "Buy"
+
+[node name="Weather" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+layout_mode = 2
+text = "Weather App"
+
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+layout_mode = 2
+text = "       "
+
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+layout_mode = 2
+text = "50 Pesos/day"
+
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+layout_mode = 2
+text = "                       "
+
+[node name="weatherBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+layout_mode = 2
+text = "Buy"
+
+[node name="JuanAngat" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "JuanAngat Loan+"
+
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "              "
+
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "+300, owe 400"
+
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "                       "
+
+[node name="loanBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+layout_mode = 2
+text = "Borrow"
+
+[node name="Gamble" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+layout_mode = 2
+text = "Sbatter"
+
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+layout_mode = 2
+text = "                                    "
+
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+layout_mode = 2
+text = "Your name"
+
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+layout_mode = 2
+text = "                       "
+
+[node name="gambleBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+layout_mode = 2
+text = "Bet"
+
+[node name="SbatterResult" type="Label" parent="Node2D/MiscGroup/VBoxContainer"]
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="RestartRow" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/RestartRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Start over"
+
+[node name="restartBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/RestartRow"]
+layout_mode = 2
+text = "Restart"
+
 [node name="Home" type="CanvasGroup" parent="Node2D" unique_id=565726316]
 position = Vector2(349, -610)
 
@@ -534,9 +683,9 @@ text = "Go to bed"
 fit_content = true
 autowrap_mode = 0
 
+[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/AppSubscription/appSubBtn" to="Node2D" method="_on_app_sub_btn_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Fishball/buyFishball" to="Node2D" method="_on_buy_fishball_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kikiam/buyKikiam" to="Node2D" method="_on_buy_kikiam_pressed"]
-[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_upg_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_buys_kwek_2_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Sauce/buySauce" to="Node2D" method="_on_buy_sauce_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Palamig/buyPalamig" to="Node2D" method="_on_buy_palamig_pressed"]
@@ -549,6 +698,11 @@ autowrap_mode = 0
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Rent/rentBtn" to="Node2D" method="_on_rent_btn_pressed"]
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Food/foodBtn" to="Node2D" method="_on_food_btn_pressed"]
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Medicine/medBtn" to="Node2D" method="_on_med_btn_pressed"]
+[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Anting2/antingBtn" to="Node2D" method="_on_anting_btn_pressed"]
+[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Weather/weatherBtn" to="Node2D" method="_on_weather_btn_pressed"]
+[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/JuanAngat/loanBtn" to="Node2D" method="_on_loan_btn_pressed"]
+[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Gamble/gambleBtn" to="Node2D" method="_on_sbatter_btn_pressed"]
+[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/RestartRow/restartBtn" to="Node2D" method="_on_restart_pressed"]
 [connection signal="mouse_entered" from="Node2D/HomeBtn" to="Node2D" method="_on_home_btn_mouse_entered"]
 [connection signal="mouse_exited" from="Node2D/HomeBtn" to="Node2D" method="_on_home_btn_mouse_exited"]
 [connection signal="pressed" from="Node2D/HomeBtn" to="Node2D" method="_on_home_btn_pressed"]

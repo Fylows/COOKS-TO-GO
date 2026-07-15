@@ -1,7 +1,5 @@
 extends Control
 
-# pour one cup per customer, get the fill line right or waste it
-
 signal palamig_served(price: int)
 signal money_lost(amount: int)
 signal palamig_wasted(cups: int)
@@ -9,9 +7,9 @@ signal minigame_finished(earned: int, lost: int)
 
 enum Step { POUR, EMPTY }
 
-@export var target_fill: float = 85.0
+@export var target_fill: float = 72.0
 @export var target_variation: float = 8.0
-@export var fill_tolerance: float = 7.0
+@export var fill_tolerance: float = 12.0
 @export var pour_rate: float = 75.0
 @export var sale_price: int = 30
 @export var waste_cost: int = 6
@@ -19,17 +17,31 @@ enum Step { POUR, EMPTY }
 
 var current_step: Step = Step.POUR
 var cups_remaining: int
+var jug_capacity: int = 10
 var cup_fill: float = 0.0
 var is_pouring: bool = false
 var total_money_earned: int = 0
 var total_money_lost: int = 0
 var base_target_fill: float
+var order_cups_total: int = 0
+var order_cups_served: int = 0
+var order_completed: bool = false
+var _finish_sent: bool = false
 
-@onready var step_label: Label = $MarginContainer/VBox/StepLabel
-@onready var target_hint: Label = $MarginContainer/VBox/TargetHint
-@onready var feedback_label: Label = $MarginContainer/VBox/FeedbackLabel
-@onready var status_label: Label = $MarginContainer/VBox/PenaltyLabel
-@onready var jug: FillVessel = $MarginContainer/VBox/WorkArea/ContentRow/TubArea/BigTub
+const CUP_ICON_DONE := preload("res://Shared/Assets/Palamig/cup_full.PNG")
+const CUP_ICON_TODO := preload("res://Shared/Assets/Palamig/cup.PNG")
+
+@onready var step_label: Label = $CenterRoot/MarginContainer/VBox/Header/StepLabel
+@onready var target_hint: Label = $CenterRoot/MarginContainer/VBox/Header/TargetHint
+@onready var feedback_label: Label = $CenterRoot/MarginContainer/VBox/FeedbackLabel
+@onready var order_progress_panel: VBoxContainer = $CenterRoot/MarginContainer/VBox/OrderProgressPanel
+@onready var order_cup_row: HBoxContainer = $CenterRoot/MarginContainer/VBox/OrderProgressPanel/OrderCupRow
+@onready var earned_value: Label = $CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/EarnedRow/Value
+@onready var lost_value: Label = $CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/LostRow/Value
+@onready var jug_value: Label = $CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/JugRow/JugHeader/Value
+@onready var jug_bar: ProgressBar = $CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/JugRow/JugBar
+@onready var jug: FillVessel = $CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/TubArea/BigTub
+@onready var back_button: Button = $BackButton
 
 var results_modal: ColorRect
 var results_label: Label
@@ -40,20 +52,51 @@ var sfx := {}
 
 
 func _ready() -> void:
-	base_target_fill = target_fill
-	_randomize_target()
-	if stats:
-		# jug is however much palamig got bought at the store
-		jug_cups = stats.palamigStock
-	cups_remaining = maxi(jug_cups, 0)
-	current_step = Step.POUR if cups_remaining > 0 else Step.EMPTY
+	_reset_session()
 	jug.gui_input.connect(_on_jug_input)
+	back_button.pressed.connect(_exit_to_game)
 	for s in ["pour", "serve", "waste", "sold_out"]:
 		var player := AudioStreamPlayer.new()
+		player.bus = "SFX"
 		player.stream = load("res://Palamig/Assets/SFX/%s.wav" % s)
 		add_child(player)
 		sfx[s] = player
 	_build_results_modal()
+	_update_ui()
+
+
+func begin_order(cups: int) -> void:
+	order_cups_total = cups
+	order_cups_served = 0
+	order_completed = false
+	_finish_sent = false
+	if results_modal:
+		results_modal.hide()
+	_reset_session()
+
+
+func _reset_session() -> void:
+	base_target_fill = target_fill
+	_randomize_target()
+	total_money_earned = 0
+	total_money_lost = 0
+	cup_fill = 0.0
+	is_pouring = false
+	feedback_label.text = ""
+	if results_modal:
+		results_modal.hide()
+	if order_cups_total > 0:
+		jug_capacity = stats.palamigStock if stats else 0
+		cups_remaining = jug_capacity
+		current_step = Step.POUR if cups_remaining > 0 else Step.EMPTY
+	elif stats:
+		jug_capacity = maxi(stats.palamigStock, 0)
+		cups_remaining = jug_capacity
+		current_step = Step.POUR if cups_remaining > 0 else Step.EMPTY
+	else:
+		jug_capacity = 0
+		cups_remaining = 0
+		current_step = Step.EMPTY
 	_update_ui()
 
 
@@ -80,14 +123,40 @@ func _build_results_modal() -> void:
 
 
 func _show_results() -> void:
-	results_label.text = "SOLD OUT!\n\nEarned: P%d\nLost: P%d\n\nClick anywhere to continue" % [total_money_earned, total_money_lost]
+	results_label.text = "SOLD OUT!\n\nEarned: %s\nLost: %s\n\nClick anywhere to continue" % [
+		PlayerStatController.format_pesos(total_money_earned),
+		PlayerStatController.format_pesos(total_money_lost),
+	]
 	results_modal.visible = true
 	sfx["sold_out"].play()
 
 
 func _close_results() -> void:
 	results_modal.hide()
+	_finish_minigame()
+
+
+func _exit_to_game() -> void:
+	if is_pouring:
+		is_pouring = false
+		sfx["pour"].stop()
+		cup_fill = 0.0
+	if results_modal and results_modal.visible:
+		results_modal.hide()
+	_sync_stock()
+	_finish_minigame()
+
+
+func _finish_minigame() -> void:
+	if _finish_sent:
+		return
+	_finish_sent = true
 	minigame_finished.emit(total_money_earned, total_money_lost)
+
+
+func _sync_stock() -> void:
+	if stats:
+		stats.palamigStock = maxi(cups_remaining, 0)
 
 
 func _on_jug_input(event: InputEvent) -> void:
@@ -100,6 +169,11 @@ func _input(event: InputEvent) -> void:
 		var clicked: bool = event is InputEventMouseButton and event.pressed
 		if clicked or (event.is_action_pressed("ui_accept") and not event.is_echo()):
 			_close_results()
+		elif event.is_action_pressed("ui_cancel") and not event.is_echo():
+			_close_results()
+		return
+	if event.is_action_pressed("ui_cancel") and not event.is_echo():
+		_exit_to_game()
 		return
 	# release can happen anywhere, not just over the jug
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
@@ -118,9 +192,18 @@ func _process(delta: float) -> void:
 			_stop_pour()
 
 
+func jug_fill_ratio() -> float:
+	if jug_capacity <= 0:
+		return 0.0
+	var in_flight := cup_fill / 100.0 if is_pouring else 0.0
+	return clampf((float(cups_remaining) - in_flight) / float(jug_capacity), 0.0, 1.0)
+
+
 func _start_pour() -> void:
-	if current_step == Step.EMPTY:
-		feedback_label.text = "Jug is empty. Restock palamig."
+	if current_step == Step.EMPTY or cups_remaining <= 0:
+		current_step = Step.EMPTY
+		feedback_label.text = "Out of palamig. Back to cart to restock."
+		_update_ui()
 		return
 	cup_fill = 0.0
 	is_pouring = true
@@ -137,8 +220,7 @@ func _stop_pour() -> void:
 		return
 
 	cups_remaining -= 1
-	if stats:
-		stats.palamigStock = cups_remaining
+	_sync_stock()
 	# spilled cup is never a sale, even if the target sits close to the brim
 	var spilled := cup_fill >= 100.0
 	if not spilled and absf(cup_fill - target_fill) <= fill_tolerance:
@@ -147,7 +229,19 @@ func _stop_pour() -> void:
 			stat_controller.addMoney(sale_price)
 		palamig_served.emit(sale_price)
 		sfx["serve"].play()
-		feedback_label.text = "Cup served! +P%d" % sale_price
+		if order_cups_total > 0:
+			order_cups_served += 1
+			cup_fill = 0.0
+			feedback_label.text = "Cup %d/%d served! +%s" % [
+				order_cups_served, order_cups_total, PlayerStatController.format_pesos(sale_price)
+			]
+			if order_cups_served >= order_cups_total:
+				order_completed = true
+				_update_ui()
+				_finish_minigame()
+				return
+		else:
+			feedback_label.text = "Cup served! +%s" % PlayerStatController.format_pesos(sale_price)
 	else:
 		total_money_lost += waste_cost
 		if stat_controller:
@@ -156,13 +250,19 @@ func _stop_pour() -> void:
 		palamig_wasted.emit(1)
 		sfx["waste"].play()
 		if spilled:
-			feedback_label.text = "Spilled! Cup overflowed (P%d lost)." % waste_cost
+			feedback_label.text = "Spilled! Cup overflowed (%s lost)." % PlayerStatController.format_pesos(waste_cost)
 		else:
-			feedback_label.text = "Wrong amount. One cup wasted (P%d lost)." % waste_cost
+			feedback_label.text = "Wrong amount. One cup wasted (%s lost)." % PlayerStatController.format_pesos(waste_cost)
 
 	if cups_remaining <= 0:
 		current_step = Step.EMPTY
-		_show_results()
+		_sync_stock()
+		if order_cups_total > 0:
+			feedback_label.text = "Out of palamig. Back to cart to restock."
+			_update_ui()
+			_finish_minigame()
+		else:
+			_show_results()
 	else:
 		_randomize_target()
 	_update_ui()
@@ -174,10 +274,45 @@ func _randomize_target() -> void:
 
 
 func _update_ui() -> void:
-	if current_step == Step.EMPTY:
-		step_label.text = "Jug empty"
-		target_hint.text = "Restock palamig before serving another customer."
+	if order_cups_total > 0:
+		if current_step == Step.EMPTY:
+			step_label.text = "Out of palamig"
+			target_hint.text = "Back to cart to restock, or wait for the order timer."
+		else:
+			step_label.text = "Serve %d cups" % order_cups_total
+			target_hint.text = "Hold the tap. Release at the green line."
+		order_progress_panel.show()
+		_rebuild_order_cups()
 	else:
-		step_label.text = "Fill one cup"
-		target_hint.text = "Hold the dispenser tap. Release at the cup's green line."
-	status_label.text = "Earned: P%d | Lost: P%d | Jug: %d cups" % [total_money_earned, total_money_lost, cups_remaining]
+		order_progress_panel.hide()
+		if current_step == Step.EMPTY:
+			step_label.text = "Jug empty"
+			target_hint.text = "Restock palamig before serving another customer."
+		else:
+			step_label.text = "Fill one cup"
+			target_hint.text = "Hold the dispenser tap. Release at the cup's green line."
+
+	earned_value.text = PlayerStatController.format_pesos(total_money_earned)
+	lost_value.text = PlayerStatController.format_pesos(total_money_lost)
+	jug_bar.max_value = maxf(jug_capacity, 1)
+	jug_bar.value = cups_remaining
+	jug_value.text = "%d cups" % cups_remaining
+	if not is_pouring and feedback_label.text == "Pouring...":
+		feedback_label.text = ""
+
+
+func _rebuild_order_cups() -> void:
+	for child in order_cup_row.get_children():
+		child.queue_free()
+
+	for i in order_cups_total:
+		var icon := TextureRect.new()
+		icon.custom_minimum_size = Vector2(32, 40)
+		icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+		var served := i < order_cups_served
+		icon.texture = CUP_ICON_DONE if served else CUP_ICON_TODO
+		icon.modulate = Color.WHITE if served else Color(0.55, 0.55, 0.55, 0.85)
+		order_cup_row.add_child(icon)
