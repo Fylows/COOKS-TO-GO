@@ -1,0 +1,7 @@
+[gd_resource type="Theme" format=3 uid="uid://cyf1rwnof540"]
+
+[ext_resource type="FontFile" uid="uid://chibk7ni6hdr1" path="res://Shared/Font/04B_03__.TTF" id="1_7kjp8"]
+
+[resource]
+default_font = ExtResource("1_7kjp8")
+default_font_size = 24

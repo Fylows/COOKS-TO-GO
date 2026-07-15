@@ -1,6 +1,9 @@
 extends PanelContainer
 class_name Order
 
+# Retain previous class design for future scalability
+# No need to change as it still works
+
 # FOOD ITEMS
 var fishball_count : int = 0
 var kwekwek_count : int = 0
@@ -22,6 +25,7 @@ func setup_order(fb: int, kk: int, ki: int, bm: int, pal: int) -> void:
 	
 	update_ui_text()
 
+
 ## Clear and rewrite the current label text 
 func update_ui_text() -> void:
 	var lines: Array[String] = []
@@ -38,3 +42,5 @@ func update_ui_text() -> void:
 		lines.append("%d Palamig" % palamig_count)
 
 	order_label.text = "\n".join(lines)
+	
+	
