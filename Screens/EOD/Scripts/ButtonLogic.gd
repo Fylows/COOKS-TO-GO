@@ -1369,7 +1369,9 @@ func _setup_bed_button_caption() -> void:
 	$HomeBtn.tooltip_text = ""
 	bed_action_caption = PanelContainer.new()
 	bed_action_caption.name = "BedActionCaption"
-	bed_action_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Whole pill is the click target. Tiny HomeBtn alone misses most of the label.
+	bed_action_caption.mouse_filter = Control.MOUSE_FILTER_STOP
+	bed_action_caption.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	bed_action_caption.z_index = 40
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.08, 0.12, 0.28, 0.94)
@@ -1387,8 +1389,14 @@ func _setup_bed_button_caption() -> void:
 	bed_action_label.add_theme_font_size_override("font_size", PHONE_FONT_BODY)
 	bed_action_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bed_action_caption.add_child(bed_action_label)
+	bed_action_caption.gui_input.connect(_on_bed_caption_gui_input)
 	$HomeBtn.add_sibling(bed_action_caption)
 	_refresh_bed_button_caption()
+
+
+func _on_bed_caption_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_on_home_btn_pressed()
 
 
 func _layout_bed_button_caption() -> void:
@@ -1398,10 +1406,15 @@ func _layout_bed_button_caption() -> void:
 	var sz := bed_action_caption.get_combined_minimum_size()
 	if sz.x < 1.0:
 		sz = bed_action_caption.size
-	var home_btn := $HomeBtn as Control
-	# Center on the scaled hit target over the phone home circle.
-	var center := home_btn.position + home_btn.size * home_btn.scale * 0.5
+	# Phone Base sits at (-27, -254). Home circle is on the bezel under the glass.
+	var center := Vector2(-27.0, 208.0)
 	bed_action_caption.position = center - sz * 0.5
+	# Keep the invisible HomeBtn under the pill so either path still works.
+	var home_btn := $HomeBtn as Control
+	var hit := Vector2(maxf(sz.x, 64.0), maxf(sz.y, 40.0))
+	home_btn.scale = Vector2.ONE
+	home_btn.position = center - hit * 0.5
+	home_btn.size = hit
 
 
 func _setup_stock_hud() -> void:
