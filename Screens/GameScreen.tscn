@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://dhw4oitpble61"]
+
+[ext_resource type="PackedScene" uid="uid://iq1mcvj1proc" path="res://Orders/Scenes/OrderContainer.tscn" id="1_p7x0p"]
+[ext_resource type="Texture2D" uid="uid://dmscxvdcf2qke" path="res://Screens/Assets/cart_main.PNG" id="2_b7a1e"]
+[ext_resource type="Script" uid="uid://c723lttww2v05" path="res://EOD/Scripts/cameraMovement.gd" id="3_q7e6u"]
+[ext_resource type="Script" path="res://Screens/GameScreen.gd" id="4_gamescreen"]
+
+[node name="GameScreen" type="Node2D" unique_id=333561420]
+script = ExtResource("4_gamescreen")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=520455930]
+layer = 10
+
+[node name="OrderContainer" parent="HUD" unique_id=908020767 instance=ExtResource("1_p7x0p")]
+
+[node name="PalamigBtn" type="Button" parent="HUD"]
+offset_left = 24.0
+offset_top = 260.0
+offset_right = 160.0
+offset_bottom = 300.0
+text = "Palamig"
+
+[node name="CartMain" type="Sprite2D" parent="." unique_id=481923727]
+position = Vector2(960, 540)
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("2_b7a1e")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1981916952]
+position = Vector2(965, 537)
+script = ExtResource("3_q7e6u")
+deadZone = 125
+
+[connection signal="pressed" from="HUD/PalamigBtn" to="." method="_on_palamig_btn_pressed"]

@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://iq1mcvj1proc"]
+
+[ext_resource type="Script" uid="uid://d2fr3vhmi6x0p" path="res://Orders/Scripts/OrderController.gd" id="1_jdj8n"]
+
+[node name="OrderContainer" type="MarginContainer" unique_id=908020767]
+propagate_maximum_size = false
+offset_left = 24.0
+offset_right = 988.0
+offset_bottom = 240.0
+script = ExtResource("1_jdj8n")
+
+[node name="OrderList" type="HBoxContainer" parent="." unique_id=303329867]
+layout_mode = 2
+theme_override_constants/separation = 16
