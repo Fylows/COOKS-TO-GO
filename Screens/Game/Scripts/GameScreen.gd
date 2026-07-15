@@ -2,6 +2,7 @@ extends Node2D
 
 const PALAMIG_SCENE := preload("res://Palamig/Scenes/palamig_minigame.tscn")
 const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
+const MoneyHud := preload("res://Screens/Shared/MoneyHud.gd")
 const DAY_DURATION_SECONDS := 120.0
 
 @onready var order_controller: OrderController = $HUD/OrderContainer
@@ -21,9 +22,13 @@ var _day_active: bool = false
 var _day_paused: bool = false
 var _popup_stagger: Dictionary = {}
 var lore_feed: Label
+var money_balance_label: Label
+var money_earned_label: Label
+var money_hud_panel: PanelContainer
 
 
 func _ready() -> void:
+	get_tree().paused = false
 	$HUD.process_mode = Node.PROCESS_MODE_ALWAYS
 	day_over.visible = false
 	BgmController.play_track("stall")
@@ -31,13 +36,7 @@ func _ready() -> void:
 	order_controller.order_money_earned.connect(_on_order_money_earned)
 	_setup_palamig_game()
 	lore_feed = LoreFeedBar.ensure($HUD, "LoreFeed")
-	var lore_panel: Control = lore_feed.get_parent().get_parent() as Control
-	if lore_panel:
-		lore_panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-		lore_panel.offset_left = 320.0
-		lore_panel.offset_top = -108.0
-		lore_panel.offset_right = -320.0
-		lore_panel.offset_bottom = -16.0
+	_setup_money_hud()
 	await _play_day_start_intro()
 	start_day()
 
@@ -50,6 +49,8 @@ func _play_day_start_intro() -> void:
 		$HUD/OrderContainer,
 		$HUD/MoneyPopupLayer,
 	]
+	if money_hud_panel:
+		hud_elements.append(money_hud_panel)
 	if lore_feed:
 		var lore_panel := lore_feed.get_parent().get_parent() as CanvasItem
 		if lore_panel:
@@ -58,19 +59,27 @@ func _play_day_start_intro() -> void:
 		node.modulate.a = 0.0
 	$CartMain.modulate.a = 0.0
 	$CartMain.scale = Vector2(0.92, 0.92)
-	if DayTransition.consume_fade_in():
-		await DayTransition.fade_from_black(0.5)
 	var tween := create_tween()
+	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tween.set_parallel(true)
 	for node in hud_elements:
-		tween.tween_property(node, "modulate:a", 1.0, 0.4)
-	tween.tween_property($CartMain, "modulate:a", 1.0, 0.5)
-	tween.tween_property($CartMain, "scale", Vector2(1.2, 1.2), 0.5)\
+		tween.tween_property(node, "modulate:a", 1.0, 0.22)
+	tween.tween_property($CartMain, "modulate:a", 1.0, 0.22)
+	tween.tween_property($CartMain, "scale", Vector2(1.2, 1.2), 0.22)\
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if DayTransition.consume_fade_in():
+		await DayTransition.fade_from_black(0.2)
+	else:
+		DayTransition.release_input()
 	await tween.finished
 
 
+func _exit_tree() -> void:
+	DayTransition.release_input()
+
+
 func _process(delta: float) -> void:
+	_update_money_hud()
 	_update_stock_label()
 	LoreFeedBar.refresh(lore_feed)
 	if not _day_active or _day_paused:
@@ -92,7 +101,7 @@ func start_day() -> void:
 	_update_stock_label()
 	pause_button.text = "Pause"
 	order_controller.set_orders_paused(false)
-	order_controller.start_order_spawning()
+	order_controller.start_order_spawning(PlayerStats.daysPassed)
 
 
 func end_day() -> void:
@@ -108,9 +117,9 @@ func end_day() -> void:
 
 
 func _play_day_end_transition() -> void:
-	await DayTransition.fade_to_black("Day Over", 0.5)
+	await DayTransition.fade_to_black("Day Over", 0.22)
 	dayOverPopup()
-	await DayTransition.fade_from_black(0.4)
+	await DayTransition.fade_from_black(0.18)
 
 
 func pause_day() -> void:
@@ -247,6 +256,26 @@ func _update_day_label() -> void:
 
 func _update_stock_label() -> void:
 	stock_label.text = PlayerStatController.format_stock_summary()
+
+
+func _setup_money_hud() -> void:
+	var overlay := get_node_or_null("MoneyHudLayer") as CanvasLayer
+	if overlay == null:
+		overlay = CanvasLayer.new()
+		overlay.name = "MoneyHudLayer"
+		overlay.layer = 55
+		overlay.process_mode = Node.PROCESS_MODE_ALWAYS
+		add_child(overlay)
+	var parts := MoneyHud.ensure(overlay, "MoneyHud")
+	money_hud_panel = parts.panel as PanelContainer
+	money_balance_label = parts.balance_label as Label
+	money_earned_label = parts.earned_label as Label
+	MoneyHud.apply_top_right_layout(money_hud_panel, 272.0, 204.0)
+	_update_money_hud()
+
+
+func _update_money_hud() -> void:
+	MoneyHud.refresh(money_balance_label, money_earned_label)
 
 
 func dayOverPopup() -> void:
