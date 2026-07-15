@@ -28,6 +28,7 @@ AudioSettings="*res://Audio/AudioSettings.gd"
 ScoreController="*res://Player/ScoreController.gd"
 GameStateController="*res://Player/GameStateController.gd"
 PovertyVignette="*res://Screens/Shared/PovertyVignette.gd"
+LoreController="*res://Player/LoreController.gd"
 DayTransition="*res://Screens/Shared/DayTransition.gd"
 Dialogic="*uid://ds2q0uclmolvu"
 
