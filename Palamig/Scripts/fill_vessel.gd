@@ -1,38 +1,73 @@
 class_name FillVessel
 extends Control
 
-# Liquid is drawn in _draw so the surface stays level when the vessel tilts
-# (feed the rotation in through set_tilt). Art_Frame renders on top of the
-# fill: swap it for a transparent sprite and tune fill_inset_* to the art's
-# inner walls. TODO real art
+const JUICE_SHADER := preload("res://Palamig/Shaders/juice_fill.gdshader")
+const FRAME_SHADER := preload("res://Palamig/Shaders/frame_layer.gdshader")
 
 @onready var target_line: ColorRect = $TargetLine
-@onready var frame: Control = $Art_Frame
+@onready var back_art: TextureRect = $BackArt
+@onready var liquid: TextureRect = $LiquidFill
+@onready var frame: TextureRect = $Art_Frame
+@onready var tap: TextureRect = $TapOverlay
 
 @export var max_capacity: float = 100.0
-@export var fill_inset_side: float = 3.0
-@export var fill_inset_top: float = 3.0
-@export var fill_inset_bottom: float = 5.0
+@export var tap_overlay: bool = false
+@export var tap_uv_min: Vector2 = Vector2(0.72, 0.58)
+@export var tap_uv_max: Vector2 = Vector2(1.0, 0.8)
+@export_range(0.0, 1.0) var fill_cavity_top: float = 0.05
+@export_range(0.0, 1.0) var fill_cavity_bottom: float = 0.95
+@export_range(0.0, 1.0) var fill_width_top_frac: float = 0.78
+@export_range(0.0, 1.0) var fill_width_bottom_frac: float = 0.5
 
 var _amount := 0.0
 var _liquid := Color(0.85, 0.75, 0.55)
-var _tilt := 0.0
+var _juice_mat: ShaderMaterial
+var _frame_mat: ShaderMaterial
+var _tap_mat: ShaderMaterial
 
 
 func _ready() -> void:
-	$Fill.visible = false  # liquid comes from _draw so it can stay level
+	_juice_mat = ShaderMaterial.new()
+	_juice_mat.shader = JUICE_SHADER
+	liquid.material = _juice_mat
+
+	_frame_mat = ShaderMaterial.new()
+	_frame_mat.shader = FRAME_SHADER
+	frame.material = _frame_mat
+
+	_tap_mat = ShaderMaterial.new()
+	_tap_mat.shader = FRAME_SHADER
+	tap.material = _tap_mat
+	tap.visible = tap_overlay
+
+	_apply_frame_layers()
+	_sync_shader()
+
+
+func set_back_texture(tex: Texture2D) -> void:
+	back_art.texture = tex
+	back_art.visible = false
+	liquid.texture = tex
+	_juice_mat.set_shader_parameter("mask_tex", tex)
+	_sync_shader()
+
+
+func set_frame_texture(tex: Texture2D) -> void:
+	frame.texture = tex
+	tap.texture = tex
+	_juice_mat.set_shader_parameter("frame_tex", tex)
+	_apply_frame_layers()
+	_sync_shader()
 
 
 func set_fill(amount: float, color: Color) -> void:
 	_amount = amount
 	_liquid = color
-	queue_redraw()
+	_sync_shader()
 
 
-# radians, whatever rotation the vessel currently has
-func set_tilt(angle: float) -> void:
-	_tilt = angle
-	queue_redraw()
+func set_tilt(_angle: float) -> void:
+	pass
 
 
 func set_target(target: float) -> void:
@@ -41,52 +76,54 @@ func set_target(target: float) -> void:
 		return
 	target_line.visible = true
 	var ratio := clampf(target / max_capacity, 0.0, 1.0)
-	target_line.position.y = _inner_bottom() - _inner_height() * ratio - target_line.size.y * 0.5
+	var surface_norm := lerpf(fill_cavity_bottom, fill_cavity_top, ratio)
+	var y := surface_norm * _vessel_height()
+	var half_w := _width_half_at_ratio(ratio)
+	var cx := _vessel_width() * 0.5
+	target_line.position = Vector2(cx - half_w, y - target_line.size.y * 0.5)
+	target_line.size.x = half_w * 2.0
 
 
 func set_highlighted(active: bool) -> void:
-	frame.modulate = Color(1.3, 1.3, 1.15) if active else Color.WHITE
+	var tint := Color(1.3, 1.3, 1.15) if active else Color.WHITE
+	frame.modulate = tint
+	tap.modulate = tint
 
 
-# where a pour stream should land
 func surface_global_y() -> float:
-	return (get_global_transform() * Vector2(_vessel_width() * 0.5, _surface_center_y())).y
-
-
-func _draw() -> void:
-	if clampf(_amount / max_capacity, 0.0, 1.0) <= 0.0:
-		return
-	var left := fill_inset_side
-	var right := _vessel_width() - fill_inset_side
-	var top := fill_inset_top
-	var bottom := _inner_bottom()
-	var cx := (left + right) * 0.5
-	var sy := _surface_center_y()
-	# counter-slope so the surface reads as level once the vessel rotates.
-	# not volume accurate (surface just pivots around the middle) but looks
-	# fine below ~45 degrees
-	var m := -tan(_tilt)
-	var y_left := clampf(sy + m * (left - cx), top, bottom)
-	var y_right := clampf(sy + m * (right - cx), top, bottom)
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(left, y_left),
-		Vector2(right, y_right),
-		Vector2(right, bottom),
-		Vector2(left, bottom),
-	]), _liquid)
-
-
-func _surface_center_y() -> float:
 	var ratio := clampf(_amount / max_capacity, 0.0, 1.0)
-	return _inner_bottom() - _inner_height() * ratio
+	var surface_norm := lerpf(fill_cavity_bottom, fill_cavity_top, ratio)
+	return (get_global_transform() * Vector2(_vessel_width() * 0.5, surface_norm * _vessel_height())).y
 
 
-func _inner_height() -> float:
-	return _vessel_height() - fill_inset_top - fill_inset_bottom
+func _apply_frame_layers() -> void:
+	var tap_rect := Vector4(tap_uv_min.x, tap_uv_min.y, tap_uv_max.x, tap_uv_max.y)
+	_frame_mat.set_shader_parameter("tap_uv_rect", tap_rect)
+	_tap_mat.set_shader_parameter("tap_uv_rect", tap_rect)
+	_frame_mat.set_shader_parameter("layer_mode", 1 if tap_overlay else 0)
+	_tap_mat.set_shader_parameter("layer_mode", 2)
+	if frame.texture:
+		_frame_mat.set_shader_parameter("frame_tex", frame.texture)
+		_tap_mat.set_shader_parameter("frame_tex", frame.texture)
 
 
-func _inner_bottom() -> float:
-	return _vessel_height() - fill_inset_bottom
+func _sync_shader() -> void:
+	if _juice_mat == null:
+		return
+	var ratio := clampf(_amount / max_capacity, 0.0, 1.0)
+	_juice_mat.set_shader_parameter("fill_ratio", ratio)
+	_juice_mat.set_shader_parameter("juice_color", _liquid)
+	_juice_mat.set_shader_parameter("cavity_top", fill_cavity_top)
+	_juice_mat.set_shader_parameter("cavity_bottom", fill_cavity_bottom)
+	if frame.texture:
+		_juice_mat.set_shader_parameter("frame_tex", frame.texture)
+
+
+func _width_half_at_ratio(ratio: float) -> float:
+	var w := _vessel_width()
+	var top_half := w * fill_width_top_frac * 0.5
+	var bot_half := w * fill_width_bottom_frac * 0.5
+	return lerpf(bot_half, top_half, ratio)
 
 
 func _vessel_width() -> float:

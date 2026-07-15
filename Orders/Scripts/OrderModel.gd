@@ -96,6 +96,19 @@ func stop_countdown() -> void:
 	countdown_active = false
 
 
+func resume_countdown() -> void:
+	countdown_active = countdown_remaining_seconds > 0.0
+
+
+func is_palamig_order() -> bool:
+	return (
+		palamig_count > 0
+		and fishball_count == 0
+		and kwekwek_count == 0
+		and kikiam_count == 0
+	)
+
+
 func update_countdown(delta: float) -> void:
 	countdown_remaining_seconds = maxf(countdown_remaining_seconds - delta, 0.0)
 	update_countdown_bar()

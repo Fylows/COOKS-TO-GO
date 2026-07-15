@@ -1,6 +1,8 @@
 extends MarginContainer
 class_name OrderController
 
+signal palamig_order_started(order: Order)
+
 const ORDER_SCENE: PackedScene = preload("res://Orders/Scenes/Order.tscn")
 
 const FOOD_QUANTITY_LIST: Array[int] = [1,3,5,7,10]
@@ -104,7 +106,7 @@ func create_order(days_passed: int) -> Order:
 	var new_order: Order = ORDER_SCENE.instantiate()
 	order_slot.add_child(new_order)
 
-	new_order.confirm_requested.connect(confirm_order)
+	new_order.confirm_requested.connect(_on_confirm_requested)
 	new_order.cancel_requested.connect(cancel_order)
 	new_order.expired.connect(_on_order_expired)
 	
@@ -141,6 +143,18 @@ func _remove_order(order: Order, on_removal_claimed: Callable = Callable()) -> b
 	return true
 
 
+func _on_confirm_requested(order: Order) -> void:
+	if not is_instance_valid(order) or order.is_queued_for_deletion():
+		return
+
+	if order.is_palamig_order():
+		order.stop_countdown()
+		palamig_order_started.emit(order)
+		return
+
+	await confirm_order(order)
+
+
 func confirm_order(order: Order) -> bool:
 	if not is_instance_valid(order) or order.is_queued_for_deletion() or not stats or not stat_controller:
 		return false
@@ -172,6 +186,10 @@ func confirm_order(order: Order) -> bool:
 
 
 func cancel_order(order: Order) -> void:
+	await _remove_order(order)
+
+
+func complete_palamig_order(order: Order) -> void:
 	await _remove_order(order)
 
 
