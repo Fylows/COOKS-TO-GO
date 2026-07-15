@@ -222,6 +222,7 @@ func _setup_endings_gallery() -> void:
 	gallery_root = ui.get_node_or_null("EndingsGallery") as Control
 	if gallery_root:
 		gallery_list = gallery_root.find_child("GalleryList", true, false) as VBoxContainer
+		_restyle_gallery_chrome()
 		return
 
 	gallery_root = Control.new()
@@ -240,56 +241,73 @@ func _setup_endings_gallery() -> void:
 	var panel := PanelContainer.new()
 	panel.name = "GalleryPanel"
 	panel.set_anchors_preset(Control.PRESET_CENTER)
-	panel.offset_left = -420.0
-	panel.offset_right = 420.0
-	panel.offset_top = -360.0
-	panel.offset_bottom = 360.0
+	panel.offset_left = -460.0
+	panel.offset_right = 460.0
+	panel.offset_top = -380.0
+	panel.offset_bottom = 380.0
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.05, 0.06, 0.1, 0.98)
 	style.border_color = Color(1.0, 0.86, 0.42, 0.95)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(8)
-	style.set_content_margin_all(18)
+	style.set_content_margin_all(22)
 	panel.add_theme_stylebox_override("panel", style)
 	gallery_root.add_child(panel)
 
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 12)
+	vbox.add_theme_constant_override("separation", 14)
 	panel.add_child(vbox)
 
 	var header := Label.new()
+	header.name = "GalleryHeader"
 	header.text = "Endings"
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	header.add_theme_font_size_override("font_size", 28)
+	header.add_theme_font_size_override("font_size", 36)
 	header.add_theme_color_override("font_color", Color(1.0, 0.9, 0.55))
 	vbox.add_child(header)
 
 	var sub := Label.new()
 	sub.name = "GallerySub"
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub.add_theme_font_size_override("font_size", 14)
+	sub.add_theme_font_size_override("font_size", 20)
 	sub.add_theme_color_override("font_color", Color(0.75, 0.8, 0.9))
 	sub.text = "Locked = silhouette + hint"
 	vbox.add_child(sub)
 
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.custom_minimum_size = Vector2(0, 520)
+	scroll.custom_minimum_size = Vector2(0, 540)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	vbox.add_child(scroll)
 
 	gallery_list = VBoxContainer.new()
 	gallery_list.name = "GalleryList"
 	gallery_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	gallery_list.add_theme_constant_override("separation", 10)
+	gallery_list.add_theme_constant_override("separation", 12)
 	scroll.add_child(gallery_list)
 
 	var close_btn := Button.new()
+	close_btn.name = "GalleryClose"
 	close_btn.text = "Close"
-	close_btn.custom_minimum_size = Vector2(0, 42)
-	close_btn.add_theme_font_size_override("font_size", 18)
+	close_btn.custom_minimum_size = Vector2(0, 52)
+	close_btn.add_theme_font_size_override("font_size", 24)
 	close_btn.pressed.connect(_on_gallery_close_pressed)
 	vbox.add_child(close_btn)
+
+
+func _restyle_gallery_chrome() -> void:
+	if gallery_root == null:
+		return
+	var header := gallery_root.find_child("GalleryHeader", true, false) as Label
+	if header:
+		header.add_theme_font_size_override("font_size", 36)
+	var sub := gallery_root.find_child("GallerySub", true, false) as Label
+	if sub:
+		sub.add_theme_font_size_override("font_size", 20)
+	var close_btn := gallery_root.find_child("GalleryClose", true, false) as Button
+	if close_btn:
+		close_btn.add_theme_font_size_override("font_size", 24)
+		close_btn.custom_minimum_size = Vector2(0, 52)
 
 
 func _rebuild_gallery_rows() -> void:
@@ -305,7 +323,7 @@ func _make_ending_row(id: String) -> PanelContainer:
 	var unlocked := ScoreController.has_unlocked_ending(id)
 	var good := EndingBank.is_good(id)
 	var row := PanelContainer.new()
-	row.custom_minimum_size = Vector2(760, 0)
+	row.custom_minimum_size = Vector2(840, 0)
 	var style := StyleBoxFlat.new()
 	if unlocked:
 		style.bg_color = Color(0.08, 0.12, 0.1, 0.95) if good else Color(0.12, 0.07, 0.08, 0.95)
@@ -315,15 +333,15 @@ func _make_ending_row(id: String) -> PanelContainer:
 		style.border_color = Color(0.28, 0.3, 0.36, 0.9)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(6)
-	style.set_content_margin_all(12)
+	style.set_content_margin_all(14)
 	row.add_theme_stylebox_override("panel", style)
 
 	var h := HBoxContainer.new()
-	h.add_theme_constant_override("separation", 14)
+	h.add_theme_constant_override("separation", 16)
 	row.add_child(h)
 
 	var silhouette := ColorRect.new()
-	silhouette.custom_minimum_size = Vector2(56, 56)
+	silhouette.custom_minimum_size = Vector2(64, 64)
 	if unlocked:
 		silhouette.color = Color(0.25, 0.7, 0.4, 1) if good else Color(0.7, 0.2, 0.22, 1)
 	else:
@@ -332,12 +350,12 @@ func _make_ending_row(id: String) -> PanelContainer:
 
 	var text_col := VBoxContainer.new()
 	text_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	text_col.add_theme_constant_override("separation", 4)
+	text_col.add_theme_constant_override("separation", 6)
 	h.add_child(text_col)
 
 	var title := Label.new()
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.add_theme_font_size_override("font_size", 18)
+	title.add_theme_font_size_override("font_size", 24)
 	if unlocked:
 		title.text = EndingBank.title_for(id)
 		title.add_theme_color_override(
@@ -352,15 +370,15 @@ func _make_ending_row(id: String) -> PanelContainer:
 	if not unlocked:
 		var body := Label.new()
 		body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		body.add_theme_font_size_override("font_size", 13)
+		body.add_theme_font_size_override("font_size", 18)
 		body.text = EndingBank.hint_for(id)
-		body.add_theme_color_override("font_color", Color(0.62, 0.66, 0.74))
+		body.add_theme_color_override("font_color", Color(0.72, 0.76, 0.84))
 		text_col.add_child(body)
 
 	var kind := Label.new()
-	kind.add_theme_font_size_override("font_size", 12)
+	kind.add_theme_font_size_override("font_size", 18)
 	kind.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	kind.custom_minimum_size = Vector2(70, 0)
+	kind.custom_minimum_size = Vector2(96, 0)
 	if unlocked:
 		kind.text = "GOOD" if good else "BAD"
 		kind.add_theme_color_override(
@@ -369,7 +387,7 @@ func _make_ending_row(id: String) -> PanelContainer:
 		)
 	else:
 		kind.text = "LOCKED"
-		kind.add_theme_color_override("font_color", Color(0.45, 0.48, 0.55))
+		kind.add_theme_color_override("font_color", Color(0.55, 0.58, 0.65))
 	h.add_child(kind)
 	return row
 
