@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bmjmgpqkf7xcr"
-path="res://.godot/imported/store_buy.png-c84366b7c799ba05791a848a1a3fa203.ctex"
+uid="uid://btt6oqcr26xur"
+path="res://.godot/imported/play_pressed.png-ae7a52cf8e34603bdf28f1f21268ae77.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://EOD/Docs/store_buy.png"
-dest_files=["res://.godot/imported/store_buy.png-c84366b7c799ba05791a848a1a3fa203.ctex"]
+source_file="res://Screens/Main Menu/Buttons/play_pressed.png"
+dest_files=["res://.godot/imported/play_pressed.png-ae7a52cf8e34603bdf28f1f21268ae77.ctex"]
 
 [params]
 

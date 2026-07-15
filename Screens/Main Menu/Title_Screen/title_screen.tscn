@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://drwk50tl8svlb"]
+
+[ext_resource type="Script" uid="uid://36jsf7nrevhw" path="res://Screens/Main Menu/title_screen.gd" id="1_pjs3m"]
+[ext_resource type="Texture2D" uid="uid://cj8c6q7vsagbq" path="res://Screens/Main Menu/additionalBG/Game Menu1.png" id="2_7ynfn"]
+[ext_resource type="Texture2D" uid="uid://c1vkq5x228bl3" path="res://Screens/Main Menu/Buttons/play.png" id="3_cuaw2"]
+[ext_resource type="Texture2D" uid="uid://btt6oqcr26xur" path="res://Screens/Main Menu/Buttons/play_pressed.png" id="4_2xqsj"]
+[ext_resource type="Texture2D" uid="uid://b3yjwin26yqou" path="res://Screens/Main Menu/Buttons/play_highlight.png" id="5_upuvp"]
+[ext_resource type="Texture2D" uid="uid://bn768svy8qb7f" path="res://Screens/Main Menu/Buttons/quit.png" id="6_dsjmw"]
+[ext_resource type="Texture2D" uid="uid://b52s5cux3gf2k" path="res://Screens/Main Menu/Buttons/quit_pressed.png" id="7_c7si6"]
+[ext_resource type="Texture2D" uid="uid://dbpg7ut2hmynl" path="res://Screens/Main Menu/Buttons/quit_highlight.png" id="8_2in6p"]
+[ext_resource type="Texture2D" uid="uid://dg22txshbim16" path="res://Screens/Main Menu/Buttons/credits.png" id="9_gj5p0"]
+[ext_resource type="Texture2D" uid="uid://d4mqh0qh1xw86" path="res://Screens/Main Menu/Buttons/credits_pressed.png" id="10_e8jtp"]
+[ext_resource type="Texture2D" uid="uid://cioe5yp524fot" path="res://Screens/Main Menu/Buttons/credits_highlight.png" id="11_mw5eg"]
+
+[node name="title_screen" type="Node2D" unique_id=485187835]
+script = ExtResource("1_pjs3m")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1973120040]
+position = Vector2(960, 540)
+texture = ExtResource("2_7ynfn")
+
+[node name="button_manager" type="Control" parent="." unique_id=1352815499]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="button_manager" unique_id=1802883193]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Start" type="TextureButton" parent="button_manager" unique_id=49300092]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 175.0
+offset_top = 320.0
+offset_right = 335.0
+offset_bottom = 340.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+texture_normal = ExtResource("3_cuaw2")
+texture_pressed = ExtResource("4_2xqsj")
+texture_hover = ExtResource("5_upuvp")
+
+[node name="Credit" type="TextureButton" parent="button_manager" unique_id=960460364]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 175.0
+offset_top = 449.0
+offset_right = 335.0
+offset_bottom = 469.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+texture_normal = ExtResource("9_gj5p0")
+texture_pressed = ExtResource("10_e8jtp")
+texture_hover = ExtResource("11_mw5eg")
+
+[node name="Quit" type="TextureButton" parent="button_manager" unique_id=118505692]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 175.0
+offset_top = 578.0
+offset_right = 335.0
+offset_bottom = 598.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+texture_normal = ExtResource("6_dsjmw")
+texture_pressed = ExtResource("7_c7si6")
+texture_hover = ExtResource("8_2in6p")
+
+[node name="click" type="AudioStreamPlayer2D" parent="button_manager" unique_id=1804569512]
+
+[node name="hover" type="AudioStreamPlayer2D" parent="button_manager" unique_id=255228640]
+
+[node name="bgm" type="AudioStreamPlayer2D" parent="." unique_id=1643484359]
+
+[connection signal="mouse_entered" from="button_manager/Start" to="." method="_on_start_mouse_entered"]
+[connection signal="pressed" from="button_manager/Start" to="." method="_on_start_pressed"]
+[connection signal="mouse_entered" from="button_manager/Credit" to="." method="_on_credit_mouse_entered"]
+[connection signal="pressed" from="button_manager/Credit" to="." method="_on_credit_pressed"]
+[connection signal="mouse_entered" from="button_manager/Quit" to="." method="_on_quit_mouse_entered"]
+[connection signal="pressed" from="button_manager/Quit" to="." method="_on_quit_pressed"]

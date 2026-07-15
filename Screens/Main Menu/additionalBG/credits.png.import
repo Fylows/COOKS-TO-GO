@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://reasrtc01oir"
-path="res://.godot/imported/Tindahal_FINAL_1.0_CLOSEDwBOOK.png-bc84d478bc26c76dac7add13c21ea491.ctex"
+uid="uid://cjchqlju7161c"
+path="res://.godot/imported/credits.png-561928568fed070cda628291042c1f4a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://EOD/Assets/Tindahal_FINAL_1.0_CLOSEDwBOOK.png"
-dest_files=["res://.godot/imported/Tindahal_FINAL_1.0_CLOSEDwBOOK.png-bc84d478bc26c76dac7add13c21ea491.ctex"]
+source_file="res://Screens/Main Menu/additionalBG/credits.png"
+dest_files=["res://.godot/imported/credits.png-561928568fed070cda628291042c1f4a.ctex"]
 
 [params]
 

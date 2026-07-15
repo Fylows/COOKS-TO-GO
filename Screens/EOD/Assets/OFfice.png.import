@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://gfeluyrnfolj"
-path="res://.godot/imported/OFfice.png-bf0f8c0c5310a098af7241b6f1eb9e86.ctex"
+path="res://.godot/imported/OFfice.png-ec97fb19edc7eec9207a64425212e46b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://EOD/Assets/OFfice.png"
-dest_files=["res://.godot/imported/OFfice.png-bf0f8c0c5310a098af7241b6f1eb9e86.ctex"]
+source_file="res://Screens/EOD/Assets/OFfice.png"
+dest_files=["res://.godot/imported/OFfice.png-ec97fb19edc7eec9207a64425212e46b.ctex"]
 
 [params]
 

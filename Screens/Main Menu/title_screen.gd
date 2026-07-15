@@ -6,7 +6,7 @@ extends Node2D
 func _ready() -> void:
 	bgm.play()
 func _on_start_pressed() -> void:
-	get_tree().change_scene_to_file("res://EOD/Scenes/Room.tscn")
+	get_tree().change_scene_to_file("res://Screens/EOD/Scenes/Room.tscn")
 	pass
 
 func _on_quit_pressed() -> void:

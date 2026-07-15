@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://12grfk7eqntt"]
 
-[ext_resource type="Script" uid="uid://c723lttww2v05" path="res://EOD/Scripts/cameraMovement.gd" id="1_1ovwu"]
-[ext_resource type="Texture2D" uid="uid://reasrtc01oir" path="res://EOD/Assets/Tindahal_FINAL_1.0_CLOSEDwBOOK.png" id="2_de1ox"]
-[ext_resource type="Script" uid="uid://coab1l62jxgr1" path="res://EOD/Scripts/ButtonLogic.gd" id="3_qbcnb"]
+[ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="1_fduob"]
+[ext_resource type="Texture2D" uid="uid://reasrtc01oir" path="res://Screens/EOD/Assets/Tindahal_FINAL_1.0_CLOSEDwBOOK.png" id="2_bl1sv"]
+[ext_resource type="Script" uid="uid://coab1l62jxgr1" path="res://Screens/EOD/Scripts/ButtonLogic.gd" id="3_qfuc6"]
 
 [sub_resource type="Gradient" id="Gradient_s6ai5"]
 offsets = PackedFloat32Array(0.87650603, 1)
@@ -14,16 +14,16 @@ gradient = SubResource("Gradient_s6ai5")
 [node name="Room" type="Node2D" unique_id=1933003144]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=181366636]
-script = ExtResource("1_1ovwu")
+script = ExtResource("1_fduob")
 deadZone = 125
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1567093855]
 scale = Vector2(1.25, 1.25)
-texture = ExtResource("2_de1ox")
+texture = ExtResource("2_bl1sv")
 
 [node name="Node2D" type="Node2D" parent="." unique_id=1706686152]
 position = Vector2(-4, 245)
-script = ExtResource("3_qbcnb")
+script = ExtResource("3_qfuc6")
 parallax_strength = 1.1
 camera_path = NodePath("../Camera2D")
 
@@ -529,8 +529,8 @@ text = "Start New Day"
 [connection signal="pressed" from="Node2D/MenuOptions/Misc" to="Node2D" method="_on_misc_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Fishball/buyFishball" to="Node2D" method="_on_buy_fishball_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kikiam/buyKikiam" to="Node2D" method="_on_buy_kikiam_pressed"]
-[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_upg_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_buys_kwek_2_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_upg_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Sauce/buySauce" to="Node2D" method="_on_buy_sauce_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Palamig/buyPalamig" to="Node2D" method="_on_buy_palamig_pressed"]
 [connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd/palamigBtn" to="Node2D" method="_on_palamig_btn_pressed"]
