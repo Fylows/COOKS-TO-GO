@@ -47,15 +47,24 @@ func evaluate_wins() -> bool:
 	return true
 
 
-func reset_for_new_game() -> void:
-	is_game_over = false
-	is_victory_toast = false
-	reason = ""
-	cause_detail = ""
-	ending_id = ""
-	hide()
+func _present_overlay() -> void:
+	_refresh_panel()
+	show()
+	layer = 2500
 	if _blocker:
-		_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+		_blocker.modulate.a = 0.0
+	_panel.modulate.a = 0.0
+	_panel.scale = Vector2(0.9, 0.9)
+	_panel.reset_size()
+	_panel.pivot_offset = _panel.size * 0.5
+	var tween := create_tween()
+	tween.set_parallel(true)
+	if _blocker:
+		tween.tween_property(_blocker, "modulate:a", 1.0, 0.2)
+	tween.tween_property(_panel, "modulate:a", 1.0, 0.22)
+	tween.tween_property(_panel, "scale", Vector2.ONE, 0.22)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func dismiss_victory() -> void:
@@ -63,13 +72,49 @@ func dismiss_victory() -> void:
 	ending_id = ""
 	reason = ""
 	cause_detail = ""
-	hide()
+	_dismiss_overlay_animated()
+
+
+func reset_for_new_game() -> void:
+	is_game_over = false
+	is_victory_toast = false
+	reason = ""
+	cause_detail = ""
+	ending_id = ""
+	_dismiss_overlay_animated(true)
+
+
+func _dismiss_overlay_animated(instant: bool = false) -> void:
+	if not visible:
+		if _blocker:
+			_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		return
+	if instant:
+		hide()
+		if _blocker:
+			_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_blocker.modulate.a = 1.0
+		_panel.modulate.a = 1.0
+		_panel.scale = Vector2.ONE
+		return
+	var tween := create_tween()
+	tween.set_parallel(true)
 	if _blocker:
-		_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		tween.tween_property(_blocker, "modulate:a", 0.0, 0.15)
+	tween.tween_property(_panel, "modulate:a", 0.0, 0.15)
+	tween.tween_property(_panel, "scale", Vector2(0.94, 0.94), 0.15)
+	tween.chain().tween_callback(func() -> void:
+		hide()
+		if _blocker:
+			_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_blocker.modulate.a = 1.0
+		_panel.modulate.a = 1.0
+		_panel.scale = Vector2.ONE
+	)
 
 
 func _compute_reason() -> String:
-	# Softlock / homeless check only — copy comes from EndingBank.
+	# Softlock / homeless check only. Copy comes from EndingBank.
 	if FamilyStateController.is_homeless:
 		return "homeless"
 	var block := FamilyStateController.blocking_issue()
@@ -163,38 +208,23 @@ func _apply_overlay_theme(victory: bool) -> void:
 		_secondary_button.visible = false
 
 
-func _present_overlay() -> void:
-	_refresh_panel()
-	show()
-	layer = 2500
-	if _blocker:
-		_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
-
-
 func _refresh_panel() -> void:
 	var ending_title := EndingBank.title_for(ending_id) if not ending_id.is_empty() else "Wala na"
 	_title.text = ending_title
-	_reason_label.text = reason
-	_detail_label.text = cause_detail
-	if not cause_detail.is_empty():
-		_detail_label.text += "\n%s in the till." % PlayerStatController.format_pesos(PlayerStats.playerMoney)
+	if is_victory_toast:
+		_reason_label.text = cause_detail
 	else:
-		_detail_label.text = "%s in the till." % PlayerStatController.format_pesos(PlayerStats.playerMoney)
+		_reason_label.text = reason
+	_detail_label.text = "%s in the till" % PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	if _ending_label:
-		var kind := "Good ending" if EndingBank.is_good(ending_id) else "Ending"
-		var n := EndingBank.index_of(ending_id) + 1
+		var kind := "GOOD" if EndingBank.is_good(ending_id) else "BAD"
 		var unlocked := ScoreController.unlocked_ending_count()
-		_ending_label.text = "%s %d of %d · Collection %d/%d" % [
-			kind,
-			n,
-			EndingBank.count(),
-			unlocked,
-			EndingBank.count(),
-		]
-	_stats_label.text = "This run: %s\nHigh score: %s" % [
-		ScoreController.format_run_stats(),
-		ScoreController.format_records(),
-	]
+		_ending_label.text = "%s · Collection %d/%d" % [kind, unlocked, EndingBank.count()]
+	if is_victory_toast:
+		_stats_label.visible = false
+	else:
+		_stats_label.visible = true
+		_stats_label.text = ScoreController.format_run_stats()
 
 
 func _build_overlay() -> void:

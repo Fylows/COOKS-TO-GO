@@ -1,6 +1,8 @@
 # COOKS TO GO
 
-A Godot 4.7 street-food cart sim built for a game jam. You run a fishball stall, buy stock and pay bills on your phone each night, then serve timed customer orders during the day. Money is in **Pesos**.
+Pay the phone bill that keeps your stall “visible,” or lose the tarp — and maybe the roof — before the first fishball hits the oil.
+
+A Godot 4.7 street-food cart sim built for a game jam. You run a fishball stall, buy stock and pay bills on your phone each night, then serve timed customer orders during the day. Money is in **Pesos**. Store copy lives in [`ITCH.md`](ITCH.md).
 
 ## Requirements
 
@@ -21,7 +23,7 @@ Headless smoke test (economy + day loop, no GPU):
 godot4 --headless --audio-driver Dummy --path . --script res://tests/e2e_flow.gd
 ```
 
-Expected last line: `=== ALL 5 STEPS PASSED ===`
+Expected last line: `=== ALL 6 STEPS PASSED ===`
 
 ## Game loop
 
@@ -32,7 +34,8 @@ Title screen → EOD shop (phone UI) → Game screen (stall) → Day over → EO
 ### 1. Title screen
 
 - Enter your vendor name (optional; defaults to your OS username).
-- **Play** opens the end-of-day shop.
+- **Play** opens the end-of-day shop (first night coaches: pay app → buy stock → start day).
+- **Endings** opens a gallery of locked silhouettes with unlock hints (15 total).
 - **Restart** resets all progress and returns to the title screen.
 - **Credits** lists attributions.
 - **Quit** exits.
@@ -134,9 +137,18 @@ tests/e2e_flow.gd Headless smoke test
 
 ## Known gaps (jam scope)
 
-- Pre/post-day random events (`willRain`, `nanakawan`, etc.) roll but do not change gameplay yet.
 - Frying, trash, and storage actions have SFX hooks but no stall gameplay.
 - Customer voice lines are not implemented.
+
+## Endings
+
+- **10 bad endings** — cause-picked game overs (rent, sickness, app fee, Sbatter, loans).
+- **5 good endings** — survive a week, clear debt with cash left, finish the cart upgrades, keep a roof for 10 days, or pay food/water/power for 7 nights straight.
+
+## Overnight & weather
+
+Post-day rolls (theft, leftover cash, sickness) change money/stock and show on the EOD **morning briefing**.
+Pre-day weather (ulan / awasan / ordinary) changes order spawn rate, patience, and palamig demand, with a stall banner when the day opens. Weather app subscription improves the chance of an ordinary day and labels the forecast.
 
 ## License
 

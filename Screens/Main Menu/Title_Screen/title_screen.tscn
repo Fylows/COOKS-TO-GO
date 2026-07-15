@@ -146,8 +146,8 @@ max_length = 24
 [node name="HintLabel" type="Label" parent="UiLayer/CenterRoot/Column/NamePanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 16
-text = "This is the name customers will see at your stall.\nTen ways out. Five ways through. Unlock all 15 endings."
+theme_override_font_sizes/font_size = 20
+text = "Vendor name for your stall."
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -156,7 +156,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
 theme_override_colors/font_hover_color = Color(1, 0.9, 0.55, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "New Game"
 visible = false
 
@@ -174,7 +174,7 @@ theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
 theme_override_colors/font_shadow_color = Color(0.02, 0.02, 0.05, 0.85)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 22
 text = "Day 0 · 0 Pesos earned · 0 Pesos peak"
 visible = false
 horizontal_alignment = 1

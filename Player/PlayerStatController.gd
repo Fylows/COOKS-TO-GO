@@ -119,21 +119,40 @@ func weather_title() -> String:
 		"awasan":
 			return "Awasan"
 		"none":
-			return "Ordinary day"
+			return "Clear"
 		_:
-			return "Sky unknown"
+			return ""
+
+
+## Overnight phone copy: one lore line for tomorrow's open.
+func morning_forecast_line() -> String:
+	match weather_key():
+		"willRain":
+			return "Bukas ulan. Expect a slow line at the tarp."
+		"awasan":
+			return "Bukas awasan. Palamig will sell if the jug is full."
+		"none":
+			return "Bukas clear skies. Regular foot traffic, no drama."
+		_:
+			return ""
+
+
+## Stall-day flash: you are already under that weather.
+func stall_weather_line() -> String:
+	match weather_key():
+		"willRain":
+			return "Ulan on the street. Customers drip in slow."
+		"awasan":
+			return "Awasan heat. Palamig is the whole personality."
+		"none":
+			return "Clear day. Cook like you mean it."
+		_:
+			return ""
 
 
 func weather_effect_blurb() -> String:
-	match weather_key():
-		"willRain":
-			return "Fewer customers. Orders arrive slower."
-		"awasan":
-			return "Hot sidewalk. Faster queues. More palamig orders."
-		"none":
-			return "Normal foot traffic."
-		_:
-			return "Open the stall to see the sky."
+	# Kept for any old callers; prefer morning_forecast_line / stall_weather_line.
+	return morning_forecast_line()
 
 
 func spawn_interval_multiplier() -> float:
@@ -167,23 +186,24 @@ func _refresh_morning_forecast() -> void:
 	if weather_key().is_empty():
 		morning_forecast = ""
 		return
-	if PlayerStats.boughtSubscription:
-		morning_forecast = "Weather app: %s — %s" % [weather_title(), weather_effect_blurb()]
+	var blurb := weather_effect_blurb()
+	# Overnight EOD: weather for tomorrow's open after Go to bed.
+	if blurb.is_empty():
+		morning_forecast = "Tomorrow · %s" % weather_title()
 	else:
-		morning_forecast = "Look outside: %s — %s" % [weather_title(), weather_effect_blurb()]
+		morning_forecast = "Tomorrow · %s · %s" % [weather_title(), blurb]
 
 
 func morning_briefing_lines() -> PackedStringArray:
 	var lines: PackedStringArray = PackedStringArray()
-	if not last_night_report.is_empty():
-		lines.append("Last night")
-		for line in last_night_report:
-			lines.append("• %s" % line)
+	for line in last_night_report:
+		if line == "Quiet night.":
+			continue
+		lines.append(line)
+		if lines.size() >= 2:
+			break
 	if not morning_forecast.is_empty():
-		if not lines.is_empty():
-			lines.append("")
-		lines.append("Today's weather")
-		lines.append("• %s" % morning_forecast)
+		lines.append(morning_forecast)
 	return lines
 
 
@@ -245,23 +265,23 @@ func apply_post_day_events() -> void:
 
 func _build_night_report(loan_paid: int) -> void:
 	if loan_paid > 0:
-		last_night_report.append("JuanAngat collected %s." % format_pesos(loan_paid))
+		last_night_report.append("JuanAngat −%s" % format_pesos(loan_paid))
 	if PlayerStats.post_day_events.sickChild.active:
-		last_night_report.append("Your child got sick overnight.")
+		last_night_report.append("Anak may lagnat")
 	if PlayerStats.post_day_events.nanakawan.active and _night_stolen > 0:
-		last_night_report.append("May nanakaw sa tindahan. −%s." % format_pesos(_night_stolen))
+		last_night_report.append("Nanakaw −%s" % format_pesos(_night_stolen))
 	elif PlayerStats.post_day_events.nanakawan.active:
-		last_night_report.append("May nanakaw sa tindahan. Walang pera nakuha.")
+		last_night_report.append("Nanakaw (walang pera)")
 	if _night_stock_stolen > 0:
-		last_night_report.append("Ninakaw ang %d fishball mula sa cart." % _night_stock_stolen)
+		last_night_report.append("−%d fishball" % _night_stock_stolen)
 	if PlayerStats.post_day_events.extraMoney.active and _night_gained > 0:
-		last_night_report.append("May naiwan sa mesa. +%s." % format_pesos(_night_gained))
+		last_night_report.append("Naiwan +%s" % format_pesos(_night_gained))
 	if last_night_report.is_empty():
 		last_night_report.append("Quiet night.")
 
 
 func resetStats() -> void:
-	# Daily bills only — stock and sauce carry overnight.
+	# Daily bills only. Stock and sauce carry overnight.
 	PlayerStats.paidElectricity = false
 	PlayerStats.paidWater = false
 	PlayerStats.paidRent = false

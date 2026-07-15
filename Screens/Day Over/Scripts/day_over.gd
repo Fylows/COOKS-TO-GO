@@ -67,7 +67,7 @@ func _present_summary() -> void:
 
 func _refresh_summary() -> void:
 	title_label.text = "Day %d Over" % PlayerStatController.current_day_number()
-	subtitle_label.text = "Stall closed. Overnight events resolve when you continue."
+	subtitle_label.text = "Overnight next."
 	money_label.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	if ScoreController.today_earned > 0:
 		earned_label.add_theme_color_override("font_color", Color(0.45, 0.92, 0.55))

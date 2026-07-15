@@ -71,6 +71,7 @@ func begin_order(cups: int) -> void:
 	order_cups_served = 0
 	order_completed = false
 	_finish_sent = false
+	set_process_input(true)
 	if results_modal:
 		results_modal.hide()
 	_reset_session()
@@ -154,6 +155,11 @@ func _finish_minigame() -> void:
 	if _finish_sent:
 		return
 	_finish_sent = true
+	is_pouring = false
+	if sfx.has("pour"):
+		sfx["pour"].stop()
+	# Hidden UI still ate Space and billed waste_cost. Lock input on finish.
+	set_process_input(false)
 	minigame_finished.emit(total_money_earned, total_money_lost)
 
 
@@ -168,6 +174,8 @@ func _on_jug_input(event: InputEvent) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if not visible or _finish_sent:
+		return
 	if results_modal.visible:
 		var clicked: bool = event is InputEventMouseButton and event.pressed
 		if clicked or (event.is_action_pressed("ui_accept") and not event.is_echo()):
@@ -203,6 +211,8 @@ func jug_fill_ratio() -> float:
 
 
 func _start_pour() -> void:
+	if not visible or _finish_sent or order_completed:
+		return
 	if current_step == Step.EMPTY or cups_remaining <= 0:
 		current_step = Step.EMPTY
 		feedback_label.text = "Out of palamig. Back to cart to restock."
