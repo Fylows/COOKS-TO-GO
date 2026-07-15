@@ -79,7 +79,7 @@ text = "                      "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Fishball" unique_id=1080631662]
 layout_mode = 2
-text = "$ 50"
+text = "50 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Fishball" unique_id=23251496]
 layout_mode = 2
@@ -103,7 +103,7 @@ text = "                       "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kikiam" unique_id=1557554053]
 layout_mode = 2
-text = "$ 75"
+text = "75 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kikiam" unique_id=417377119]
 layout_mode = 2
@@ -127,7 +127,7 @@ text = "               "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kwek2" unique_id=268937186]
 layout_mode = 2
-text = "$ 150"
+text = "150 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Kwek2" unique_id=38805921]
 layout_mode = 2
@@ -151,7 +151,7 @@ text = "                                    "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Sauce" unique_id=794033985]
 layout_mode = 2
-text = "$ 100"
+text = "100 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Sauce" unique_id=125994112]
 layout_mode = 2
@@ -175,7 +175,7 @@ text = "                                "
 
 [node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Palamig" unique_id=636221258]
 layout_mode = 2
-text = "$ 75"
+text = "75 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/Palamig" unique_id=1423337787]
 layout_mode = 2
@@ -208,7 +208,7 @@ text = "                            "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd" unique_id=1038436901]
 layout_mode = 2
-text = "$ 100"
+text = "100 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd" unique_id=376998132]
 layout_mode = 2
@@ -231,7 +231,7 @@ text = "                         "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=692793365]
 layout_mode = 2
-text = "$ 200"
+text = "200 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/BurnUpgrd" unique_id=481267961]
 layout_mode = 2
@@ -255,7 +255,7 @@ text = "                              "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=942770667]
 layout_mode = 2
-text = "$ 250"
+text = "250 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/ContainerUpgrd" unique_id=2133625966]
 layout_mode = 2
@@ -278,7 +278,7 @@ text = "                                    "
 
 [node name="Price" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=455282992]
 layout_mode = 2
-text = "$ 500"
+text = "500 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/UpgradesGroup/VBoxContainer/CookingUpgrd" unique_id=1295428735]
 layout_mode = 2
@@ -311,7 +311,7 @@ text = "                      "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Electricity" unique_id=2094282141]
 layout_mode = 2
-text = "$150"
+text = "150 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Electricity" unique_id=92422364]
 layout_mode = 2
@@ -334,7 +334,7 @@ text = "                              "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Water" unique_id=2125099689]
 layout_mode = 2
-text = "$50"
+text = "50 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Water" unique_id=1988265474]
 layout_mode = 2
@@ -357,7 +357,7 @@ text = "                                "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Rent" unique_id=1439481335]
 layout_mode = 2
-text = "$75"
+text = "75 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Rent" unique_id=1229657044]
 layout_mode = 2
@@ -380,7 +380,7 @@ text = "                               "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Food" unique_id=615231970]
 layout_mode = 2
-text = "$150"
+text = "150 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Food" unique_id=1471463325]
 layout_mode = 2
@@ -403,7 +403,7 @@ text = "                        "
 
 [node name="Price" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Medicine" unique_id=1837453622]
 layout_mode = 2
-text = "$300"
+text = "300 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/FamilyGroup/VBoxContainer/Medicine" unique_id=560384034]
 layout_mode = 2
@@ -435,7 +435,7 @@ text = "                              "
 
 [node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=517326087]
 layout_mode = 2
-text = "$ 250"
+text = "250 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=832704377]
 layout_mode = 2
@@ -459,7 +459,7 @@ text = "       "
 
 [node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=355834479]
 layout_mode = 2
-text = "$ 50/day"
+text = "50 Pesos/day"
 
 [node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1624335634]
 layout_mode = 2
@@ -483,7 +483,7 @@ text = "                                    "
 
 [node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=716471082]
 layout_mode = 2
-text = "$ 100"
+text = "100 Pesos"
 
 [node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1697950572]
 layout_mode = 2
