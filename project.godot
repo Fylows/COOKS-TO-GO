@@ -25,6 +25,7 @@ SbatterController="*res://Player/SbatterController.gd"
 BgmController="*res://Audio/BgmController.gd"
 SfxController="*res://Audio/SfxController.gd"
 AudioSettings="*res://Audio/AudioSettings.gd"
+ScoreController="*res://Player/ScoreController.gd"
 DayTransition="*res://Screens/Shared/DayTransition.gd"
 Dialogic="*uid://ds2q0uclmolvu"
 
