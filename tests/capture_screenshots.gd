@@ -82,8 +82,8 @@ func _reset_state(shot: Dictionary) -> void:
 
 	if shot.get("briefing", false):
 		psc.last_night_report = PackedStringArray([
-			"May nanakaw sa tindahan. −120 Pesos.",
-			"Ninakaw ang 6 fishball mula sa cart.",
+			"Nanakaw −₱120",
+			"−6 fishball",
 		])
 		stats.pre_day_events.willRain.active = true
 		psc._refresh_morning_forecast()
@@ -117,7 +117,7 @@ func _reset_state(shot: Dictionary) -> void:
 		gsc.cause_detail = str(bank2.call("detail_for", "isang_linggo"))
 		score.unlock_ending("isang_linggo")
 
-	# Seed one unlocked ending so gallery isn't empty chrome.
+	# Seed one unlocked ending so the gallery is not empty.
 	if shot.get("gallery", false) or shot.name.begins_with("01"):
 		score.unlock_ending("isang_linggo")
 
@@ -134,7 +134,7 @@ func _capture(shot: Dictionary) -> void:
 	if shot.name.begins_with("02") and scene:
 		var logic := scene.get_node_or_null("Node2D")
 		if logic:
-			# Let deferred first-night / resources open settle, then steer the shot.
+			# Wait for deferred first-night / resources open, then steer the shot.
 			for _w in 6:
 				await process_frame
 			if shot.get("first_night", false):
@@ -160,8 +160,11 @@ func _capture(shot: Dictionary) -> void:
 
 	if shot.name.begins_with("03") and scene and scene.has_method("start_day"):
 		scene.start_day()
-		await process_frame
-		if scene.get("weather_banner") != null:
+		for _w in 8:
+			await process_frame
+		if scene.has_method("hold_weather_banner"):
+			scene.hold_weather_banner()
+		elif scene.get("weather_banner") != null:
 			scene.weather_banner.modulate.a = 1.0
 
 	if shot.get("game_over", false) or shot.get("good_ending", false):
