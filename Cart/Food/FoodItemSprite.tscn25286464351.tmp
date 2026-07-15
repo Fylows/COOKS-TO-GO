@@ -1,0 +1,207 @@
+[gd_scene format=3 uid="uid://crbte2p67k7gm"]
+
+[ext_resource type="Texture2D" uid="uid://d31pi7ubsqcdu" path="res://Shared/Assets/Betamax/Betamax_Cooking.png" id="2_1v2nt"]
+[ext_resource type="Script" uid="uid://c7up1xnf6y8ll" path="res://Cart/Scripts/FoodItemSprite.gd" id="2_b2rbm"]
+[ext_resource type="Texture2D" uid="uid://bxkadr74ddxh7" path="res://Shared/Assets/Fishball/Fishball_Cooking.png" id="3_jmls6"]
+[ext_resource type="Texture2D" uid="uid://bys62heummqiw" path="res://Shared/Assets/Kikiam/Kikiam_Cooking.png" id="4_tdvvd"]
+[ext_resource type="Texture2D" uid="uid://btwxlqd0g8kgw" path="res://Shared/Assets/Kwekwek/Kwekwek_Cooking.png" id="5_wedub"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iwykn"]
+atlas = ExtResource("2_1v2nt")
+region = Rect2(0, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_48fa6"]
+atlas = ExtResource("2_1v2nt")
+region = Rect2(1024, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_as17k"]
+atlas = ExtResource("2_1v2nt")
+region = Rect2(2048, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qopn6"]
+atlas = ExtResource("2_1v2nt")
+region = Rect2(3072, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wrdgb"]
+atlas = ExtResource("2_1v2nt")
+region = Rect2(4096, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v8ug7"]
+atlas = ExtResource("3_jmls6")
+region = Rect2(0, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6fd6q"]
+atlas = ExtResource("3_jmls6")
+region = Rect2(1024, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jpl36"]
+atlas = ExtResource("3_jmls6")
+region = Rect2(2048, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_012cl"]
+atlas = ExtResource("3_jmls6")
+region = Rect2(3072, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o81k5"]
+atlas = ExtResource("3_jmls6")
+region = Rect2(4096, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vsmyu"]
+atlas = ExtResource("4_tdvvd")
+region = Rect2(0, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s5fcc"]
+atlas = ExtResource("4_tdvvd")
+region = Rect2(1024, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dye40"]
+atlas = ExtResource("4_tdvvd")
+region = Rect2(2048, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_872vg"]
+atlas = ExtResource("4_tdvvd")
+region = Rect2(3072, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dnntf"]
+atlas = ExtResource("4_tdvvd")
+region = Rect2(4096, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_he6sr"]
+atlas = ExtResource("5_wedub")
+region = Rect2(0, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eojto"]
+atlas = ExtResource("5_wedub")
+region = Rect2(1024, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xkwlp"]
+atlas = ExtResource("5_wedub")
+region = Rect2(2048, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x3dti"]
+atlas = ExtResource("5_wedub")
+region = Rect2(3072, 0, 1024, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p1f67"]
+atlas = ExtResource("5_wedub")
+region = Rect2(4096, 0, 1024, 1024)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_n2fls"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iwykn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_48fa6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_as17k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qopn6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wrdgb")
+}],
+"loop": 1,
+"name": &"Betamax_Cooking",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v8ug7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6fd6q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jpl36")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_012cl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o81k5")
+}],
+"loop": 1,
+"name": &"Fishball_Cooking",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vsmyu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s5fcc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dye40")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_872vg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dnntf")
+}],
+"loop": 1,
+"name": &"Kikiam_Cooking",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_he6sr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eojto")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xkwlp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x3dti")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p1f67")
+}],
+"loop": 1,
+"name": &"Kwekwek_Cooking",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7pb5u"]
+radius = 9.930245
+
+[node name="FoodItemSprite" type="Sprite2D" unique_id=1390722012]
+position = Vector2(155, 156)
+scale = Vector2(0.3, 0.3)
+script = ExtResource("2_b2rbm")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1023511261]
+visible = false
+sprite_frames = SubResource("SpriteFrames_n2fls")
+animation = &"Kwekwek_Cooking"
+frame_progress = 0.95737153
+
+[node name="Area2D" type="Area2D" parent="." unique_id=409545259]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1311114286]
+position = Vector2(-10.000002, -1.7166138e-05)
+rotation = 0.78293
+scale = Vector2(-61.7539, 24.945305)
+shape = SubResource("CircleShape2D_7pb5u")
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=385350499]
+custom_minimum_size = Vector2(48, 8)
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -512.0
+offset_top = -525.5
+offset_right = -512.0
+offset_bottom = -498.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]

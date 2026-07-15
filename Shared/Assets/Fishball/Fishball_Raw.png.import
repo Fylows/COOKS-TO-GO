@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bv8v1gmoq0u28"
-path="res://.godot/imported/Kikiam_CookingAnim.png-13105fc8c698ebe6e1f147f5f500c019.ctex"
+uid="uid://cyog5stu8nhnr"
+path="res://.godot/imported/Fishball_Raw.png-a14b6e46d96ff9a0d8197e5e43681b95.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Food/Assets/Sprites/Kikiam_CookingAnim.png"
-dest_files=["res://.godot/imported/Kikiam_CookingAnim.png-13105fc8c698ebe6e1f147f5f500c019.ctex"]
+source_file="res://Shared/Assets/Fishball/Fishball_Raw.png"
+dest_files=["res://.godot/imported/Fishball_Raw.png-a14b6e46d96ff9a0d8197e5e43681b95.ctex"]
 
 [params]
 

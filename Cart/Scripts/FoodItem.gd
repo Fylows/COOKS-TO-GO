@@ -3,6 +3,8 @@ class_name FoodItem
 enum FoodName {
 	FISHBALL,
 	KIKIAM,
+	BETAMAX,
+	KWEKWEK,
 }
 
 enum Location {
@@ -14,6 +16,7 @@ enum Location {
 
 enum CookState {
 	RAW,
+	COOKING,
 	COOKED,
 	BURNT
 }
@@ -21,11 +24,13 @@ enum CookState {
 const FoodData := {
 	FoodName.FISHBALL: {"cook_time": 10.0, "burn_time": 20.0},
 	FoodName.KIKIAM: {"cook_time": 16.0, "burn_time": 25.0},
+	FoodName.BETAMAX: {"cook_time": 7.0, "burn_time": 15.0},
+	FoodName.KWEKWEK: {"cook_time": 10.0, "burn_time": 20.0},
 }
 
 var food_name: FoodName
 var location:= Location.CART
-var visual: Sprite2D
+var visual: Node2D
 var curr_cooktime: float = 0.0
 var cook_time: float
 var burn_time: float

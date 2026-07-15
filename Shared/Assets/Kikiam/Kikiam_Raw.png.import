@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgof78vvjak18"
-path="res://.godot/imported/cart_main.PNG-722a8aadede0eafbd9d9e9a565437b45.ctex"
+uid="uid://c1odjv1kcef62"
+path="res://.godot/imported/Kikiam_Raw.png-e3ec684f2fe8ab461c2177b1f7b24471.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Food/Assets/Sprites/cart_main.PNG"
-dest_files=["res://.godot/imported/cart_main.PNG-722a8aadede0eafbd9d9e9a565437b45.ctex"]
+source_file="res://Shared/Assets/Kikiam/Kikiam_Raw.png"
+dest_files=["res://.godot/imported/Kikiam_Raw.png-e3ec684f2fe8ab461c2177b1f7b24471.ctex"]
 
 [params]
 

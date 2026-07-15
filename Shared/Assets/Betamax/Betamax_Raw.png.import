@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c5aa3qfnmgsca"
-path="res://.godot/imported/Kikiam_RawFull.png-36dcf3dea8d86043de065dafed2e8749.ctex"
+uid="uid://bm3wm8bnhofcn"
+path="res://.godot/imported/Betamax_Raw.png-4b8b715af0fa17eb9ed9a7f9ad8c959e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Food/Assets/Sprites/Kikiam_RawFull.png"
-dest_files=["res://.godot/imported/Kikiam_RawFull.png-36dcf3dea8d86043de065dafed2e8749.ctex"]
+source_file="res://Shared/Assets/Betamax/Betamax_Raw.png"
+dest_files=["res://.godot/imported/Betamax_Raw.png-4b8b715af0fa17eb9ed9a7f9ad8c959e.ctex"]
 
 [params]
 

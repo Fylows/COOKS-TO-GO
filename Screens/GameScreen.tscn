@@ -1,9 +1,17 @@
-[gd_scene load_steps=5 format=3 uid="uid://dhw4oitpble61"]
+[gd_scene format=3 uid="uid://dhw4oitpble61"]
 
 [ext_resource type="PackedScene" uid="uid://iq1mcvj1proc" path="res://Orders/Scenes/OrderContainer.tscn" id="1_p7x0p"]
 [ext_resource type="Texture2D" uid="uid://dmscxvdcf2qke" path="res://Screens/Assets/cart_main.PNG" id="2_b7a1e"]
 [ext_resource type="Script" uid="uid://c723lttww2v05" path="res://EOD/Scripts/cameraMovement.gd" id="3_q7e6u"]
-[ext_resource type="Script" path="res://Screens/GameScreen.gd" id="4_gamescreen"]
+[ext_resource type="Script" uid="uid://br8ap87vd11cs" path="res://Cart/Scripts/CookingController.gd" id="4_7rxhj"]
+[ext_resource type="Script" uid="uid://d25bth6dg3orq" path="res://Screens/GameScreen.gd" id="4_gamescreen"]
+[ext_resource type="PackedScene" uid="uid://crbte2p67k7gm" path="res://Cart/Food/FoodItemSprite.tscn" id="5_7rxhj"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7q1ou"]
+radius = 224.55774
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n2fls"]
+size = Vector2(4.7318745, 2.7791252)
 
 [node name="GameScreen" type="Node2D" unique_id=333561420]
 script = ExtResource("4_gamescreen")
@@ -12,18 +20,46 @@ script = ExtResource("4_gamescreen")
 layer = 10
 
 [node name="OrderContainer" parent="HUD" unique_id=908020767 instance=ExtResource("1_p7x0p")]
+metadata/_edit_use_anchors_ = true
 
-[node name="PalamigBtn" type="Button" parent="HUD"]
+[node name="PalamigBtn" type="Button" parent="HUD" unique_id=1935118615]
 offset_left = 24.0
 offset_top = 260.0
 offset_right = 160.0
 offset_bottom = 300.0
 text = "Palamig"
+metadata/_edit_use_anchors_ = true
 
-[node name="CartMain" type="Sprite2D" parent="." unique_id=481923727]
-position = Vector2(960, 540)
-scale = Vector2(1.2, 1.2)
+[node name="CartMain" type="Sprite2D" parent="." unique_id=481923727 node_paths=PackedStringArray("pan_area", "container_area", "spawn_position")]
+position = Vector2(984, 433)
+scale = Vector2(1.2, 1.1970567)
 texture = ExtResource("2_b7a1e")
+script = ExtResource("4_7rxhj")
+food_item_scene = ExtResource("5_7rxhj")
+pan_area = NodePath("PanArea")
+container_area = NodePath("ContainerArea")
+spawn_position = NodePath("SpawnNode")
+
+[node name="PanArea" type="Area2D" parent="CartMain" unique_id=1868130324]
+position = Vector2(-101.212524, 248.06427)
+scale = Vector2(1.0021051, 1.2920011)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CartMain/PanArea" unique_id=61579961]
+position = Vector2(-13.758514, 84.057526)
+scale = Vector2(1.3866657, 0.88093936)
+shape = SubResource("CircleShape2D_7q1ou")
+debug_color = Color(0.7292633, 0.4713059, 0.14347473, 0.41960785)
+
+[node name="ContainerArea" type="Area2D" parent="CartMain" unique_id=1586474530]
+position = Vector2(434.99997, 372.58054)
+scale = Vector2(76.60817, 74.246185)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CartMain/ContainerArea" unique_id=460487212]
+position = Vector2(0.85391426, -0.28691387)
+shape = SubResource("RectangleShape2D_n2fls")
+
+[node name="SpawnNode" type="Node2D" parent="CartMain" unique_id=347804143]
+position = Vector2(-676.6666, 271.4993)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1981916952]
 position = Vector2(965, 537)
