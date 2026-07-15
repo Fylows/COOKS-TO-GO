@@ -47,7 +47,54 @@ func _ready() -> void:
 	fade_tween = create_tween()
 	fade_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
 	countdown_bar.add_theme_stylebox_override("fill", countdown_fill_style)
+	_ensure_action_captions()
 	update_countdown_bar()
+
+
+func _ensure_action_captions() -> void:
+	_caption_action_button(confirm_button, "Serve")
+	_caption_action_button(cancel_button, "Pass")
+	var box := confirm_button.get_parent() as HBoxContainer
+	if box == null:
+		return
+	var hint := box.get_parent().get_node_or_null("ActionHint") as Label
+	if hint:
+		return
+	hint = Label.new()
+	hint.name = "ActionHint"
+	hint.text = "Serve · Pass"
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_size_override("font_size", 12)
+	hint.add_theme_color_override("font_color", Color(0.15, 0.15, 0.18, 1))
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var vbox := box.get_parent()
+	if vbox:
+		vbox.add_child(hint)
+		vbox.move_child(hint, box.get_index())
+
+
+func _caption_action_button(btn: TextureButton, caption: String) -> void:
+	if btn == null:
+		return
+	btn.tooltip_text = caption
+	btn.custom_minimum_size = Vector2(52, 44)
+	var existing := btn.get_node_or_null("ActionCaption") as Label
+	if existing:
+		existing.text = caption
+		return
+	var label := Label.new()
+	label.name = "ActionCaption"
+	label.text = caption
+	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	label.offset_top = 22.0
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_size_override("font_size", 10)
+	label.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+	label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
+	label.add_theme_constant_override("outline_size", 4)
+	btn.add_child(label)
 
 
 func _process(delta: float) -> void:
