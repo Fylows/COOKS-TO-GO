@@ -3,13 +3,29 @@
 [ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="1_fduob"]
 [ext_resource type="Texture2D" uid="uid://reasrtc01oir" path="res://Screens/EOD/Assets/Tindahal_FINAL_1.0_CLOSEDwBOOK.png" id="2_bl1sv"]
 [ext_resource type="Script" uid="uid://coab1l62jxgr1" path="res://Screens/EOD/Scripts/ButtonLogic.gd" id="3_qfuc6"]
+[ext_resource type="Texture2D" uid="uid://b3svnmy22fjlj" path="res://Screens/EOD/Assets/phone_home.PNG" id="4_ukhsu"]
+[ext_resource type="Texture2D" uid="uid://xl67381r20mf" path="res://Screens/EOD/Assets/phone_blank.PNG" id="5_g8ebx"]
+[ext_resource type="Texture2D" uid="uid://dey4ytfou31x3" path="res://Screens/EOD/Assets/resources_icon.PNG" id="6_010dm"]
+[ext_resource type="Texture2D" uid="uid://bdugl0urg4bxk" path="res://Screens/EOD/Assets/upgrade_icon.PNG" id="7_3u338"]
+[ext_resource type="Texture2D" uid="uid://hmoqd7lqy3fb" path="res://Screens/EOD/Assets/family_icon.PNG" id="8_lik14"]
+[ext_resource type="Texture2D" uid="uid://bjk2wxupn347o" path="res://Screens/EOD/Assets/gamble_icon.PNG" id="9_psjel"]
+[ext_resource type="Script" uid="uid://boy81dltvf84d" path="res://Screens/EOD/Scripts/home_tooltip.gd" id="10_psjel"]
+[ext_resource type="Script" uid="uid://dxyeski8jb75u" path="res://Screens/EOD/Scripts/next_day_tooltip.gd" id="11_q8wqv"]
 
-[sub_resource type="Gradient" id="Gradient_s6ai5"]
-offsets = PackedFloat32Array(0.87650603, 1)
-colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_md4an"]
-gradient = SubResource("Gradient_s6ai5")
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_psjel"]
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+expand_margin_left = 10.0
+expand_margin_top = 2.0
+expand_margin_right = 10.0
+expand_margin_bottom = 2.0
 
 [node name="Room" type="Node2D" unique_id=1933003144]
 
@@ -27,38 +43,17 @@ script = ExtResource("3_qfuc6")
 parallax_strength = 1.1
 camera_path = NodePath("../Camera2D")
 
-[node name="Phone base" type="Sprite2D" parent="Node2D" unique_id=768722228]
-scale = Vector2(14.255925, 20.733023)
-texture = SubResource("GradientTexture2D_md4an")
-
-[node name="MenuOptions" type="HBoxContainer" parent="Node2D" unique_id=1794590763]
-offset_left = -423.0
-offset_top = -623.0
-offset_right = -134.0
-offset_bottom = -583.0
-
-[node name="Resources" type="Button" parent="Node2D/MenuOptions" unique_id=1671092552]
-layout_mode = 2
-text = "Resources"
-metadata/_edit_use_anchors_ = true
-
-[node name="Upgrades" type="Button" parent="Node2D/MenuOptions" unique_id=1842615462]
-layout_mode = 2
-text = "Upgrades"
-metadata/_edit_use_anchors_ = true
-
-[node name="Family" type="Button" parent="Node2D/MenuOptions" unique_id=361599361]
-layout_mode = 2
-text = "Family"
-metadata/_edit_use_anchors_ = true
-
-[node name="Misc" type="Button" parent="Node2D/MenuOptions" unique_id=602819624]
-layout_mode = 2
-text = "Misc."
-metadata/_edit_use_anchors_ = true
-
 [node name="ResourceGroup" type="CanvasGroup" parent="Node2D" unique_id=494400270]
+visible = false
 position = Vector2(5, -13)
+
+[node name="BackgroundColor" type="ColorRect" parent="Node2D/ResourceGroup" unique_id=1364131817]
+offset_left = 213.0
+offset_top = 184.0
+offset_right = 277.66754
+offset_bottom = 235.56705
+scale = Vector2(-7.678791, -16.375587)
+color = Color(0.9137255, 0.92941177, 0.9647059, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/ResourceGroup" unique_id=511594472]
 offset_left = -409.0
@@ -189,6 +184,14 @@ text = "Buy"
 visible = false
 position = Vector2(5, -7)
 
+[node name="BackgroundColor" type="ColorRect" parent="Node2D/UpgradesGroup" unique_id=702026049]
+offset_left = 213.0
+offset_top = 184.0
+offset_right = 277.66754
+offset_bottom = 235.56705
+scale = Vector2(-7.678791, -16.375587)
+color = Color(0.92156863, 0.5411765, 0.25882354, 1)
+
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/UpgradesGroup" unique_id=982042350]
 offset_left = -410.0
 offset_top = -556.0
@@ -291,6 +294,13 @@ text = "Buy"
 [node name="FamilyGroup" type="CanvasGroup" parent="Node2D" unique_id=1163707389]
 visible = false
 position = Vector2(-209, -534)
+
+[node name="BackgroundColor" type="ColorRect" parent="Node2D/FamilyGroup" unique_id=892300956]
+offset_left = 422.0
+offset_top = 706.0
+offset_right = 486.66754
+offset_bottom = 757.567
+scale = Vector2(-7.678791, -16.375587)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/FamilyGroup" unique_id=2098986779]
 offset_left = -197.0
@@ -416,83 +426,13 @@ text = "Buy"
 [node name="MiscGroup" type="CanvasGroup" parent="Node2D" unique_id=328044440]
 visible = false
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/MiscGroup" unique_id=616868786]
-offset_left = -405.0
-offset_top = -562.0
-offset_right = -16.0
-offset_bottom = -461.0
-
-[node name="Anting2" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=1702457408]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=2108607646]
-layout_mode = 2
-text = "Anting Anting"
-
-[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=370398410]
-layout_mode = 2
-text = "                              "
-
-[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=517326087]
-layout_mode = 2
-text = "$ 250"
-
-[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=832704377]
-layout_mode = 2
-text = "                       "
-
-[node name="antingBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=2002300616]
-layout_mode = 2
-text = "Buy"
-metadata/_edit_use_anchors_ = true
-
-[node name="Weather" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=360911844]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1443726510]
-layout_mode = 2
-text = "Weather App Subscription"
-
-[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=548921598]
-layout_mode = 2
-text = "       "
-
-[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=355834479]
-layout_mode = 2
-text = "$ 50/day"
-
-[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1624335634]
-layout_mode = 2
-text = "                       "
-
-[node name="weatherBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1274891083]
-layout_mode = 2
-text = "Buy"
-metadata/_edit_use_anchors_ = true
-
-[node name="Gamble" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=124490726]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1325931007]
-layout_mode = 2
-text = "Bingo Plus"
-
-[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1645104393]
-layout_mode = 2
-text = "                                    "
-
-[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=716471082]
-layout_mode = 2
-text = "$ 100"
-
-[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1697950572]
-layout_mode = 2
-text = "                       "
-
-[node name="gambleBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1279583]
-layout_mode = 2
-text = "Buy"
-metadata/_edit_use_anchors_ = true
+[node name="BackgroundColor" type="ColorRect" parent="Node2D/MiscGroup" unique_id=1425918169]
+offset_left = 213.0
+offset_top = 184.0
+offset_right = 277.66754
+offset_bottom = 235.56705
+scale = Vector2(-7.678791, -16.375587)
+color = Color(0.92156863, 0.5411765, 0.25882354, 1)
 
 [node name="Stats" type="CanvasGroup" parent="Node2D" unique_id=960918305]
 position = Vector2(349, -610)
@@ -516,17 +456,96 @@ offset_right = -12.0
 offset_bottom = 210.0
 metadata/_edit_use_anchors_ = true
 
-[node name="New Day" type="Button" parent="Node2D" unique_id=441180160]
-offset_left = -57.0
-offset_top = 8.0
-offset_right = 62.0
-offset_bottom = 39.0
-text = "Start New Day"
+[node name="Home" type="CanvasGroup" parent="Node2D" unique_id=565726316]
+position = Vector2(349, -610)
 
-[connection signal="pressed" from="Node2D/MenuOptions/Resources" to="Node2D" method="_on_resources_pressed"]
-[connection signal="pressed" from="Node2D/MenuOptions/Upgrades" to="Node2D" method="_on_upgrades_pressed"]
-[connection signal="pressed" from="Node2D/MenuOptions/Family" to="Node2D" method="_on_family_pressed"]
-[connection signal="pressed" from="Node2D/MenuOptions/Misc" to="Node2D" method="_on_misc_pressed"]
+[node name="Phone Home" type="Sprite2D" parent="Node2D/Home" unique_id=768722228]
+position = Vector2(-376, 356)
+texture = ExtResource("4_ukhsu")
+
+[node name="Phone Base" type="Sprite2D" parent="Node2D" unique_id=881558449]
+position = Vector2(-26.999998, -253.99998)
+texture = ExtResource("5_g8ebx")
+
+[node name="HomeBtn" type="Button" parent="Node2D" unique_id=441180160]
+offset_left = -72.0
+offset_top = 178.0
+offset_right = -64.0
+offset_bottom = 186.0
+scale = Vector2(8, 8)
+
+[node name="MenuOptions" type="HBoxContainer" parent="Node2D" unique_id=1794590763]
+offset_left = -265.0
+offset_top = -295.0
+offset_right = 1640.0
+offset_bottom = 125.0
+scale = Vector2(0.2, 0.2)
+theme_override_constants/separation = 75
+
+[node name="Resources" type="TextureButton" parent="Node2D/MenuOptions" unique_id=1530792267]
+layout_mode = 2
+texture_normal = ExtResource("6_010dm")
+
+[node name="Upgrades" type="TextureButton" parent="Node2D/MenuOptions" unique_id=2126709805]
+layout_mode = 2
+texture_normal = ExtResource("7_3u338")
+
+[node name="Family" type="TextureButton" parent="Node2D/MenuOptions" unique_id=1462070874]
+layout_mode = 2
+texture_normal = ExtResource("8_lik14")
+
+[node name="Misc" type="TextureButton" parent="Node2D/MenuOptions" unique_id=329067401]
+layout_mode = 2
+texture_normal = ExtResource("9_psjel")
+
+[node name="Canvas" type="CanvasLayer" parent="." unique_id=1179902968]
+
+[node name="Control" type="Control" parent="Canvas" unique_id=253832679]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HomeTooltip" type="PanelContainer" parent="Canvas/Control" unique_id=570871015]
+visible = false
+layout_mode = 0
+offset_right = 86.0
+offset_bottom = 42.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_psjel")
+script = ExtResource("10_psjel")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Canvas/Control/HomeTooltip" unique_id=553982238]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+bbcode_enabled = true
+text = "Go home"
+fit_content = true
+autowrap_mode = 0
+
+[node name="NextDayTooltip" type="PanelContainer" parent="Canvas/Control" unique_id=2076380064]
+visible = false
+layout_mode = 0
+offset_right = 86.0
+offset_bottom = 42.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_psjel")
+script = ExtResource("11_q8wqv")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Canvas/Control/NextDayTooltip" unique_id=749787643]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+bbcode_enabled = true
+text = "Go to bed"
+fit_content = true
+autowrap_mode = 0
+
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Fishball/buyFishball" to="Node2D" method="_on_buy_fishball_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kikiam/buyKikiam" to="Node2D" method="_on_buy_kikiam_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_buys_kwek_2_pressed"]
@@ -542,6 +561,10 @@ text = "Start New Day"
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Rent/rentBtn" to="Node2D" method="_on_rent_btn_pressed"]
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Food/foodBtn" to="Node2D" method="_on_food_btn_pressed"]
 [connection signal="pressed" from="Node2D/FamilyGroup/VBoxContainer/Medicine/medBtn" to="Node2D" method="_on_med_btn_pressed"]
-[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Anting2/antingBtn" to="Node2D" method="_on_anting_btn_pressed"]
-[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Weather/weatherBtn" to="Node2D" method="_on_weather_btn_pressed"]
-[connection signal="pressed" from="Node2D/New Day" to="Node2D" method="_on_new_day_pressed"]
+[connection signal="mouse_entered" from="Node2D/HomeBtn" to="Node2D" method="_on_home_btn_mouse_entered"]
+[connection signal="mouse_exited" from="Node2D/HomeBtn" to="Node2D" method="_on_home_btn_mouse_exited"]
+[connection signal="pressed" from="Node2D/HomeBtn" to="Node2D" method="_on_home_btn_pressed"]
+[connection signal="pressed" from="Node2D/MenuOptions/Resources" to="Node2D" method="_on_resources_pressed"]
+[connection signal="pressed" from="Node2D/MenuOptions/Upgrades" to="Node2D" method="_on_upgrades_pressed"]
+[connection signal="pressed" from="Node2D/MenuOptions/Family" to="Node2D" method="_on_family_pressed"]
+[connection signal="pressed" from="Node2D/MenuOptions/Misc" to="Node2D" method="_on_misc_pressed"]

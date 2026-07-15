@@ -10,11 +10,14 @@ var base_position: Vector2
 @onready var resources : CanvasGroup = $ResourceGroup
 @onready var family : CanvasGroup = $FamilyGroup
 @onready var misc : CanvasGroup = $MiscGroup
+@onready var home : CanvasGroup = $Home
 
+var page : CanvasGroup
 var categories: Dictionary
 
 func _ready() -> void:
 	get_tree().paused = false
+	page = home
 	camera = get_node(camera_path)
 	base_position = position
 	categories = {
@@ -23,7 +26,6 @@ func _ready() -> void:
 		"family": family,
 		"misc": misc
 	}
-	showOpt("resources")
 	if (PlayerStats.get("palamigUP") != true):
 		$ResourceGroup/VBoxContainer/Palamig.visible = false
 	if (PlayerStats.kikiamPurchasable != true):
@@ -36,6 +38,10 @@ func _process(delta: float) -> void:
 	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s" % [PlayerStats.palamigUP, PlayerStats.containerUP, PlayerStats.cookUP, PlayerStats.burnUP]
 
 func showOpt(opt: String) -> void:
+	page = categories[opt]
+	$Home.visible = false
+	$Stats.visible = false
+	$MenuOptions.visible = false
 	for key in categories.keys():
 		categories[key].visible = (key == opt)
 
@@ -161,31 +167,30 @@ func _on_med_btn_pressed() -> void:
 	buyEssentials(PlayerStats.essentialPrice["medicine"], "paidMedicine")
 	$FamilyGroup/VBoxContainer/Medicine/medBtn.text = "bought"
 
-
 func _on_food_btn_pressed() -> void:
 	if PlayerStats.get("paidFood"):
 		return
 	buyEssentials(PlayerStats.essentialPrice["food"], "paidFood")
 	$FamilyGroup/VBoxContainer/Food/foodBtn.text = "bought"
 
-
-# MISC
-
-
-func _on_anting_btn_pressed() -> void:
-	if PlayerStats.get("boughtAnting2"):
+func go_home(currentGroup : CanvasGroup) -> void:
+	currentGroup.visible = false
+	page = home
+	home.visible = true
+	$MenuOptions.visible = true
+	$Stats.visible = true
+	
+func _on_home_btn_pressed() -> void:
+	if page != home:
+		go_home(page)
+		$"../Canvas/Control/HomeTooltip".toggle(false)
 		return
-	buyEssentials(PlayerStats.miscPrice["anting"], "boughtAnting2")
-	$MiscGroup/VBoxContainer/Anting2/antingBtn.text = "bought"
-
-
-func _on_weather_btn_pressed() -> void:
-	if PlayerStats.get("boughtSubscription"):
-		return
-	buyEssentials(PlayerStats.miscPrice["weather"], "boughtSubscription")
-	$MiscGroup/VBoxContainer/Weather/weatherBtn.text = "bought"
-
-
-func _on_new_day_pressed() -> void:
+	$"../Canvas/Control/NextDayTooltip".hide()
 	PlayerStatController.newDay()
-	get_tree().change_scene_to_file("res://Screens/GameScreen.tscn")
+	get_tree().change_scene_to_file("res://Screens/Game/Scenes/GameScreen.tscn")
+func _on_home_btn_mouse_entered() -> void:
+	if (page == home): $"../Canvas/Control/NextDayTooltip".toggle(true)
+	else: $"../Canvas/Control/HomeTooltip".toggle(true)
+func _on_home_btn_mouse_exited() -> void:
+	if (page == home): $"../Canvas/Control/NextDayTooltip".toggle(false)
+	else: $"../Canvas/Control/HomeTooltip".toggle(false)

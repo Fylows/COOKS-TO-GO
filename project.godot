@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 PlayerStats="*uid://cirurloxsm83l"
 PlayerStatController="*uid://bf0kj6i3ab5cb"
 Dialogic="*uid://ds2q0uclmolvu"
+FamilyStateController="*res://Player/FamilyStateController.gd"
+LoanController="*res://Player/LoanController.gd"
+SbatterController="*res://Player/SbatterController.gd"
+BgmController="*res://Audio/BgmController.gd"
 
 [dialogic]
 
