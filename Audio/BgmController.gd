@@ -19,6 +19,12 @@ var _stress: float = 0.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_ensure_players()
+
+
+func _ensure_players() -> void:
+	if _player:
+		return
 	_setup_music_bus()
 	_player = _make_player(-10.0, 1.0)
 	_ghost = _make_player(-80.0, 0.965)
@@ -49,7 +55,7 @@ func _setup_music_bus() -> void:
 
 
 func _process(delta: float) -> void:
-	if not _player.playing:
+	if _player == null or not _player.playing:
 		return
 	var target := _poverty_stress()
 	_stress = lerpf(_stress, target, minf(delta * 1.5, 1.0))
@@ -67,6 +73,7 @@ func _poverty_stress() -> float:
 func play_track(key: String) -> void:
 	if key not in TRACKS:
 		return
+	_ensure_players()
 	if key == _current and _player.playing:
 		_apply_money_mood()
 		return
@@ -80,6 +87,8 @@ func play_track(key: String) -> void:
 
 
 func _apply_money_mood() -> void:
+	if _player == null or _lowpass == null:
+		return
 	_stress = _poverty_stress()
 	_player.pitch_scale = lerpf(1.0, 0.94, _stress)
 	_player.volume_db = lerpf(-10.0, -12.5, _stress)
@@ -88,6 +97,8 @@ func _apply_money_mood() -> void:
 
 
 func stop() -> void:
+	if _player == null:
+		return
 	_player.stop()
 	_ghost.stop()
 	_current = ""
