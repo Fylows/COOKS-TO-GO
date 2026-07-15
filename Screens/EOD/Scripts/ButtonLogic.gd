@@ -1366,7 +1366,7 @@ func _layout_bed_button_caption() -> void:
 		home_btn.offset_right - home_btn.offset_left,
 		home_btn.offset_bottom - home_btn.offset_top
 	) * home_btn.scale
-	var center := btn_tl + btn_size * 0.5
+	var center := btn_tl + btn_size * 0.5 + Vector2(-6.0, -10.0)
 	bed_action_caption.position = center - sz * 0.5
 
 
