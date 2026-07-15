@@ -7,6 +7,7 @@ var playerMoney : int = 1000
 var player_name : String = ""
 var name_spent_on_sbatter : bool = false
 var sbatter_won : bool = false
+var sbatter_bet_count : int = 0
 var luck : float = 1.0
 
 # RESOURSES
@@ -121,6 +122,7 @@ func reset_new_game() -> void:
 	player_name = ""
 	name_spent_on_sbatter = false
 	sbatter_won = false
+	sbatter_bet_count = 0
 	luck = 1.0
 	fishballStock = 0
 	kwekwekStock = 0

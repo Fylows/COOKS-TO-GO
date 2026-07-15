@@ -5,6 +5,23 @@
 [ext_resource type="Texture2D" uid="uid://dmscxvdcf2qke" path="res://Screens/Assets/cart_main.PNG" id="3_2t8hv"]
 [ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="4_kkmty"]
 [ext_resource type="PackedScene" uid="uid://cnt482x3sc0bc" path="res://Screens/Day Over/Scenes/day_over.tscn" id="5_co4do"]
+[ext_resource type="Script" path="res://Screens/Shared/AudioToggles.gd" id="6_audio"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stock_panel"]
+bg_color = Color(0.08, 0.1, 0.16, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.78, 0.28, 0.85)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
 
 [node name="GameScreen" type="Node2D" unique_id=333561420]
 script = ExtResource("1_iwem0")
@@ -15,9 +32,15 @@ layer = 10
 [node name="DayHud" type="HBoxContainer" parent="HUD"]
 offset_left = 24.0
 offset_top = 16.0
-offset_right = 320.0
+offset_right = 480.0
 offset_bottom = 56.0
 theme_override_constants/separation = 16
+
+[node name="DayLabel" type="Label" parent="HUD/DayHud"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.95, 0.88, 0.55, 1)
+text = "Day 1"
 
 [node name="TimerLabel" type="Label" parent="HUD/DayHud"]
 layout_mode = 2
@@ -31,6 +54,41 @@ text = "Pause"
 [node name="EndDayButton" type="Button" parent="HUD/DayHud"]
 layout_mode = 2
 text = "End Day"
+
+[node name="RestartButton" type="Button" parent="HUD/DayHud"]
+layout_mode = 2
+text = "Restart"
+
+[node name="StockHud" type="PanelContainer" parent="HUD"]
+offset_left = 1620.0
+offset_top = 16.0
+offset_right = 1896.0
+offset_bottom = 196.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_stock_panel")
+
+[node name="VBox" type="VBoxContainer" parent="HUD/StockHud"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="HUD/StockHud/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.78, 0.28, 1)
+theme_override_font_sizes/font_size = 18
+text = "STOCK"
+horizontal_alignment = 1
+
+[node name="StockLabel" type="Label" parent="HUD/StockHud/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "Fishball: 0"
+
+[node name="AudioToggles" type="HBoxContainer" parent="HUD"]
+offset_left = 24.0
+offset_top = 1036.0
+offset_right = 280.0
+offset_bottom = 1068.0
+script = ExtResource("6_audio")
 
 [node name="MoneyPopupLayer" type="Control" parent="HUD"]
 anchors_preset = 0
@@ -59,5 +117,6 @@ layer = 999
 
 [node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_co4do")]
 
+[connection signal="pressed" from="HUD/DayHud/RestartButton" to="." method="_on_restart_pressed"]
 [connection signal="pressed" from="HUD/DayHud/EndDayButton" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="HUD/DayHud/PauseButton" to="." method="_on_pause_button_pressed"]

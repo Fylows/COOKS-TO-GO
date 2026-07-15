@@ -18,6 +18,22 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="2_back_btn"]
+bg_color = Color(0.12, 0.16, 0.28, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.86, 0.42, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+
 [node name="Credits" type="Node2D"]
 script = ExtResource("1_credit")
 
@@ -68,24 +84,37 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.9, 0.84, 1)
 theme_override_font_sizes/font_size = 22
-text = "Jiro, Yel and Goonard — game"
+text = "Jiro, Yel and Goonard: game"
 horizontal_alignment = 1
 
 [node name="Sprites" type="Label" parent="UI/Center/Panel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.9, 0.84, 1)
 theme_override_font_sizes/font_size = 22
-text = "Isha and Bam — sprites"
+text = "Isha and Bam: sprites"
 horizontal_alignment = 1
 
 [node name="Story" type="Label" parent="UI/Center/Panel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.9, 0.84, 1)
 theme_override_font_sizes/font_size = 22
-text = "Jo, Carlos and Nat — story"
+text = "Jo, Carlos and Nat: story"
 horizontal_alignment = 1
 
+[node name="BackButton" type="Button" parent="UI/Center/Panel/Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 0.9, 0.55, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("2_back_btn")
+theme_override_styles/hover = SubResource("2_back_btn")
+theme_override_styles/pressed = SubResource("2_back_btn")
+text = "Back"
+custom_minimum_size = Vector2(220, 52)
+
 [node name="Back" type="TextureButton" parent="UI"]
+visible = false
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -102,4 +131,5 @@ texture_normal = ExtResource("3_back")
 texture_pressed = ExtResource("4_back_pressed")
 texture_hover = ExtResource("5_back_highlight")
 
-[connection signal="pressed" from="UI/Back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="UI/Center/Panel/Margin/VBox/BackButton" to="." method="_on_back_pressed"]
+[connection signal="mouse_entered" from="UI/Center/Panel/Margin/VBox/BackButton" to="." method="_on_back_mouse_entered"]

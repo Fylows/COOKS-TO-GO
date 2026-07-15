@@ -94,7 +94,7 @@ func format_journal() -> String:
 		return "Run log is empty."
 	var lines: PackedStringArray = PackedStringArray(["Run log:"])
 	for block in run_journal:
-		lines.append("—")
+		lines.append("---")
 		for line in block:
 			lines.append("  " + line)
 	return "\n".join(lines)

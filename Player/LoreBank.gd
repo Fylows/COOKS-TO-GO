@@ -73,7 +73,7 @@ static func entries() -> Array:
 		{"need": ["sbatter_name", "sbatter_win"], "prio": 65, "bucket": "online", "line": "Sbatter W! Name mo pa rin nawala though."},
 		{"need": ["sbatter_name", "cash_broke"], "prio": 60, "bucket": "online", "line": "Sbatter User ka na. Promos: 52. Pera: 0."},
 		{"need": ["sbatter_loss", "loan_active"], "prio": 63, "bucket": "online", "line": "Lost name sa Sbatter, may utang pa. Combo."},
-		{"need": ["vendor_proper", "cash_tight"], "prio": 15, "bucket": "online", "line": "Misc tab whispers: 'Isang taya lang sa Sbatter...'"},
+		{"need": ["vendor_proper", "cash_tight"], "prio": 15, "bucket": "online", "line": "Sbatter promo: %d%% win chance. Drops every night." % _sbatter_odds()},
 		{"need": ["sbatter_name", "day8_14"], "prio": 61, "bucket": "online", "line": "Day %d: still Sbatter User %s energy." % [_day(), _short_name()]},
 
 		# --- Anting / weather misc ---
@@ -177,3 +177,7 @@ static func _short_name() -> String:
 
 static func _day() -> int:
 	return PlayerStats.daysPassed + 1
+
+
+static func _sbatter_odds() -> int:
+	return SbatterController.get_win_chance_percent()
