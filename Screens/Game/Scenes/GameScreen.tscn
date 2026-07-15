@@ -86,8 +86,9 @@ text = "Fishball: 0"
 [node name="AudioToggles" type="HBoxContainer" parent="HUD"]
 offset_left = 500.0
 offset_top = 16.0
-offset_right = 820.0
+offset_right = 884.0
 offset_bottom = 56.0
+clip_contents = false
 script = ExtResource("6_audio")
 
 [node name="MoneyPopupLayer" type="Control" parent="HUD"]

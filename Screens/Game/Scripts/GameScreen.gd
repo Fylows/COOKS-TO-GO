@@ -57,12 +57,14 @@ func _layout_stall_hud(lore_panel: Control) -> void:
 	# the bottom feed (which reserves the right margin). Avoids the top-bar overlap.
 	var audio := $HUD/AudioToggles as Control
 	if audio:
+		# Two 176px pills + 16px gap need ~368px; keep a right margin.
 		audio.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-		audio.offset_left = -300.0
+		audio.offset_left = -384.0
 		audio.offset_right = -16.0
 		audio.offset_top = -56.0
 		audio.offset_bottom = -16.0
 		audio.z_index = 25
+		audio.clip_contents = false
 	if lore_panel:
 		LoreFeedBar.refresh(lore_feed)
 

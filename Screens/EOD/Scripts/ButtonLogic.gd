@@ -1214,7 +1214,8 @@ func _style_shop_row(row: HBoxContainer) -> void:
 	row.add_theme_constant_override("separation", 6)
 	row.custom_minimum_size = Vector2(0, 34)
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.clip_contents = true
+	# Never clip shop copy for alignment. Names wrap; prices/buttons stay full.
+	row.clip_contents = false
 	var name_label: Label = null
 	var price_label: Label = null
 	var action_btn: Button = null
@@ -1238,24 +1239,25 @@ func _style_shop_row(row: HBoxContainer) -> void:
 	# glass. Wrap them in fixed Controls so the HBox stays ≤ panel width.
 	if name_label:
 		_style_shop_label(name_label, false)
-		name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-		name_label.clip_text = true
-		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		name_label.clip_text = false
+		name_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		_wrap_shop_cell(row, name_label, "NameWrap", Vector2(24, 28), Control.SIZE_EXPAND_FILL)
+		name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		_wrap_shop_cell(row, name_label, "NameWrap", Vector2(160, 40), Control.SIZE_EXPAND_FILL, false)
 	if price_label:
 		_style_shop_label(price_label, true)
-		# No ellipsis. Grow left into the name column instead of "Your nam..."
 		price_label.clip_text = false
 		price_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		_wrap_shop_cell(row, price_label, "PriceWrap", Vector2(168, 28), Control.SIZE_SHRINK_END, false)
+		# Tight: ₱999 fits. Was 168 and ate the name column.
+		_wrap_shop_cell(row, price_label, "PriceWrap", Vector2(88, 28), Control.SIZE_SHRINK_END, false)
 	if action_btn:
 		_style_shop_button(action_btn)
 		action_btn.clip_text = false
 		action_btn.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		# Wide enough for "Subscribe" at PHONE_FONT_BTN with button padding.
-		_wrap_shop_cell(row, action_btn, "BtnWrap", Vector2(122, 32), Control.SIZE_SHRINK_END)
+		_wrap_shop_cell(row, action_btn, "BtnWrap", Vector2(122, 32), Control.SIZE_SHRINK_END, false)
 
 
 ## Caps a shop-row child's layout width. Labels/Buttons ignore custom_minimum_size
@@ -1266,7 +1268,7 @@ func _wrap_shop_cell(
 	wrap_name: String,
 	min_size: Vector2,
 	h_flags: int,
-	clip: bool = true,
+	clip: bool = false,
 ) -> void:
 	var wrap := row.get_node_or_null(wrap_name) as Control
 	if wrap == null:
@@ -1293,7 +1295,8 @@ func _style_shop_label(label: Label, is_price: bool) -> void:
 		SHOP_PRICE if is_price else SHOP_TEXT
 	)
 	label.add_theme_font_size_override("font_size", PHONE_FONT_PRICE if is_price else PHONE_FONT_SHOP)
-	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+	label.clip_text = false
 
 
 func _position_phone_tabs() -> void:
@@ -1328,6 +1331,19 @@ func _style_shop_button(button: Button) -> void:
 	button.add_theme_font_size_override("font_size", PHONE_FONT_BTN)
 	button.add_theme_color_override("font_color", Color.WHITE)
 	button.add_theme_color_override("font_disabled_color", Color(0.92, 0.94, 0.96))
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+
+func _apply_flat_button_styles(button: Button, normal: StyleBoxFlat) -> void:
+	var hover := normal.duplicate() as StyleBoxFlat
+	hover.bg_color = normal.bg_color.lightened(0.18)
+	hover.border_color = normal.border_color.lightened(0.12)
+	var pressed := normal.duplicate() as StyleBoxFlat
+	pressed.bg_color = normal.bg_color.darkened(0.1)
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 
 func _setup_new_day_hint() -> void:
@@ -1381,7 +1397,14 @@ func _setup_bed_button_caption() -> void:
 	style.set_content_margin_all(10)
 	style.content_margin_left = 14
 	style.content_margin_right = 14
+	var hover := style.duplicate() as StyleBoxFlat
+	hover.bg_color = style.bg_color.lightened(0.2)
+	hover.border_color = Color(1.0, 0.9, 0.55, 0.98)
+	bed_action_caption.set_meta("style_normal", style)
+	bed_action_caption.set_meta("style_hover", hover)
 	bed_action_caption.add_theme_stylebox_override("panel", style)
+	bed_action_caption.mouse_entered.connect(_on_bed_caption_hover_on)
+	bed_action_caption.mouse_exited.connect(_on_bed_caption_hover_off)
 
 	bed_action_label = Label.new()
 	bed_action_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1392,6 +1415,27 @@ func _setup_bed_button_caption() -> void:
 	bed_action_caption.gui_input.connect(_on_bed_caption_gui_input)
 	$HomeBtn.add_sibling(bed_action_caption)
 	_refresh_bed_button_caption()
+
+
+func _on_bed_caption_hover_on() -> void:
+	if bed_action_caption == null:
+		return
+	var hover := bed_action_caption.get_meta("style_hover") as StyleBoxFlat
+	if hover:
+		bed_action_caption.add_theme_stylebox_override("panel", hover)
+	if bed_action_label:
+		bed_action_label.add_theme_color_override("font_color", Color(1.0, 0.94, 0.7))
+	_on_ui_hover()
+
+
+func _on_bed_caption_hover_off() -> void:
+	if bed_action_caption == null:
+		return
+	var normal := bed_action_caption.get_meta("style_normal") as StyleBoxFlat
+	if normal:
+		bed_action_caption.add_theme_stylebox_override("panel", normal)
+	if bed_action_label:
+		bed_action_label.add_theme_color_override("font_color", Color(0.92, 0.96, 1.0))
 
 
 func _on_bed_caption_gui_input(event: InputEvent) -> void:
@@ -1819,9 +1863,7 @@ func _setup_restart_hud() -> void:
 	style.set_content_margin_all(10)
 	style.content_margin_left = 16
 	style.content_margin_right = 16
-	restart_button.add_theme_stylebox_override("normal", style)
-	restart_button.add_theme_stylebox_override("hover", style)
-	restart_button.add_theme_stylebox_override("pressed", style)
+	_apply_flat_button_styles(restart_button, style)
 	restart_button.pressed.connect(_on_restart_pressed)
 	restart_button.mouse_entered.connect(_on_ui_hover)
 	canvas_layer.add_child(restart_button)
@@ -1848,9 +1890,7 @@ func _setup_restart_hud() -> void:
 	menu_style.set_content_margin_all(10)
 	menu_style.content_margin_left = 16
 	menu_style.content_margin_right = 16
-	menu_button.add_theme_stylebox_override("normal", menu_style)
-	menu_button.add_theme_stylebox_override("hover", menu_style)
-	menu_button.add_theme_stylebox_override("pressed", menu_style)
+	_apply_flat_button_styles(menu_button, menu_style)
 	menu_button.pressed.connect(_on_main_menu_pressed)
 	menu_button.mouse_entered.connect(_on_ui_hover)
 	canvas_layer.add_child(menu_button)

@@ -69,8 +69,8 @@ func _refresh_title_state() -> void:
 		high_score_label.text = records
 	elif show_restart:
 		high_score_label.visible = true
-		high_score_label.text = "This run\n%s" % ScoreController.format_run_stats()
-	else:
+			high_score_label.text = "This run\n%s" % ScoreController.format_run_stats()
+		else:
 		high_score_label.visible = false
 		high_score_label.text = ""
 	if high_score_label:
@@ -291,6 +291,23 @@ func _setup_endings_gallery() -> void:
 	close_btn.text = "Close"
 	close_btn.custom_minimum_size = Vector2(0, 52)
 	close_btn.add_theme_font_size_override("font_size", 24)
+	close_btn.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
+	close_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.94, 0.7))
+	var close_style := StyleBoxFlat.new()
+	close_style.bg_color = Color(0.1, 0.14, 0.24, 0.98)
+	close_style.border_color = Color(0.55, 0.7, 0.95, 0.95)
+	close_style.set_border_width_all(2)
+	close_style.set_corner_radius_all(8)
+	close_style.set_content_margin_all(12)
+	var close_hover := close_style.duplicate() as StyleBoxFlat
+	close_hover.bg_color = close_style.bg_color.lightened(0.18)
+	close_hover.border_color = close_style.border_color.lightened(0.12)
+	var close_pressed := close_style.duplicate() as StyleBoxFlat
+	close_pressed.bg_color = close_style.bg_color.darkened(0.1)
+	close_btn.add_theme_stylebox_override("normal", close_style)
+	close_btn.add_theme_stylebox_override("hover", close_hover)
+	close_btn.add_theme_stylebox_override("pressed", close_pressed)
+	close_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	close_btn.pressed.connect(_on_gallery_close_pressed)
 	vbox.add_child(close_btn)
 
@@ -394,6 +411,7 @@ func _make_ending_row(id: String) -> PanelContainer:
 
 func _on_endings_pressed() -> void:
 	SfxController.play_click()
+	_restyle_gallery_chrome()
 	_rebuild_gallery_rows()
 	if gallery_root == null:
 		return
