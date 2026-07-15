@@ -1120,6 +1120,7 @@ func _wire_app_icon_hover(btn: TextureButton) -> void:
 		_set_app_icon_hover(btn, base_scale, false)
 	)
 	btn.button_down.connect(func() -> void:
+		UiMotion.kill(btn.get_meta("_ui_hover_tween", null))
 		btn.scale = base_scale * 0.94
 		btn.modulate = Color(0.82, 0.82, 0.82, 1.0)
 	)
@@ -1132,12 +1133,7 @@ func _wire_app_icon_hover(btn: TextureButton) -> void:
 
 
 func _set_app_icon_hover(btn: TextureButton, base_scale: Vector2, hovered: bool) -> void:
-	if hovered:
-		btn.scale = base_scale * 1.12
-		btn.modulate = Color(1.22, 1.22, 1.22, 1.0)
-	else:
-		btn.scale = base_scale
-		btn.modulate = Color.WHITE
+	UiMotion.hover(self, btn, base_scale, hovered)
 
 
 var _app_icon_tooltip: PanelContainer
@@ -1514,14 +1510,13 @@ func _refresh_morning_briefing() -> void:
 	if briefing_panel == null or briefing_label == null:
 		return
 	if _first_night_active():
-		briefing_panel.visible = false
+		UiMotion.fade_out_then_hide(self, briefing_panel)
 		return
 	var lines := PlayerStatController.morning_briefing_lines()
 	if lines.is_empty():
-		briefing_panel.visible = false
+		UiMotion.fade_out_then_hide(self, briefing_panel)
 		return
 	briefing_label.text = " · ".join(lines)
-	briefing_panel.visible = true
 	var style := briefing_panel.get_theme_stylebox("panel") as StyleBoxFlat
 	if style:
 		var blob := briefing_label.text.to_lower()
@@ -1531,6 +1526,12 @@ func _refresh_morning_briefing() -> void:
 			style.border_color = Color(0.35, 0.85, 0.5, 0.95)
 		else:
 			style.border_color = Color(0.95, 0.78, 0.28, 0.85)
+	var was_up := briefing_panel.visible and briefing_panel.modulate.a > 0.85
+	if was_up:
+		briefing_panel.visible = true
+		briefing_panel.modulate.a = 1.0
+	else:
+		UiMotion.pop_in(self, briefing_panel)
 
 
 func _setup_must_pay_strip() -> void:
@@ -1602,14 +1603,19 @@ func _refresh_must_pay_strip() -> void:
 		return
 	var chips := _must_pay_lines()
 	if chips.is_empty() or page != home or _first_night_active():
-		must_pay_strip.visible = false
+		UiMotion.fade_out_then_hide(self, must_pay_strip)
 		return
 	must_pay_label.text = "  ·  ".join(chips)
-	must_pay_strip.visible = true
 	must_pay_strip.reset_size()
 	var half := maxf(must_pay_strip.size.x, 280.0) * 0.5
 	must_pay_strip.offset_left = -half
 	must_pay_strip.offset_right = half
+	var was_up := must_pay_strip.visible and must_pay_strip.modulate.a > 0.85
+	if was_up:
+		must_pay_strip.visible = true
+		must_pay_strip.modulate.a = 1.0
+	else:
+		UiMotion.pop_in(self, must_pay_strip)
 
 
 func _first_night_active() -> bool:
@@ -1706,11 +1712,11 @@ func _refresh_first_night_coach() -> void:
 	if tutorial_panel == null or tutorial_label == null:
 		return
 	if not _first_night_active():
-		tutorial_panel.visible = false
+		UiMotion.fade_out_then_hide(self, tutorial_panel)
 		_clear_tutorial_row_highlights()
 		return
-	tutorial_panel.visible = true
 	var step := _first_night_step()
+	var prev := tutorial_label.text
 	match step:
 		"app":
 			tutorial_label.text = "1/3 · Subscribe"
@@ -1724,12 +1730,18 @@ func _refresh_first_night_coach() -> void:
 			tutorial_label.text = "3/3 · Go to bed"
 			_clear_tutorial_row_highlights()
 		_:
-			tutorial_panel.visible = false
-	if tutorial_panel.visible:
-		tutorial_panel.reset_size()
-		var half := maxf(tutorial_panel.size.x, 220.0) * 0.5
-		tutorial_panel.offset_left = -half
-		tutorial_panel.offset_right = half
+			UiMotion.fade_out_then_hide(self, tutorial_panel)
+			return
+	tutorial_panel.reset_size()
+	var half := maxf(tutorial_panel.size.x, 220.0) * 0.5
+	tutorial_panel.offset_left = -half
+	tutorial_panel.offset_right = half
+	var was_up := tutorial_panel.visible and tutorial_panel.modulate.a > 0.85
+	if was_up and prev == tutorial_label.text:
+		tutorial_panel.visible = true
+		tutorial_panel.modulate.a = 1.0
+	else:
+		UiMotion.pop_in(self, tutorial_panel)
 
 
 func _highlight_tutorial_row(row: Node, on: bool) -> void:
@@ -1841,11 +1853,19 @@ func _refresh_new_day_hint() -> void:
 	if new_day_hint == null or new_day_hint_pill == null:
 		return
 	if GameStateController.is_game_over:
-		new_day_hint_pill.visible = false
+		UiMotion.fade_out_then_hide(self, new_day_hint_pill)
 		return
 	var reason := FamilyStateController.start_day_block_reason()
 	new_day_hint.text = reason
-	new_day_hint_pill.visible = not reason.is_empty() and page == home
+	if reason.is_empty() or page != home:
+		UiMotion.fade_out_then_hide(self, new_day_hint_pill)
+		return
+	var was_up := new_day_hint_pill.visible and new_day_hint_pill.modulate.a > 0.85
+	if was_up:
+		new_day_hint_pill.visible = true
+		new_day_hint_pill.modulate.a = 1.0
+	else:
+		UiMotion.pop_in(self, new_day_hint_pill)
 
 
 func _flash_new_day_hint() -> void:
