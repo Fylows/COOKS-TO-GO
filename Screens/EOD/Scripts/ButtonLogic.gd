@@ -6,24 +6,30 @@ const SHOP_PRICE := Color(1.0, 0.86, 0.42)
 const SHOP_BTN_BG := Color(0.14, 0.36, 0.58)
 const SHOP_BTN_DISABLED := Color(0.35, 0.38, 0.46)
 const STATS_TEXT := Color(0.95, 0.97, 1.0)
-const PHONE_PANEL_LEFT := -248.0
-const PHONE_PANEL_WIDTH := 280.0
+# Content inset inside phone_blank.PNG glass (sprite at -27,-254).
+const PHONE_PANEL_LEFT := -264.0
+const PHONE_PANEL_WIDTH := 456.0
 const SHOP_VBOX_LEFT := PHONE_PANEL_LEFT
 const SHOP_VBOX_RIGHT := PHONE_PANEL_LEFT + PHONE_PANEL_WIDTH
 const SHOP_ROW_WIDTH := PHONE_PANEL_WIDTH
 const WALLET_Y := -590.0
+# Exact glass hole in phone_blank.PNG (transparent screen area).
+const SCREEN_BACK_LEFT := -276.0
+const SCREEN_BACK_WIDTH := 479.0
+const SCREEN_BACK_TOP := -659.0
+const SCREEN_BACK_BOTTOM := 147.0
 const WALLET_TAB_GAP := 8.0
 const TAB_HEADER_HEIGHT := 36.0
 const PHONE_TABS_Y := -330.0
 const SHOP_CONTENT_PAD := 10.0
-const PHONE_FONT_CAPTION := 14
-const PHONE_FONT_BODY := 18
-const PHONE_FONT_BALANCE := 40
-const PHONE_FONT_WARNING := 18
-const PHONE_FONT_SHOP := 16
-const PHONE_FONT_PRICE := 15
-const PHONE_FONT_BTN := 14
-const PHONE_FONT_TAB := 18
+const PHONE_FONT_CAPTION := 16
+const PHONE_FONT_BODY := 20
+const PHONE_FONT_BALANCE := 44
+const PHONE_FONT_WARNING := 20
+const PHONE_FONT_SHOP := 20
+const PHONE_FONT_PRICE := 18
+const PHONE_FONT_BTN := 17
+const PHONE_FONT_TAB := 22
 
 @export var parallax_strength: float = 1.5  # >1 = moves more than camera (feels closer)
 @export var camera_path: NodePath
@@ -709,10 +715,12 @@ func _layout_phone_chrome() -> void:
 		tab_header.custom_minimum_size = Vector2(PHONE_PANEL_WIDTH, TAB_HEADER_HEIGHT)
 		tab_header.z_index = 55
 	if phone_screen_back:
-		var screen_top := WALLET_Y - 12.0
-		var screen_bottom := 110.0
-		phone_screen_back.position = Vector2(PHONE_PANEL_LEFT - 14.0, screen_top)
-		phone_screen_back.size = Vector2(PHONE_PANEL_WIDTH + 28.0, screen_bottom - screen_top)
+		# ponytail: fill the phone's glass area, tuned to the Phone Base art.
+		# Content (wallet/tabs/rows) sits at the top; the rest is dark screen.
+		var screen_top := SCREEN_BACK_TOP
+		var screen_bottom := SCREEN_BACK_BOTTOM
+		phone_screen_back.position = Vector2(SCREEN_BACK_LEFT, screen_top)
+		phone_screen_back.size = Vector2(SCREEN_BACK_WIDTH, screen_bottom - screen_top)
 		phone_screen_back.visible = page != home
 	_apply_shop_layout(shop_top)
 

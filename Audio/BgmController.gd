@@ -10,11 +10,22 @@ const TRACKS := {
 
 const BUS_NAME := "Music"
 
+# Mood endpoints: stress 0 = flush (jolly), stress 1 = broke (somber).
+const JOLLY_PITCH := 1.0
+const SAD_PITCH := 0.86
+const JOLLY_VOL := -10.0
+const SAD_VOL := -15.0
+const JOLLY_CUTOFF := 20500.0
+const SAD_CUTOFF := 6000.0
+
 var _player: AudioStreamPlayer
 var _ghost: AudioStreamPlayer
 var _lowpass: AudioEffectLowPassFilter
 var _current: String = ""
 var _stress: float = 0.0
+# Jolliness is fixed per track: sampled once when a track starts (day / EOD
+# start), not chased live — a single sale no longer flips the mood back to jolly.
+var _mood_stress: float = 0.0
 
 
 func _ready() -> void:
@@ -78,13 +89,20 @@ func _process(delta: float) -> void:
 	if _is_game_over_track():
 		_apply_game_over_mood()
 		return
-	var target := _poverty_stress()
-	_stress = lerpf(_stress, target, minf(delta * 1.5, 1.0))
-	_player.pitch_scale = lerpf(1.0, 0.94, _stress)
-	_player.volume_db = lerpf(-10.0, -12.5, _stress)
+	# Ease toward the fixed mood set at track start; don't chase live money.
+	_stress = lerpf(_stress, _mood_stress, minf(delta * 1.5, 1.0))
+	_apply_stress_to_players(_stress)
+
+
+func _apply_stress_to_players(s: float) -> void:
+	if _player == null:
+		return
+	_player.pitch_scale = lerpf(JOLLY_PITCH, SAD_PITCH, s)
+	_player.volume_db = lerpf(JOLLY_VOL, SAD_VOL, s)
 	if _lowpass:
-		_lowpass.cutoff_hz = lerpf(20500.0, 9000.0, _stress)
-	_ghost.volume_db = lerpf(-80.0, -24.0, _stress)
+		_lowpass.cutoff_hz = lerpf(JOLLY_CUTOFF, SAD_CUTOFF, s)
+	if _ghost:
+		_ghost.volume_db = lerpf(-80.0, -22.0, s)
 
 
 func _poverty_stress() -> float:
@@ -100,7 +118,7 @@ func play_track(key: String) -> void:
 		_silence_now()
 		return
 	if key == _current and _player.playing:
-		_apply_money_mood()
+		# Keep the mood sampled at track start — don't re-read live money.
 		_set_bus_muted(false)
 		return
 	_current = key
@@ -135,11 +153,10 @@ func _apply_money_mood() -> void:
 	if _is_game_over_track():
 		_apply_game_over_mood()
 		return
-	_stress = _poverty_stress()
-	_player.pitch_scale = lerpf(1.0, 0.94, _stress)
-	_player.volume_db = lerpf(-10.0, -12.5, _stress)
-	_lowpass.cutoff_hz = lerpf(20500.0, 9000.0, _stress)
-	_ghost.volume_db = lerpf(-80.0, -24.0, _stress)
+	# Sample poverty ONCE here (track/day start) and hold it for the whole track.
+	_mood_stress = _poverty_stress()
+	_stress = _mood_stress
+	_apply_stress_to_players(_stress)
 
 
 func stop() -> void:
