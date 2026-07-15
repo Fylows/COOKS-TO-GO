@@ -355,15 +355,7 @@ func _setup_weather_banner() -> void:
 	weather_banner_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	weather_banner_label.add_theme_font_size_override("font_size", 16)
 	weather_banner_label.add_theme_color_override("font_color", Color(0.95, 0.96, 1.0))
-	# Stall banner: you are already in that shift.
-	var blurb := PlayerStatController.weather_effect_blurb()
-	var title := PlayerStatController.weather_title()
-	if title.is_empty():
-		weather_banner_label.text = ""
-	elif blurb.is_empty():
-		weather_banner_label.text = title
-	else:
-		weather_banner_label.text = "%s · %s" % [title, blurb]
+	weather_banner_label.text = PlayerStatController.stall_weather_line()
 	weather_banner.add_child(weather_banner_label)
 	weather_banner.modulate.a = 0.0
 	$HUD.add_child(weather_banner)

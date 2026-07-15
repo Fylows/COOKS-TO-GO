@@ -124,16 +124,35 @@ func weather_title() -> String:
 			return ""
 
 
-func weather_effect_blurb() -> String:
+## Overnight phone copy: one lore line for tomorrow's open.
+func morning_forecast_line() -> String:
 	match weather_key():
 		"willRain":
-			return "fewer customers"
+			return "Bukas ulan. Expect a slow line at the tarp."
 		"awasan":
-			return "busier · more palamig"
+			return "Bukas awasan. Palamig will sell if the jug is full."
 		"none":
-			return "normal foot traffic"
+			return "Bukas clear skies. Regular foot traffic, no drama."
 		_:
 			return ""
+
+
+## Stall-day flash: you are already under that weather.
+func stall_weather_line() -> String:
+	match weather_key():
+		"willRain":
+			return "Ulan on the street. Customers drip in slow."
+		"awasan":
+			return "Awasan heat. Palamig is the whole personality."
+		"none":
+			return "Clear day. Cook like you mean it."
+		_:
+			return ""
+
+
+func weather_effect_blurb() -> String:
+	# Kept for any old callers; prefer morning_forecast_line / stall_weather_line.
+	return morning_forecast_line()
 
 
 func spawn_interval_multiplier() -> float:
