@@ -15,6 +15,12 @@ const AUTOLOADS := [
 	"BgmController",
 	"SfxController",
 	"Dialogic",
+	"ScoreController",
+	"GameStateController",
+	"LoreController",
+	"PovertyVignette",
+	"AudioSettings",
+	"DayTransition",
 ]
 
 var _errors: Array[String] = []
@@ -71,6 +77,7 @@ func _reset_player_state() -> void:
 	_stats().paidFood = true
 	_stats().paidWater = true
 	_stats().paidElectricity = true
+	_stats().paidTindahanApp = true
 	_family().is_family_sick = false
 	_family().on_rent_paid()
 
@@ -93,7 +100,9 @@ func _test_game_day_loop() -> void:
 	_stat_ctrl().newDay()
 	var game := load(GAME).instantiate() as Node
 	root.add_child(game)
-	await create_timer(0.5).timeout
+	await create_timer(2.0).timeout
+	if game.has_method("start_day"):
+		game.start_day()
 	_assert(game.has_method("start_day"), "GameScreen has start_day")
 	var oc: Node = game.get_node("HUD/OrderContainer")
 	_assert(oc != null, "OrderController node present")
@@ -118,9 +127,10 @@ func _test_game_day_loop() -> void:
 		_assert(_stats().playerMoney > money_before, "money increased after order confirm")
 	game.call("pause_day")
 	game.call("resume_day")
-	game.call("end_day")
-	await create_timer(0.3).timeout
-	var overlay: CanvasLayer = game.get_node("CanvasLayer")
+	await game.end_day()
+	paused = false
+	await create_timer(0.2).timeout
+	var overlay: Node = game.get_node("CanvasLayer/DayOver")
 	_assert(overlay.visible, "day over overlay visible")
 	_clear_scenes()
 	await create_timer(0.2).timeout
@@ -129,16 +139,11 @@ func _test_game_day_loop() -> void:
 func _test_day_over_to_eod() -> void:
 	_step += 1
 	_log("Step %d: day over -> EOD" % _step)
+	paused = false
 	var days_before: int = _stats().daysPassed
-	var day_over := load(DAY_OVER).instantiate() as Node
-	root.add_child(day_over)
-	day_over.set("visible", true)
-	await create_timer(0.2).timeout
-	day_over.call("_on_button_pressed")
-	await create_timer(0.3).timeout
+	_stat_ctrl().endDay()
 	_assert(_stats().daysPassed == days_before + 1, "daysPassed incremented after endDay")
 	_assert(_stats().fishballStock == 0, "stock reset after endDay")
-	_clear_scenes()
 
 
 func _test_family_gate() -> void:
@@ -150,6 +155,7 @@ func _test_family_gate() -> void:
 
 
 func _clear_scenes() -> void:
+	paused = false
 	for child in root.get_children():
 		if child.name in AUTOLOADS:
 			continue

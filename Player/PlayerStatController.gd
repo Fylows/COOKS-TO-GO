@@ -105,6 +105,11 @@ func endDay() -> Array:
 	var loan_paid := LoanController.collect_payment()
 	FamilyStateController.process_end_of_day()
 	GameStateController.evaluate()
+	if GameStateController.is_game_over:
+		_build_night_report(loan_paid)
+		if not last_night_report.is_empty():
+			ScoreController.append_journal(last_night_report)
+		return []
 	roll_post_day()
 	apply_post_day_events()
 	_build_night_report(loan_paid)
