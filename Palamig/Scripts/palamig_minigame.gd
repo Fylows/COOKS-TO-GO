@@ -7,7 +7,7 @@ signal minigame_finished(earned: int, lost: int)
 
 enum Step { POUR, EMPTY }
 
-@export var target_fill: float = 85.0
+@export var target_fill: float = 72.0
 @export var target_variation: float = 8.0
 @export var fill_tolerance: float = 12.0
 @export var pour_rate: float = 75.0

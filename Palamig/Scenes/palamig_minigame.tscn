@@ -119,8 +119,8 @@ mouse_filter = 2
 custom_minimum_size = Vector2(90, 140)
 layout_mode = 2
 mouse_filter = 2
-fill_cavity_top = 0.0
-fill_cavity_bottom = 0.944
+fill_cavity_top = 0.13
+fill_cavity_bottom = 0.92
 fill_width_top_frac = 0.791
 fill_width_bottom_frac = 0.5
 
