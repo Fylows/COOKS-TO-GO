@@ -23,6 +23,19 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.18, 0.14, 0.11, 0.92)
 
+[node name="BackButton" type="Button" parent="."]
+z_index = 10
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -148.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = 44.0
+grow_horizontal = 0
+text = "Back to cart"
+
 [node name="CenterRoot" type="CenterContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -65,7 +78,7 @@ layout_mode = 2
 size_flags_vertical = 0
 
 [node name="WorkArea" type="Control" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost"]
-custom_minimum_size = Vector2(300, 340)
+custom_minimum_size = Vector2(280, 380)
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("2_visuals")
@@ -81,11 +94,9 @@ mouse_filter = 2
 
 [node name="TubArea" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 8.0
-offset_right = 204.0
-offset_bottom = 238.0
-theme_override_constants/separation = 6
+offset_right = 180.0
+offset_bottom = 248.0
+theme_override_constants/separation = 8
 mouse_filter = 2
 
 [node name="BigTub" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/TubArea" instance=ExtResource("3_vessel")]
@@ -100,17 +111,16 @@ fill_width_top_frac = 0.82
 fill_width_bottom_frac = 0.691
 
 [node name="Label" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/TubArea"]
+custom_minimum_size = Vector2(180, 20)
 layout_mode = 2
 text = "Palamig dispenser"
 horizontal_alignment = 1
 
 [node name="ServeArea" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
 layout_mode = 0
-offset_left = 155.0
-offset_top = 198.0
-offset_right = 245.0
-offset_bottom = 370.0
-theme_override_constants/separation = 4
+offset_right = 90.0
+offset_bottom = 168.0
+theme_override_constants/separation = 8
 mouse_filter = 2
 
 [node name="Cup" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/ServeArea" instance=ExtResource("3_vessel")]
@@ -123,6 +133,7 @@ fill_width_top_frac = 0.791
 fill_width_bottom_frac = 0.5
 
 [node name="Label" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/ServeArea"]
+custom_minimum_size = Vector2(90, 20)
 layout_mode = 2
 text = "Customer's cup"
 horizontal_alignment = 1
@@ -138,13 +149,17 @@ mouse_filter = 2
 
 [node name="Stream" type="Line2D" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/EffectsLayer"]
 visible = false
-width = 8.0
+width = 5.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
 default_color = Color(0.78, 0.45, 0.16, 0.95)
 
 [node name="FeedbackLabel" type="Label" parent="CenterRoot/MarginContainer/VBox"]
-custom_minimum_size = Vector2(460, 0)
+custom_minimum_size = Vector2(460, 32)
 layout_mode = 2
 size_flags_vertical = 0
+theme_override_constants/line_spacing = 4
 theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 1)
 text = "Serve the customer one cup."
 horizontal_alignment = 1

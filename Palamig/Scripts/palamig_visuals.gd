@@ -6,13 +6,17 @@ const TEX_JUG_OPEN := preload("res://Shared/Assets/Palamig/palamig_open.PNG")
 const TEX_JUG_BACK := preload("res://Shared/Assets/Palamig/palamig_back.PNG")
 const TEX_CUP_BACK := preload("res://Shared/Assets/Palamig/cup_back.PNG")
 const TEX_CUP_FRAME := preload("res://Shared/Assets/Palamig/cup.PNG")
-const JUG_TAP_UV := Vector2(0.9, 0.7)
-const CUP_RIM_UV := Vector2(0.5, 0.1)
 
+@onready var tub_area: VBoxContainer = $ContentRow/TubArea
+@onready var serve_area: VBoxContainer = $ContentRow/ServeArea
 @onready var jug: FillVessel = $ContentRow/TubArea/BigTub
 @onready var cup: FillVessel = $ContentRow/ServeArea/Cup
 @onready var effects: Control = $EffectsLayer
 @onready var stream: Line2D = $EffectsLayer/Stream
+
+const JUG_SIZE := Vector2(180, 220)
+const CUP_SIZE := Vector2(90, 140)
+const CUP_BELOW_TAP := 10.0
 
 var _game: Node
 
@@ -23,6 +27,18 @@ func _ready() -> void:
 	jug.set_frame_texture(TEX_JUG_CLOSED)
 	cup.set_back_texture(TEX_CUP_BACK)
 	cup.set_frame_texture(TEX_CUP_FRAME)
+	resized.connect(_layout_pour_scene)
+	_layout_pour_scene()
+
+
+func _layout_pour_scene() -> void:
+	var jug_x := (size.x - JUG_SIZE.x) * 0.5
+	tub_area.position = Vector2(jug_x, 0.0)
+
+	var tap_uv_x := lerpf(jug.tap_uv_min.x, jug.tap_uv_max.x, 0.65)
+	var tap_x := jug_x + JUG_SIZE.x * tap_uv_x
+	var tap_y := JUG_SIZE.y * jug.tap_uv_max.y
+	serve_area.position = Vector2(tap_x - CUP_SIZE.x * 0.5, tap_y + CUP_BELOW_TAP)
 
 
 func _process(_delta: float) -> void:
@@ -44,17 +60,12 @@ func _update_stream() -> void:
 		return
 	var inv := effects.get_global_transform().affine_inverse()
 	stream.default_color = COL_JUICE
-	var tap_tip := _global_uv(jug, JUG_TAP_UV)
-	var cup_rim := _global_uv(cup, CUP_RIM_UV)
+	var tap_tip := jug.tap_spout_global()
+	var cup_rim := cup.rim_global()
 	stream.points = PackedVector2Array([
 		inv * tap_tip,
 		inv * cup_rim,
 	])
-
-
-func _global_uv(vessel: Control, uv: Vector2) -> Vector2:
-	var rect := vessel.get_global_rect()
-	return rect.position + rect.size * uv
 
 
 func _find_minigame() -> Node:

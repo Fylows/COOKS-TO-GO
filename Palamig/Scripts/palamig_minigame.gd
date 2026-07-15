@@ -40,6 +40,7 @@ const CUP_ICON_TODO := preload("res://Shared/Assets/Palamig/cup.PNG")
 @onready var jug_value: Label = $CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/JugRow/JugHeader/Value
 @onready var jug_bar: ProgressBar = $CenterRoot/MarginContainer/VBox/StatsPanel/StatsMargin/StatsVBox/JugRow/JugBar
 @onready var jug: FillVessel = $CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/TubArea/BigTub
+@onready var back_button: Button = $BackButton
 
 var results_modal: ColorRect
 var results_label: Label
@@ -52,6 +53,7 @@ var sfx := {}
 func _ready() -> void:
 	_reset_session()
 	jug.gui_input.connect(_on_jug_input)
+	back_button.pressed.connect(_exit_to_game)
 	for s in ["pour", "serve", "waste", "sold_out"]:
 		var player := AudioStreamPlayer.new()
 		player.stream = load("res://Palamig/Assets/SFX/%s.wav" % s)
@@ -129,6 +131,16 @@ func _close_results() -> void:
 	minigame_finished.emit(total_money_earned, total_money_lost)
 
 
+func _exit_to_game() -> void:
+	if is_pouring:
+		is_pouring = false
+		sfx["pour"].stop()
+		cup_fill = 0.0
+	if results_modal and results_modal.visible:
+		results_modal.hide()
+	minigame_finished.emit(total_money_earned, total_money_lost)
+
+
 func _on_jug_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_start_pour()
@@ -139,6 +151,11 @@ func _input(event: InputEvent) -> void:
 		var clicked: bool = event is InputEventMouseButton and event.pressed
 		if clicked or (event.is_action_pressed("ui_accept") and not event.is_echo()):
 			_close_results()
+		elif event.is_action_pressed("ui_cancel") and not event.is_echo():
+			_close_results()
+		return
+	if event.is_action_pressed("ui_cancel") and not event.is_echo():
+		_exit_to_game()
 		return
 	# release can happen anywhere, not just over the jug
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
@@ -166,7 +183,7 @@ func jug_fill_ratio() -> float:
 
 func _start_pour() -> void:
 	if current_step == Step.EMPTY or cups_remaining <= 0:
-		feedback_label.text = "Jug is empty. Restock palamig."
+		feedback_label.text = "Out of palamig. Tap Back to return to orders."
 		return
 	cup_fill = 0.0
 	is_pouring = true

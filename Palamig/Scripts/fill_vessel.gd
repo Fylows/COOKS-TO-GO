@@ -96,6 +96,20 @@ func surface_global_y() -> float:
 	return (get_global_transform() * Vector2(_vessel_width() * 0.5, surface_norm * _vessel_height())).y
 
 
+func tap_spout_global() -> Vector2:
+	var uv := Vector2(lerpf(tap_uv_min.x, tap_uv_max.x, 0.65), tap_uv_max.y)
+	return _uv_global(uv)
+
+
+func rim_global() -> Vector2:
+	return _uv_global(Vector2(0.5, fill_cavity_top))
+
+
+func _uv_global(uv: Vector2) -> Vector2:
+	var rect := get_global_rect()
+	return rect.position + rect.size * uv
+
+
 func _apply_frame_layers() -> void:
 	var tap_rect := Vector4(tap_uv_min.x, tap_uv_min.y, tap_uv_max.x, tap_uv_max.y)
 	_frame_mat.set_shader_parameter("tap_uv_rect", tap_rect)
