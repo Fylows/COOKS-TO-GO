@@ -30,7 +30,7 @@ func _ready() -> void:
 		$ResourceGroup/VBoxContainer/Kikiam.visible = false
 func _process(delta: float) -> void:
 	position = base_position + camera.offset * parallax_strength
-	$Stats/Money.text = str(PlayerStats.playerMoney)
+	$Stats/Money.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	var text = ("Palamig: %s" % PlayerStats.palamigStock) if PlayerStats.palamigUP else ""
 	$Stats/Resources.text = "Fishball: %d\nKikiam: %d\nKwek-Kwek: %d\nSauce: %s\n%s" % [PlayerStats.fishballStock, PlayerStats.kikiamStock, PlayerStats.kwekwekStock, PlayerStats.boughtSauce, text]
 	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s" % [PlayerStats.palamigUP, PlayerStats.containerUP, PlayerStats.cookUP, PlayerStats.burnUP]
@@ -188,4 +188,4 @@ func _on_weather_btn_pressed() -> void:
 
 func _on_new_day_pressed() -> void:
 	PlayerStatController.newDay()
-	get_tree().change_scene_to_file("res://Screens/GameScreen.tscn")
+	get_tree().change_scene_to_file("res://Screens/Game/Scenes/GameScreen.tscn")

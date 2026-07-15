@@ -119,7 +119,10 @@ func _build_results_modal() -> void:
 
 
 func _show_results() -> void:
-	results_label.text = "SOLD OUT!\n\nEarned: P%d\nLost: P%d\n\nClick anywhere to continue" % [total_money_earned, total_money_lost]
+	results_label.text = "SOLD OUT!\n\nEarned: %s\nLost: %s\n\nClick anywhere to continue" % [
+		PlayerStatController.format_pesos(total_money_earned),
+		PlayerStatController.format_pesos(total_money_lost),
+	]
 	results_modal.visible = true
 	sfx["sold_out"].play()
 
@@ -199,14 +202,16 @@ func _stop_pour() -> void:
 		if order_cups_total > 0:
 			order_cups_served += 1
 			cup_fill = 0.0
-			feedback_label.text = "Cup %d/%d served! +P%d" % [order_cups_served, order_cups_total, sale_price]
+			feedback_label.text = "Cup %d/%d served! +%s" % [
+				order_cups_served, order_cups_total, PlayerStatController.format_pesos(sale_price)
+			]
 			if order_cups_served >= order_cups_total:
 				order_completed = true
 				_update_ui()
 				minigame_finished.emit(total_money_earned, total_money_lost)
 				return
 		else:
-			feedback_label.text = "Cup served! +P%d" % sale_price
+			feedback_label.text = "Cup served! +%s" % PlayerStatController.format_pesos(sale_price)
 	else:
 		total_money_lost += waste_cost
 		if stat_controller:
@@ -215,9 +220,9 @@ func _stop_pour() -> void:
 		palamig_wasted.emit(1)
 		sfx["waste"].play()
 		if spilled:
-			feedback_label.text = "Spilled! Cup overflowed (P%d lost)." % waste_cost
+			feedback_label.text = "Spilled! Cup overflowed (%s lost)." % PlayerStatController.format_pesos(waste_cost)
 		else:
-			feedback_label.text = "Wrong amount. One cup wasted (P%d lost)." % waste_cost
+			feedback_label.text = "Wrong amount. One cup wasted (%s lost)." % PlayerStatController.format_pesos(waste_cost)
 
 	if cups_remaining <= 0:
 		current_step = Step.EMPTY
@@ -251,8 +256,8 @@ func _update_ui() -> void:
 			step_label.text = "Fill one cup"
 			target_hint.text = "Hold the dispenser tap. Release at the cup's green line."
 
-	earned_value.text = "P%d" % total_money_earned
-	lost_value.text = "P%d" % total_money_lost
+	earned_value.text = PlayerStatController.format_pesos(total_money_earned)
+	lost_value.text = PlayerStatController.format_pesos(total_money_lost)
 	jug_bar.max_value = maxf(jug_capacity, 1)
 	jug_bar.value = cups_remaining
 	jug_value.text = "%d cups" % cups_remaining

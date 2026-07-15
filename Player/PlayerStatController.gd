@@ -1,5 +1,9 @@
 extends Node
 
+static func format_pesos(amount: int) -> String:
+	return "%d Pesos" % amount
+
+
 func addMoney(money: int) -> void:
 	PlayerStats.playerMoney += money
 

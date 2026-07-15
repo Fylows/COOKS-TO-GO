@@ -57,7 +57,10 @@ func _run() -> void:
 	assert(not game.results_modal.visible, "modal should hide on close")
 	assert(finished == [game.total_money_earned, game.total_money_lost],
 		"closing modal should emit minigame_finished")
-	print("AUTOPLAY OK. earned P%d, lost P%d" % [game.total_money_earned, game.total_money_lost])
+	print("AUTOPLAY OK. earned %s, lost %s" % [
+		PlayerStatController.format_pesos(game.total_money_earned),
+		PlayerStatController.format_pesos(game.total_money_lost),
+	])
 
 
 func _pour_until(target: float, mid_shot: String) -> void:
