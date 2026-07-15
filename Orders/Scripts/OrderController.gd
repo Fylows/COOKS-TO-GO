@@ -74,7 +74,7 @@ func create_order(days_passed: int) -> Order:
 		available_food.append_array(["kwekwek", "palamig"])
 
 	if days_passed >= 2:
-		available_food.append_array(["kikiam", "betamax"])
+		available_food.append_array(["kikiam"])
 
 	# Keep previous implementation as array of string for future scalability
 	var selected_food: Array[String] = [available_food.pick_random()]
@@ -82,7 +82,6 @@ func create_order(days_passed: int) -> Order:
 	var fishball_count : int = 0
 	var kwekwek_count : int = 0
 	var kikiam_count : int = 0
-	var betamax_count : int = 0
 	var palamig_count : int = 0
 
 	# Keep previous implementation for prasing selected_fooditem for scalability
@@ -96,8 +95,6 @@ func create_order(days_passed: int) -> Order:
 				kwekwek_count = quantity
 			"kikiam":
 				kikiam_count = quantity
-			"betamax":
-				betamax_count = quantity
 			"palamig":
 				palamig_count = quantity
 
@@ -112,7 +109,6 @@ func create_order(days_passed: int) -> Order:
 		fishball_count,
 		kwekwek_count,
 		kikiam_count,
-		betamax_count,
 		palamig_count
 	)
 	new_order.start_countdown(get_order_lifetime_seconds(days_passed))
@@ -143,7 +139,7 @@ func _remove_order(order: Order, on_removal_claimed: Callable = Callable()) -> b
 
 
 func confirm_order(order: Order) -> bool:
-	if not is_instance_valid(order) or order.is_queued_for_deletion() or not stats or not stat_controller or order.betamax_count > 0:
+	if not is_instance_valid(order) or order.is_queued_for_deletion() or not stats or not stat_controller:
 		return false
 
 	var needed := {

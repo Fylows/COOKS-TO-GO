@@ -12,7 +12,6 @@ const FOOD_TEXTURES: Dictionary = {
 	"fishball": preload("res://Shared/Assets/Fishball/Fishball_Cooked.png"),
 	"kwekwek": preload("res://Shared/Assets/Kwekwek/Kwekwek_Cooked.png"),
 	"kikiam": preload("res://Shared/Assets/Kikiam/Kikiam_Cooked.png"),
-	"betamax": preload("res://Shared/Assets/Betamax/Betamax_Cooked.png"),
 	"palamig": preload("res://Shared/Assets/Palamig/Palamig.png")
 }
 
@@ -26,7 +25,6 @@ const COUNTDOWN_RED: Color = Color(0.9, 0.18, 0.14)
 var fishball_count : int = 0
 var kwekwek_count : int = 0
 var kikiam_count : int = 0
-var betamax_count : int = 0
 var palamig_count : int = 0
 var fade_tween: Tween
 var countdown_lifetime_seconds: float = 0.0
@@ -57,11 +55,10 @@ func _process(delta: float) -> void:
 
 
 ## Create order instance
-func setup_order(fb: int, kk: int, ki: int, bm: int, pal: int) -> void:
+func setup_order(fb: int, kk: int, ki: int, pal: int) -> void:
 	fishball_count = fb
 	kwekwek_count = kk
 	kikiam_count = ki
-	betamax_count = bm
 	palamig_count = pal
 	
 	update_order_card_ui()
@@ -80,9 +77,6 @@ func update_order_card_ui() -> void:
 	if kikiam_count > 0:
 		lines.append("%d Kikiam" % kikiam_count)
 		food_sprite.texture = FOOD_TEXTURES["kikiam"]
-	if betamax_count > 0:
-		lines.append("%d Betamax" % betamax_count)
-		food_sprite.texture = FOOD_TEXTURES["betamax"]
 	if palamig_count > 0:
 		lines.append("%d Palamig" % palamig_count)
 		food_sprite.texture = FOOD_TEXTURES["palamig"]
