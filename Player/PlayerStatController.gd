@@ -127,9 +127,9 @@ func weather_title() -> String:
 func weather_effect_blurb() -> String:
 	match weather_key():
 		"willRain":
-			return "fewer customers today"
+			return "fewer customers"
 		"awasan":
-			return "busier today · more palamig"
+			return "busier · more palamig"
 		"none":
 			return "normal foot traffic"
 		_:
@@ -168,10 +168,11 @@ func _refresh_morning_forecast() -> void:
 		morning_forecast = ""
 		return
 	var blurb := weather_effect_blurb()
+	# Shown on EOD overnight: this is the NEXT stall open, not the day you just closed.
 	if blurb.is_empty():
-		morning_forecast = "Stall today · %s" % weather_title()
+		morning_forecast = "Next stall · %s" % weather_title()
 	else:
-		morning_forecast = "Stall today · %s · %s" % [weather_title(), blurb]
+		morning_forecast = "Next stall · %s · %s" % [weather_title(), blurb]
 
 
 func morning_briefing_lines() -> PackedStringArray:
