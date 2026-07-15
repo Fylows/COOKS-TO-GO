@@ -1,6 +1,7 @@
 extends Node2D
 
 const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
+const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
 const SHOP_TEXT := Color(0.92, 0.95, 1.0)
 const SHOP_PRICE := Color(1.0, 0.86, 0.42)
 const SHOP_BTN_BG := Color(0.14, 0.36, 0.58)
@@ -1120,7 +1121,7 @@ func _wire_app_icon_hover(btn: TextureButton) -> void:
 		_set_app_icon_hover(btn, base_scale, false)
 	)
 	btn.button_down.connect(func() -> void:
-		UiMotion.kill(btn.get_meta("_ui_hover_tween", null))
+		UiMotion._kill_meta(btn, &"_ui_hover_tween")
 		btn.scale = base_scale * 0.94
 		btn.modulate = Color(0.82, 0.82, 0.82, 1.0)
 	)

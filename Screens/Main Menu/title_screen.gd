@@ -1,6 +1,7 @@
 extends Node2D
 
 const EndingBank := preload("res://Player/EndingBank.gd")
+const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
 
 @onready var name_field: LineEdit = $UiLayer/CenterRoot/Column/NamePanel/VBox/NameField
 @onready var hint_label: Label = $UiLayer/CenterRoot/Column/NamePanel/VBox/HintLabel
