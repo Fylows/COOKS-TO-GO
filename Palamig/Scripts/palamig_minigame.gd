@@ -35,7 +35,6 @@ var results_modal: ColorRect
 var results_label: Label
 var sfx := {}
 
-# autoloads from the end_of_day branch, null until that lands on main
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
 @onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
 
