@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dmscxvdcf2qke" path="res://Screens/Assets/cart_main.PNG" id="2_b7a1e"]
 [ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="3_q7e6u"]
 [ext_resource type="Script" uid="uid://d25bth6dg3orq" path="res://Screens/GameScreen.gd" id="4_gamescreen"]
+[ext_resource type="PackedScene" uid="uid://cnt482x3sc0bc" path="res://Screens/Day Over/Scenes/day_over.tscn" id="5_nvp4f"]
 
 [node name="GameScreen" type="Node2D" unique_id=333561420]
 script = ExtResource("4_gamescreen")
@@ -30,4 +31,16 @@ position = Vector2(948, 540)
 script = ExtResource("3_q7e6u")
 deadZone = 125
 
+[node name="Button" type="Button" parent="." unique_id=1122267757]
+offset_left = 208.0
+offset_top = 1021.0
+offset_right = 278.0
+offset_bottom = 1052.0
+text = "end day"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1490396313]
+
+[node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_nvp4f")]
+
 [connection signal="pressed" from="HUD/PalamigBtn" to="." method="_on_palamig_btn_pressed"]
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

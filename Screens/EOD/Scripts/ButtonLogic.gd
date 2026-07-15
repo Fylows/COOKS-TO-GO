@@ -14,6 +14,7 @@ var base_position: Vector2
 var categories: Dictionary
 
 func _ready() -> void:
+	get_tree().paused = false
 	camera = get_node(camera_path)
 	base_position = position
 	categories = {

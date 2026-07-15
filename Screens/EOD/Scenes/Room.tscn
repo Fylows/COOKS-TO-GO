@@ -58,7 +58,6 @@ text = "Misc."
 metadata/_edit_use_anchors_ = true
 
 [node name="ResourceGroup" type="CanvasGroup" parent="Node2D" unique_id=494400270]
-visible = false
 position = Vector2(5, -13)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/ResourceGroup" unique_id=511594472]
@@ -187,6 +186,7 @@ layout_mode = 2
 text = "Buy"
 
 [node name="UpgradesGroup" type="CanvasGroup" parent="Node2D" unique_id=906747410]
+visible = false
 position = Vector2(5, -7)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/UpgradesGroup" unique_id=982042350]
