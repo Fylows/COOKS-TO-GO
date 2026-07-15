@@ -14,6 +14,7 @@ const ORDER_LIFETIME_DECREASE: float = 2.0
 const ORDER_LIFETIME_DECREASE_INTERVAL: int = 3
 
 var order_slots: Array[Control] = []
+var removing_order_ids: Dictionary = {}
 
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
 @onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
@@ -73,7 +74,7 @@ func create_order(days_passed: int) -> Order:
 		available_food.append_array(["kwekwek", "palamig"])
 
 	if days_passed >= 2:
-		available_food.append("kikiam")
+		available_food.append_array(["kikiam", "betamax"])
 
 	# Keep previous implementation as array of string for future scalability
 	var selected_food: Array[String] = [available_food.pick_random()]
@@ -118,8 +119,31 @@ func create_order(days_passed: int) -> Order:
 	
 	return new_order
 
+func _remove_order(order: Order, on_removal_claimed: Callable = Callable()) -> bool:
+	if not is_instance_valid(order) or order.is_queued_for_deletion():
+		return false
+
+	var order_id: int = order.get_instance_id()
+	if removing_order_ids.has(order_id):
+		return false
+
+	removing_order_ids[order_id] = true
+
+	if on_removal_claimed.is_valid():
+		on_removal_claimed.call()
+
+	await order.fade_out()
+
+	if is_instance_valid(order) and not order.is_queued_for_deletion():
+		order.queue_free()
+		await get_tree().process_frame
+
+	removing_order_ids.erase(order_id)
+	return true
+
+
 func confirm_order(order: Order) -> bool:
-	if not stats or not stat_controller or order.betamax_count > 0:
+	if not is_instance_valid(order) or order.is_queued_for_deletion() or not stats or not stat_controller or order.betamax_count > 0:
 		return false
 
 	var needed := {
@@ -132,8 +156,6 @@ func confirm_order(order: Order) -> bool:
 	for stock_var: String in needed:
 		if stats.get(stock_var) < needed[stock_var]:
 			return false
-	for stock_var: String in needed:
-		stats.set(stock_var, stats.get(stock_var) - needed[stock_var])
 
 	var total_items: int = (
 		order.fishball_count
@@ -141,16 +163,17 @@ func confirm_order(order: Order) -> bool:
 		+ order.kikiam_count
 		+ order.palamig_count
 	)
-	stat_controller.addMoney(total_items * SELL_PRICE_PER_ITEM)
 
-	await order.fade_out()
-	order.queue_free()
-	return true
+	var complete_order_sale := func() -> void:
+		for stock_var: String in needed:
+			stats.set(stock_var, stats.get(stock_var) - needed[stock_var])
+		stat_controller.addMoney(total_items * SELL_PRICE_PER_ITEM)
+
+	return await _remove_order(order, complete_order_sale)
 
 
 func cancel_order(order: Order) -> void:
-	await order.fade_out()
-	order.queue_free()
+	await _remove_order(order)
 
 
 func _on_order_expired(order: Order) -> void:
@@ -158,11 +181,10 @@ func _on_order_expired(order: Order) -> void:
 
 
 func expire_order(order: Order) -> void:
-	if not is_instance_valid(order):
-		return
+	await _remove_order(order)
 
-	await order.fade_out()
-	order.queue_free()
+func start_order_spawning() -> void:
+	pass
 
 # Quick test
 func _ready() -> void:

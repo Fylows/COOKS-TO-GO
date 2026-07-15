@@ -32,6 +32,7 @@ var fade_tween: Tween
 var countdown_lifetime_seconds: float = 0.0
 var countdown_remaining_seconds: float = 0.0
 var countdown_active: bool = false
+var countdown_fill_style: StyleBoxFlat = StyleBoxFlat.new()
 
 
 @onready var order_label: Label = $MarginContainer/VBoxContainer/Label
@@ -46,6 +47,7 @@ func _ready() -> void:
 	modulate.a = 0.0
 	fade_tween = create_tween()
 	fade_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
+	countdown_bar.add_theme_stylebox_override("fill", countdown_fill_style)
 	update_countdown_bar()
 
 
@@ -112,7 +114,7 @@ func update_countdown(delta: float) -> void:
 func update_countdown_bar() -> void:
 	var ratio: float = get_countdown_ratio()
 	countdown_bar.value = ratio * countdown_bar.max_value
-	countdown_bar.add_theme_stylebox_override("fill", _get_countdown_fill_style(ratio))
+	countdown_fill_style.bg_color = _get_countdown_fill_color(ratio)
 
 
 func get_countdown_ratio() -> float:
@@ -122,17 +124,13 @@ func get_countdown_ratio() -> float:
 	return clampf(countdown_remaining_seconds / countdown_lifetime_seconds, 0.0, 1.0)
 
 
-func _get_countdown_fill_style(ratio: float) -> StyleBoxFlat:
-	var fill_style: StyleBoxFlat = StyleBoxFlat.new()
-
+func _get_countdown_fill_color(ratio: float) -> Color:
 	if ratio > 0.6:
-		fill_style.bg_color = COUNTDOWN_GREEN
+		return COUNTDOWN_GREEN
 	elif ratio > 0.25:
-		fill_style.bg_color = COUNTDOWN_YELLOW
-	else:
-		fill_style.bg_color = COUNTDOWN_RED
+		return COUNTDOWN_YELLOW
 
-	return fill_style
+	return COUNTDOWN_RED
 
 
 func fade_out() -> void:
