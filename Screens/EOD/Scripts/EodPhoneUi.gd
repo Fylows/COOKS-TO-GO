@@ -218,10 +218,25 @@ static func _fix_shop_row(row: HBoxContainer) -> void:
 	if buy_btn:
 		buy_btn.custom_minimum_size = Vector2(76, 30)
 		buy_btn.add_theme_font_size_override("font_size", 15)
-		buy_btn.add_theme_stylebox_override("normal", _buy_style)
-		buy_btn.add_theme_stylebox_override("hover", _buy_style)
-		buy_btn.add_theme_stylebox_override("pressed", _buy_disabled)
-		buy_btn.add_theme_stylebox_override("disabled", _buy_disabled)
+		_apply_button_styles(buy_btn, _buy_style, _buy_disabled)
+
+
+static func _apply_button_styles(
+	button: Button,
+	normal: StyleBoxFlat,
+	disabled: StyleBoxFlat = null,
+) -> void:
+	var hover := normal.duplicate() as StyleBoxFlat
+	hover.bg_color = normal.bg_color.lightened(0.16)
+	hover.border_color = normal.border_color.lightened(0.12)
+	var pressed := normal.duplicate() as StyleBoxFlat
+	pressed.bg_color = normal.bg_color.darkened(0.1)
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+	if disabled:
+		button.add_theme_stylebox_override("disabled", disabled)
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 
 static func _style_tabs(phone: Node2D, active_key: String) -> void:
@@ -234,14 +249,17 @@ static func _style_tabs(phone: Node2D, active_key: String) -> void:
 			var btn := child as Button
 			var key: String = TAB_KEYS.get(btn.text, "")
 			var is_active := key == active_key
-			btn.add_theme_stylebox_override("normal", _tab_active if is_active else _tab_normal)
-			btn.add_theme_stylebox_override("hover", _tab_active if is_active else _tab_normal)
-			btn.add_theme_stylebox_override("pressed", _tab_active)
+			var normal := _tab_active if is_active else _tab_normal
+			_apply_button_styles(btn, normal)
+			if is_active:
+				# Keep active tab bright on hover too.
+				btn.add_theme_stylebox_override("hover", _tab_active)
 			btn.add_theme_font_size_override("font_size", 15)
 			btn.add_theme_color_override(
 				"font_color",
 				Color(1, 0.92, 0.55) if is_active else Color(0.82, 0.88, 1)
 			)
+			btn.add_theme_color_override("font_hover_color", Color(1, 0.94, 0.7))
 
 
 static func _add_section_titles(phone: Node2D) -> void:
@@ -273,11 +291,10 @@ static func _style_new_day_button(phone: Node2D) -> void:
 	btn.text = "▶  START NEW DAY"
 	btn.custom_minimum_size = Vector2(200, 36)
 	btn.position = Vector2(-210, 4)
-	btn.add_theme_stylebox_override("normal", _cta_style)
-	btn.add_theme_stylebox_override("hover", _cta_style)
-	btn.add_theme_stylebox_override("pressed", _cta_style)
+	_apply_button_styles(btn, _cta_style)
 	btn.add_theme_font_size_override("font_size", 16)
 	btn.add_theme_color_override("font_color", Color(1, 0.96, 0.82))
+	btn.add_theme_color_override("font_hover_color", Color(1, 1, 0.92))
 
 
 static func _style_restart_button(phone: Node2D) -> void:
@@ -290,11 +307,10 @@ static func _style_restart_button(phone: Node2D) -> void:
 	var restart_style := _cta_style.duplicate() as StyleBoxFlat
 	restart_style.bg_color = Color(0.18, 0.22, 0.34, 1)
 	restart_style.border_color = Color(0.75, 0.82, 0.95, 1)
-	btn.add_theme_stylebox_override("normal", restart_style)
-	btn.add_theme_stylebox_override("hover", restart_style)
-	btn.add_theme_stylebox_override("pressed", restart_style)
+	_apply_button_styles(btn, restart_style)
 	btn.add_theme_font_size_override("font_size", 16)
 	btn.add_theme_color_override("font_color", Color(0.92, 0.96, 1))
+	btn.add_theme_color_override("font_hover_color", Color(1, 0.94, 0.7))
 	btn.disabled = false
 
 

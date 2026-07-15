@@ -44,22 +44,32 @@ func _make_button_style(on: bool) -> StyleBoxFlat:
 	return style
 
 
+func _apply_button_styles(button: Button, normal: StyleBoxFlat) -> void:
+	var hover := normal.duplicate() as StyleBoxFlat
+	hover.bg_color = normal.bg_color.lightened(0.18)
+	hover.border_color = normal.border_color.lightened(0.12)
+	var pressed := normal.duplicate() as StyleBoxFlat
+	pressed.bg_color = normal.bg_color.darkened(0.1)
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+
 func _refresh_button(button: Button, label: String, on: bool) -> void:
 	button.text = "%s: %s" % [label, "On" if on else "Off"]
 	button.add_theme_color_override("font_color", LABEL_ON if on else LABEL_OFF)
 	button.add_theme_color_override("font_hover_color", LABEL_ON)
 	button.add_theme_color_override("font_pressed_color", LABEL_ON)
-	var style := _make_button_style(on)
-	button.add_theme_stylebox_override("normal", style)
-	button.add_theme_stylebox_override("hover", style)
-	button.add_theme_stylebox_override("pressed", style)
+	_apply_button_styles(button, _make_button_style(on))
 
 
 func _add_toggle(label: String, pressed: bool, setter: Callable) -> void:
 	var button := Button.new()
 	button.focus_mode = Control.FOCUS_NONE
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
-	button.custom_minimum_size = Vector2(160, 44)
+	button.custom_minimum_size = Vector2(176, 44)
+	button.clip_text = false
 	button.add_theme_font_size_override("font_size", 20)
 	button.set_meta("enabled", pressed)
 	_refresh_button(button, label, pressed)
