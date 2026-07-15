@@ -1,6 +1,11 @@
 extends Control
 
+<<<<<<< HEAD
+var _continuing: bool = false
+var _ready_done := false
+=======
 const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
+>>>>>>> origin/main
 
 var _continuing: bool = false
 var lore_feed: Label
@@ -16,8 +21,14 @@ var lore_feed: Label
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+<<<<<<< HEAD
+	_ready_done = true
+	if visible: 
+		_on_visibility_changed()
+=======
 	lore_feed = LoreFeedBar.ensure(self, "LoreFeed")
 
+>>>>>>> origin/main
 
 func _on_button_pressed() -> void:
 	if _continuing:
@@ -38,7 +49,7 @@ func _on_continue_mouse_entered() -> void:
 
 
 func _on_visibility_changed() -> void:
-	if not visible:
+	if not visible or not _ready_done:
 		return
 	if not is_node_ready():
 		call_deferred("_present_summary")

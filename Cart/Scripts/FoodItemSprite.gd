@@ -39,3 +39,5 @@ func _on_area_2d_input_event(_viewport, event, _shape_idx) -> void:
 			if screen.get("_day_paused") == true:
 				return
 		cooking_controller.on_food_clicked(self)
+
+# test

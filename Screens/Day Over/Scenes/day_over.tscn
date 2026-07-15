@@ -199,11 +199,11 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="VBox" type="VBoxContainer" parent="PanelContainer"]
+[node name="VBox" type="VBoxContainer" parent="PanelContainer" unique_id=1433029201]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="TitleLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="TitleLabel" type="Label" parent="PanelContainer/VBox" unique_id=1145757690]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
 theme_override_font_sizes/font_size = 38
@@ -224,7 +224,7 @@ theme_override_font_sizes/font_size = 14
 text = "WALLET"
 horizontal_alignment = 1
 
-[node name="MoneyLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="MoneyLabel" type="Label" parent="PanelContainer/VBox" unique_id=648440814]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.45, 1)
 theme_override_font_sizes/font_size = 42
@@ -245,7 +245,7 @@ theme_override_font_sizes/font_size = 16
 text = "STOCK LEFT"
 horizontal_alignment = 1
 
-[node name="StockLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="StockLabel" type="Label" parent="PanelContainer/VBox" unique_id=1724236454]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 19

@@ -1,28 +1,28 @@
 [gd_scene format=3 uid="uid://crbte2p67k7gm"]
 
-[ext_resource type="Texture2D" uid="uid://d31pi7ubsqcdu" path="res://Shared/Assets/Betamax/Betamax_CookingAnim.png" id="2_1v2nt"]
+[ext_resource type="Texture2D" uid="uid://c1uiqf6s3cfxb" path="res://Shared/Assets/Betamax/Betamax_CookingAnim.png" id="2_1v2nt"]
 [ext_resource type="Script" uid="uid://c7up1xnf6y8ll" path="res://Cart/Scripts/FoodItemSprite.gd" id="2_b2rbm"]
 [ext_resource type="Texture2D" uid="uid://bxkadr74ddxh7" path="res://Shared/Assets/Fishball/Fishball_CookingAnim.png" id="3_jmls6"]
 [ext_resource type="Texture2D" uid="uid://bys62heummqiw" path="res://Shared/Assets/Kikiam/Kikiam_CookingAnim.png" id="4_tdvvd"]
-[ext_resource type="Texture2D" uid="uid://btwxlqd0g8kgw" path="res://Shared/Assets/Kwekwek/Kwekwek_CookingAnim.png" id="5_wedub"]
+[ext_resource type="Texture2D" uid="uid://canwap6ma5prx" path="res://Shared/Assets/Kwekwek/Kwekwek_CookingAnim.png" id="5_wedub"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_iwykn"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_1v2nt"]
 atlas = ExtResource("2_1v2nt")
 region = Rect2(0, 0, 1024, 1024)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_48fa6"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_jmls6"]
 atlas = ExtResource("2_1v2nt")
 region = Rect2(1024, 0, 1024, 1024)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_as17k"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_tdvvd"]
 atlas = ExtResource("2_1v2nt")
 region = Rect2(2048, 0, 1024, 1024)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_qopn6"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_wedub"]
 atlas = ExtResource("2_1v2nt")
 region = Rect2(3072, 0, 1024, 1024)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_wrdgb"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_iwykn"]
 atlas = ExtResource("2_1v2nt")
 region = Rect2(4096, 0, 1024, 1024)
 
@@ -90,19 +90,19 @@ region = Rect2(4096, 0, 1024, 1024)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_1v2nt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jmls6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tdvvd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wedub")
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_iwykn")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_48fa6")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_as17k")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qopn6")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_wrdgb")
 }],
 "loop": 1,
 "name": &"betamax_cooking",
@@ -181,8 +181,8 @@ script = ExtResource("2_b2rbm")
 position = Vector2(155, 156)
 scale = Vector2(0.3, 0.3)
 sprite_frames = SubResource("SpriteFrames_n2fls")
-animation = &"kikiam_cooking"
-frame_progress = 0.893656
+animation = &"kwekwek_cooking"
+frame_progress = 0.2040116
 speed_scale = 0.75
 
 [node name="FoodItemSprite" type="Sprite2D" parent="." unique_id=1390722012]
@@ -203,11 +203,12 @@ anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-offset_left = -5.650009
-offset_top = -1.5
-offset_right = 42.34999
-offset_bottom = 25.5
+offset_left = 24.0
+offset_top = 130.00002
+offset_right = 124.0
+offset_bottom = 158.00002
 grow_horizontal = 2
 grow_vertical = 2
+scale = Vector2(2.4570682, 1.7399197)
 
 [connection signal="input_event" from="FoodItemSprite/Area2D" to="." method="_on_area_2d_input_event"]

@@ -18,7 +18,12 @@ const START_KWEKWEK := 10
 var fishballStock : int = START_FISHBALL
 var kwekwekStock : int = START_KWEKWEK
 var kikiamStock : int = 0
+<<<<<<< HEAD
+var betamaxStock: int = 0
+var boughtSauce : bool = false
+=======
 var boughtSauce : bool = true
+>>>>>>> origin/main
 var palamigStock : int = 0
 
 var kikiamPurchasable : bool = daysPassed >= 2
