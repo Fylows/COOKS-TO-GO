@@ -15,12 +15,16 @@ const FOOD_TEXTURES: Dictionary = {
 	"palamig": preload("res://Shared/Assets/Palamig/Palamig.png")
 }
 
+const FADE_IN_DURATION: float = 0.25
+const FADE_OUT_DURATION: float = 0.25
+
 # FOOD ITEMS
 var fishball_count : int = 0
 var kwekwek_count : int = 0
 var kikiam_count : int = 0
 var betamax_count : int = 0
 var palamig_count : int = 0
+var fade_tween: Tween
 
 
 @onready var order_label: Label = $MarginContainer/VBoxContainer/Label
@@ -28,6 +32,14 @@ var palamig_count : int = 0
 
 @onready var confirm_button: TextureButton = $MarginContainer/VBoxContainer/ButtonContainer/ConfirmButton
 @onready var cancel_button: TextureButton = $MarginContainer/VBoxContainer/ButtonContainer/CancelButton
+
+
+func _ready() -> void:
+	modulate.a = 0.0
+	fade_tween = create_tween()
+	fade_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
+
+
 ## Create order instance
 func setup_order(fb: int, kk: int, ki: int, bm: int, pal: int) -> void:
 	fishball_count = fb
@@ -62,6 +74,18 @@ func update_order_card_ui() -> void:
 	order_label.text = "\n".join(lines)
 	food_sprite.show()
 	
+
+func fade_out() -> void:
+	confirm_button.disabled = true
+	cancel_button.disabled = true
+
+	if fade_tween != null and fade_tween.is_valid():
+		fade_tween.kill()
+
+	fade_tween = create_tween()
+	fade_tween.tween_property(self, "modulate:a", 0.0, FADE_OUT_DURATION)
+	await fade_tween.finished
+
 	
 func _on_confirm_button_pressed() -> void:
 	confirm_requested.emit(self)

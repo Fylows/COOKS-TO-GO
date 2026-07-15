@@ -98,22 +98,27 @@ func confirm_order(order: Order) -> bool:
 	)
 	stat_controller.addMoney(total_items * SELL_PRICE_PER_ITEM)
 
+	await order.fade_out()
 	order.queue_free()
 	return true
 
 
 func cancel_order(order: Order) -> void:
+	await order.fade_out()
 	order.queue_free()
 
 # Quick test
 func _ready() -> void:
 	var order0: Order = create_order(0)
+	await get_tree().create_timer(1.0).timeout
 	var order1: Order = create_order(1)
+	await get_tree().create_timer(1.0).timeout
 	var order2: Order = create_order(2)
-	
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(1.0).timeout
 	cancel_order(order0)
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(1.0).timeout
 	var order3: Order = create_order(3)
+	await get_tree().create_timer(1.0).timeout
 	var order4: Order = create_order(3)
+	await get_tree().create_timer(1.0).timeout
 	var order5: Order = create_order(1000)
