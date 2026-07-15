@@ -49,6 +49,7 @@ func _roll_sickness() -> void:
 		return
 	if randf() < sick_risk:
 		is_family_sick = true
+		PlayerStats.paidMedicine = false
 		PlayerStats.post_day_events["sickChild"].active = true
 		family_sick.emit()
 

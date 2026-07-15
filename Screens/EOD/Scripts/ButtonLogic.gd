@@ -133,10 +133,9 @@ func _refresh_wallet_hud() -> void:
 		]
 	wallet_balance_label.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	if wallet_earned_label:
-		if ScoreController.today_earned > 0:
-			wallet_earned_label.text = "Today: +%s" % PlayerStatController.format_pesos(
-				ScoreController.today_earned
-			)
+		var earned := ScoreController.earnings_for_display()
+		if earned > 0:
+			wallet_earned_label.text = "Today: +%s" % PlayerStatController.format_pesos(earned)
 			wallet_earned_label.add_theme_color_override("font_color", Color(0.45, 0.92, 0.55))
 		else:
 			wallet_earned_label.text = "Today: +0 Pesos"
