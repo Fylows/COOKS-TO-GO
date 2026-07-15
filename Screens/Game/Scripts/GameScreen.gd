@@ -371,12 +371,19 @@ func _flash_weather_banner() -> void:
 		return
 	if _weather_banner_tween and _weather_banner_tween.is_valid():
 		_weather_banner_tween.kill()
+	weather_banner.reset_size()
+	weather_banner.pivot_offset = weather_banner.size * 0.5
 	weather_banner.modulate.a = 0.0
+	weather_banner.scale = Vector2(0.94, 0.94)
 	_weather_banner_tween = create_tween()
 	_weather_banner_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_weather_banner_tween.set_parallel(true)
 	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 1.0, 0.25)
-	_weather_banner_tween.tween_interval(3.2)
-	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 0.0, 0.45)
+	_weather_banner_tween.tween_property(weather_banner, "scale", Vector2.ONE, 0.25)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_weather_banner_tween.set_parallel(false)
+	_weather_banner_tween.tween_interval(3.0)
+	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 0.0, 0.4)
 
 
 func hold_weather_banner() -> void:
