@@ -1,6 +1,28 @@
 extends Node2D
 
-const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
+const SHOP_TEXT := Color(0.1, 0.12, 0.2)
+const SHOP_PRICE := Color(0.05, 0.34, 0.52)
+const SHOP_BTN_BG := Color(0.14, 0.36, 0.58)
+const SHOP_BTN_DISABLED := Color(0.55, 0.58, 0.64)
+const STATS_TEXT := Color(0.95, 0.97, 1.0)
+const PHONE_PANEL_LEFT := -238.0
+const PHONE_PANEL_WIDTH := 253.0
+const PHONE_CONTENT_BOTTOM := 132.0
+const SHOP_VBOX_LEFT := PHONE_PANEL_LEFT
+const SHOP_VBOX_RIGHT := PHONE_PANEL_LEFT + PHONE_PANEL_WIDTH
+const SHOP_ROW_WIDTH := PHONE_PANEL_WIDTH
+const WALLET_Y := -590.0
+const WALLET_TAB_GAP := 8.0
+const TAB_HEADER_HEIGHT := 36.0
+const PHONE_TABS_Y := -330.0
+const PHONE_FONT_CAPTION := 14
+const PHONE_FONT_BODY := 18
+const PHONE_FONT_BALANCE := 40
+const PHONE_FONT_WARNING := 18
+const PHONE_FONT_SHOP := 18
+const PHONE_FONT_PRICE := 17
+const PHONE_FONT_BTN := 16
+const PHONE_FONT_TAB := 20
 
 @export var parallax_strength: float = 1.5  # >1 = moves more than camera (feels closer)
 @export var camera_path: NodePath
@@ -17,10 +39,24 @@ var base_position: Vector2
 var page : CanvasGroup
 var categories: Dictionary
 var new_day_hint: Label
-var lore_feed: Label
+var new_day_hint_pill: PanelContainer
+var back_button: Button
+var tab_header: HBoxContainer
+var tab_title_label: Label
+var wallet_hud: PanelContainer
+var wallet_meta_label: Label
+var wallet_balance_label: Label
+var wallet_earned_label: Label
+var bed_action_caption: PanelContainer
+var bed_action_label: Label
+var stock_hud: PanelContainer
+var stock_hud_label: Label
+var restart_button: Button
 
 func _ready() -> void:
 	get_tree().paused = false
+	if not DayTransition.is_fade_in_pending():
+		DayTransition.release_input()
 	PlayerStats.ensure_player_name()
 	BgmController.play_track("eod")
 	page = home
@@ -33,57 +69,78 @@ func _ready() -> void:
 		"misc": misc
 	}
 	go_home(page)
-	if (PlayerStats.get("palamigUP") != true):
-		$ResourceGroup/VBoxContainer/Palamig.visible = false
-	if (PlayerStats.kikiamPurchasable != true):
+	update_resource_visibility()
+	if not PlayerStats.kikiamPurchasable:
 		$ResourceGroup/VBoxContainer/Kikiam.visible = false
 	_refresh_loan_btn()
 	_refresh_sbatter_btn()
 	_refresh_tindahan_app_btn()
 	_refresh_shop_lock_state()
 	_wire_button_sfx(self)
+	_setup_phone_ui()
 	_setup_new_day_hint()
+	_setup_bed_button_caption()
+	_setup_stock_hud()
+	_setup_restart_hud()
 	_setup_meta_labels()
-	lore_feed = LoreFeedBar.ensure($Stats, "LoreFeed")
 	if DayTransition.consume_fade_in():
 		call_deferred("_fade_in_after_transition")
 	call_deferred("_check_game_over")
 
 
 func _check_game_over() -> void:
-	GameStateController.evaluate()
+	if GameStateController.evaluate():
+		_present_game_over()
+
+
+func _present_game_over() -> void:
+	if page != home:
+		go_home(page)
+	if new_day_hint_pill:
+		new_day_hint_pill.visible = false
 
 
 func _fade_in_after_transition() -> void:
-	await DayTransition.fade_from_black(0.45)
+	await DayTransition.fade_from_black(0.2)
 
 func _process(delta: float) -> void:
 	position = base_position + camera.offset * parallax_strength
+	_refresh_wallet_hud()
 	if page == home:
 		update_stats_display()
+	_refresh_stock_hud()
 	_refresh_shop_state()
 
 func update_stats_display() -> void:
+	_refresh_wallet_hud()
+
+
+func _refresh_wallet_hud() -> void:
+	if wallet_meta_label == null or wallet_balance_label == null:
+		return
 	var loan_line := LoanController.status_text()
-	var lines: PackedStringArray = PackedStringArray([
-		PlayerStats.player_name,
-		"Day %d" % PlayerStatController.current_day_number(),
-		PlayerStatController.format_pesos(PlayerStats.playerMoney),
-	])
-	if not loan_line.is_empty():
-		lines.append(loan_line)
-	lines.append("Fishball: %d" % PlayerStats.fishballStock)
-	lines.append("Kikiam: %d" % PlayerStats.kikiamStock)
-	lines.append("Kwek-Kwek: %d" % PlayerStats.kwekwekStock)
-	lines.append("Sauce: %s" % PlayerStatController.format_stocked(PlayerStats.boughtSauce))
-	if PlayerStats.palamigUP:
-		lines.append("Palamig: %d" % PlayerStats.palamigStock)
-	lines.append(ScoreController.format_run_stats())
-	var last_night := ScoreController.format_last_night()
-	if not last_night.is_empty():
-		lines.append(last_night)
-	$Stats/Money.text = "\n".join(lines)
-	LoreFeedBar.refresh(lore_feed)
+	if loan_line.is_empty():
+		wallet_meta_label.text = "%s · Day %d" % [
+			PlayerStats.player_name,
+			PlayerStatController.current_day_number(),
+		]
+	else:
+		wallet_meta_label.text = "%s · Day %d · %s" % [
+			PlayerStats.player_name,
+			PlayerStatController.current_day_number(),
+			loan_line,
+		]
+	wallet_balance_label.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
+	if wallet_earned_label:
+		if ScoreController.today_earned > 0:
+			wallet_earned_label.text = "Today: +%s" % PlayerStatController.format_pesos(
+				ScoreController.today_earned
+			)
+			wallet_earned_label.add_theme_color_override("font_color", Color(0.45, 0.92, 0.55))
+		else:
+			wallet_earned_label.text = "Today: +0 Pesos"
+			wallet_earned_label.add_theme_color_override("font_color", Color(0.72, 0.76, 0.86))
+	call_deferred("_layout_phone_chrome")
 
 
 func _refresh_shop_state() -> void:
@@ -109,6 +166,8 @@ func _refresh_shop_state() -> void:
 	_refresh_new_day_hint()
 	_refresh_shop_lock_state()
 	_refresh_tindahan_app_btn()
+	_refresh_upgrade_buttons()
+	_refresh_resource_buy_buttons()
 	_refresh_shop_prices()
 	_refresh_loan_btn()
 	_refresh_sbatter_btn()
@@ -116,6 +175,8 @@ func _refresh_shop_state() -> void:
 	if run_log:
 		run_log.text = ScoreController.format_journal()
 	GameStateController.evaluate()
+	if GameStateController.is_game_over:
+		_present_game_over()
 
 
 func _refresh_shop_prices() -> void:
@@ -145,20 +206,26 @@ func _set_price_label(label: Label, amount: int) -> void:
 
 
 func showOpt(opt: String) -> void:
+	_hide_app_icon_tooltip()
 	page = categories[opt]
 	$Home.visible = false
 	$Stats.visible = false
 	$MenuOptions.visible = false
+	if wallet_hud:
+		wallet_hud.visible = true
+	if new_day_hint_pill:
+		new_day_hint_pill.visible = false
 	for key in categories.keys():
 		categories[key].visible = (key == opt)
+	_refresh_tab_header(opt)
+	_refresh_bed_button_caption()
 
 func _on_upgrades_pressed() -> void:
 	showOpt("upgrades")
 
 func _on_resources_pressed() -> void:
 	showOpt("resources")
-	if (PlayerStats.get("palamigUP") != true):
-		$ResourceGroup/VBoxContainer/Palamig.visible = false
+	update_resource_visibility()
 
 func _on_family_pressed() -> void:
 	showOpt("family")
@@ -172,11 +239,15 @@ func _on_misc_pressed() -> void:
 
 func buyUpgrade(upgrade_price : int, upgrade_name : String) -> void:
 	if not PlayerStats.paidTindahanApp:
+		SfxController.play_error()
 		return
-	if (PlayerStats.playerMoney >= upgrade_price):
-		PlayerStatController.subtractMoney(upgrade_price)
-		PlayerStats.set(upgrade_name, true)
-		update_resource_visibility()
+	if PlayerStats.playerMoney < upgrade_price:
+		SfxController.play_error()
+		return
+	PlayerStatController.subtractMoney(upgrade_price)
+	PlayerStats.set(upgrade_name, true)
+	update_resource_visibility()
+	_refresh_upgrade_buttons()
 
 func _on_palamig_btn_pressed() -> void:
 	if PlayerStats.get("palamigUP"):
@@ -199,7 +270,57 @@ func _on_burn_btn_pressed() -> void:
 	buyUpgrade(_upgrade_cost("burn"), "burnUP")
 	$UpgradesGroup/VBoxContainer/BurnUpgrd/burnBtn.text = "bought"
 func update_resource_visibility() -> void:
-	$ResourceGroup/VBoxContainer/Palamig.visible = PlayerStats.palamigUP
+	var palamig_row := $ResourceGroup/VBoxContainer/Palamig
+	var palamig_label: Label = palamig_row.get_node("Label") as Label
+	palamig_row.visible = true
+	if PlayerStats.palamigUP:
+		palamig_label.text = "Palamig"
+	else:
+		palamig_label.text = "Palamig (buy container first)"
+	_refresh_resource_buy_buttons()
+
+
+func _refresh_upgrade_buttons() -> void:
+	var palamig_btn: Button = $UpgradesGroup/VBoxContainer/PalamigUpgrd/palamigBtn
+	if PlayerStats.palamigUP:
+		palamig_btn.text = "bought"
+		palamig_btn.disabled = true
+	elif not PlayerStats.paidTindahanApp:
+		palamig_btn.disabled = true
+	else:
+		palamig_btn.text = "Buy"
+		palamig_btn.disabled = PlayerStats.playerMoney < _upgrade_cost("palamig")
+	var container_btn: Button = $UpgradesGroup/VBoxContainer/ContainerUpgrd/containerBtn
+	if PlayerStats.containerUP:
+		container_btn.text = "bought"
+		container_btn.disabled = true
+	var cook_btn: Button = $UpgradesGroup/VBoxContainer/CookingUpgrd/cookingBtn
+	if PlayerStats.cookUP:
+		cook_btn.text = "bought"
+		cook_btn.disabled = true
+	var burn_btn: Button = $UpgradesGroup/VBoxContainer/BurnUpgrd/burnBtn
+	if PlayerStats.burnUP:
+		burn_btn.text = "bought"
+		burn_btn.disabled = true
+
+
+func _refresh_resource_buy_buttons() -> void:
+	var palamig_btn: Button = $ResourceGroup/VBoxContainer/Palamig/buyPalamig
+	palamig_btn.disabled = (
+		not PlayerStats.palamigUP
+		or not PlayerStats.paidTindahanApp
+		or PlayerStats.playerMoney < _resource_cost("palamig")
+	)
+	var sauce_btn: Button = $ResourceGroup/VBoxContainer/Sauce/buySauce
+	if PlayerStats.boughtSauce:
+		sauce_btn.text = "bought"
+		sauce_btn.disabled = true
+	else:
+		sauce_btn.text = "Buy"
+		sauce_btn.disabled = (
+			not PlayerStats.paidTindahanApp
+			or PlayerStats.playerMoney < _resource_cost("sauce")
+		)
 	
 # RESOURCES
 const RESOURCE_PRICE: Dictionary = {
@@ -259,8 +380,16 @@ func _on_buy_sauce_pressed() -> void:
 
 func _on_buy_palamig_pressed() -> void:
 	if not PlayerStats.palamigUP:
+		SfxController.play_error()
+		return
+	if not PlayerStats.paidTindahanApp:
+		SfxController.play_error()
+		return
+	if PlayerStats.playerMoney < _resource_cost("palamig"):
+		SfxController.play_error()
 		return
 	buyResource(_resource_cost("palamig"), "palamigStock")
+	_refresh_resource_buy_buttons()
 
 func _on_buys_kwek_2_pressed() -> void:
 	buyResource(_resource_cost("kwek2"), "kwekwekStock")
@@ -295,7 +424,7 @@ func _refresh_shop_lock_state() -> void:
 	var unlocked := PlayerStats.paidTindahanApp
 	_set_buy_buttons_disabled($ResourceGroup, not unlocked, ["AppSubscription"])
 	_set_buy_buttons_disabled($UpgradesGroup, not unlocked)
-	_set_buy_buttons_disabled($MiscGroup, not unlocked, ["JuanAngat", "RestartRow"])
+	_set_buy_buttons_disabled($MiscGroup, not unlocked, ["JuanAngat"])
 
 
 func _set_buy_buttons_disabled(group: CanvasGroup, disabled: bool, exclude_rows: Array[String] = []) -> void:
@@ -411,7 +540,12 @@ func go_home(current_group: CanvasGroup) -> void:
 	page = home
 	home.visible = true
 	$MenuOptions.visible = true
-	$Stats.visible = true
+	$Stats.visible = false
+	if wallet_hud:
+		wallet_hud.visible = true
+	_refresh_tab_header("")
+	_refresh_new_day_hint()
+	_refresh_bed_button_caption()
 
 
 func _on_home_btn_pressed() -> void:
@@ -419,7 +553,7 @@ func _on_home_btn_pressed() -> void:
 		go_home(page)
 		$"../Canvas/Control/HomeTooltip".toggle(false)
 		return
-	if GameStateController.is_game_over:
+	if GameStateController.evaluate():
 		return
 	var block_reason := FamilyStateController.start_day_block_reason()
 	if not block_reason.is_empty():
@@ -438,46 +572,572 @@ func _on_home_btn_pressed() -> void:
 		return
 	$"../Canvas/Control/NextDayTooltip".hide()
 	PlayerStatController.newDay()
-	await DayTransition.fade_to_black("Opening the stall...", 0.45)
-	get_tree().change_scene_to_file("res://Screens/Game/Scenes/GameScreen.tscn")
+	DayTransition.transition_to_scene(
+		"res://Screens/Game/Scenes/GameScreen.tscn",
+		"Opening the stall...",
+		0.2,
+	)
 
 
 func _on_home_btn_mouse_entered() -> void:
-	if page == home:
-		$"../Canvas/Control/NextDayTooltip".toggle(true)
-	else:
+	if page != home:
 		$"../Canvas/Control/HomeTooltip".toggle(true)
 
 
 func _on_home_btn_mouse_exited() -> void:
-	if page == home:
-		$"../Canvas/Control/NextDayTooltip".toggle(false)
-	else:
+	if page != home:
 		$"../Canvas/Control/HomeTooltip".toggle(false)
 
 
 func _refresh_sbatter_btn() -> void:
 	var btn: Button = $MiscGroup/VBoxContainer/Gamble/gambleBtn
-	if PlayerStats.name_spent_on_sbatter:
-		btn.text = "Gone"
+	var price_label: Label = $MiscGroup/VBoxContainer/Gamble/Price
+	price_label.text = SbatterController.wager_label()
+	if not SbatterController.can_bet():
 		btn.disabled = true
-	elif not SbatterController.can_bet():
-		btn.disabled = true
+		if PlayerStats.name_spent_on_sbatter:
+			btn.text = "Broke"
+		else:
+			btn.text = "Bet"
 	else:
 		btn.text = "Bet"
 		btn.disabled = false
 
 
+func _setup_phone_ui() -> void:
+	_setup_wallet_hud()
+	_setup_stats_panel()
+	_style_stats_label()
+	_style_shop_groups()
+	_position_phone_tabs()
+	_setup_app_icon_hover()
+	_setup_tab_header()
+	call_deferred("_layout_phone_chrome")
+
+
+func _layout_phone_chrome() -> void:
+	if wallet_hud:
+		wallet_hud.position = Vector2(PHONE_PANEL_LEFT, WALLET_Y)
+	var wallet_height := 140.0
+	if wallet_hud:
+		wallet_hud.reset_size()
+		wallet_height = maxf(wallet_hud.size.y, float(wallet_hud.get_combined_minimum_size().y))
+	var tab_top := WALLET_Y + wallet_height + WALLET_TAB_GAP
+	var shop_top := tab_top + TAB_HEADER_HEIGHT + WALLET_TAB_GAP
+	if tab_header:
+		tab_header.position = Vector2(PHONE_PANEL_LEFT, tab_top)
+		tab_header.custom_minimum_size = Vector2(PHONE_PANEL_WIDTH, TAB_HEADER_HEIGHT)
+		tab_header.z_index = 55
+	_apply_shop_layout(shop_top)
+
+
+func _apply_shop_layout(shop_top: float) -> void:
+	for group_name in ["ResourceGroup", "UpgradesGroup", "FamilyGroup", "MiscGroup"]:
+		var group := get_node_or_null(group_name) as CanvasGroup
+		if group == null:
+			continue
+		group.position = Vector2.ZERO
+		var vbox := group.get_node_or_null("VBoxContainer") as Control
+		if vbox == null:
+			continue
+		vbox.offset_left = SHOP_VBOX_LEFT
+		vbox.offset_top = shop_top
+		vbox.offset_right = SHOP_VBOX_RIGHT
+		vbox.offset_bottom = PHONE_CONTENT_BOTTOM
+		_layout_group_background(group, vbox)
+
+
+func _setup_wallet_hud() -> void:
+	if wallet_hud:
+		return
+	wallet_hud = PanelContainer.new()
+	wallet_hud.name = "WalletHud"
+	wallet_hud.position = Vector2(PHONE_PANEL_LEFT, WALLET_Y)
+	wallet_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	wallet_hud.z_index = 50
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.07, 0.14, 0.94)
+	style.border_color = Color(1.0, 0.86, 0.42, 0.9)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(12)
+	style.set_content_margin_all(12)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	wallet_hud.add_theme_stylebox_override("panel", style)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+	wallet_hud.add_child(vbox)
+
+	wallet_meta_label = Label.new()
+	wallet_meta_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	wallet_meta_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	wallet_meta_label.add_theme_font_size_override("font_size", PHONE_FONT_BODY)
+	wallet_meta_label.add_theme_color_override("font_color", Color(0.88, 0.92, 1.0))
+	wallet_meta_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(wallet_meta_label)
+
+	var caption := Label.new()
+	caption.text = "BALANCE"
+	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	caption.add_theme_font_size_override("font_size", PHONE_FONT_CAPTION)
+	caption.add_theme_color_override("font_color", Color(0.75, 0.8, 0.9))
+	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(caption)
+
+	wallet_balance_label = Label.new()
+	wallet_balance_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	wallet_balance_label.add_theme_font_size_override("font_size", PHONE_FONT_BALANCE)
+	wallet_balance_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.45))
+	wallet_balance_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(wallet_balance_label)
+
+	wallet_earned_label = Label.new()
+	wallet_earned_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	wallet_earned_label.add_theme_font_size_override("font_size", PHONE_FONT_BODY)
+	wallet_earned_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(wallet_earned_label)
+
+	wallet_hud.custom_minimum_size = Vector2(PHONE_PANEL_WIDTH, 0)
+	add_child(wallet_hud)
+	wallet_hud.visible = true
+	_refresh_wallet_hud()
+
+
+func _setup_stats_panel() -> void:
+	if $Stats.get_node_or_null("StatsPanel"):
+		return
+	var panel := ColorRect.new()
+	panel.name = "StatsPanel"
+	panel.color = Color(0.05, 0.09, 0.18, 0.72)
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.position = Vector2(-592, 8)
+	panel.size = Vector2(262, 4)
+	panel.visible = false
+	$Stats.add_child(panel)
+	$Stats.move_child(panel, 0)
+
+
+func _layout_group_background(group: CanvasGroup, vbox: Control) -> void:
+	var bg := group.get_node_or_null("BackgroundColor") as ColorRect
+	if bg == null:
+		return
+	bg.scale = Vector2.ONE
+	bg.rotation = 0.0
+	bg.position = Vector2.ZERO
+	bg.offset_left = vbox.offset_left - 6.0
+	bg.offset_top = vbox.offset_top - 6.0
+	bg.offset_right = vbox.offset_right + 6.0
+	bg.offset_bottom = vbox.offset_bottom + 6.0
+	bg.color = Color(0.9, 0.92, 0.97, 1.0)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+
+func _setup_tab_header() -> void:
+	tab_header = HBoxContainer.new()
+	tab_header.name = "TabHeader"
+	tab_header.position = Vector2(PHONE_PANEL_LEFT, WALLET_Y + 112.0 + WALLET_TAB_GAP)
+	tab_header.custom_minimum_size = Vector2(PHONE_PANEL_WIDTH, 36)
+	tab_header.visible = false
+	tab_header.z_index = 55
+	tab_header.add_theme_constant_override("separation", 10)
+	add_child(tab_header)
+
+	back_button = Button.new()
+	back_button.name = "BackButton"
+	back_button.text = "Back"
+	back_button.custom_minimum_size = Vector2(68, 32)
+	back_button.focus_mode = Control.FOCUS_NONE
+	_style_shop_button(back_button)
+	back_button.pressed.connect(_on_back_pressed)
+	back_button.mouse_entered.connect(_on_ui_hover)
+	tab_header.add_child(back_button)
+
+	tab_title_label = Label.new()
+	tab_title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	tab_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tab_title_label.add_theme_color_override("font_color", SHOP_TEXT)
+	tab_title_label.add_theme_font_size_override("font_size", PHONE_FONT_TAB)
+	tab_header.add_child(tab_title_label)
+
+
+func _refresh_tab_header(opt: String) -> void:
+	if tab_header == null:
+		return
+	var in_tab := not opt.is_empty()
+	tab_header.visible = in_tab
+	if in_tab and tab_title_label:
+		tab_title_label.text = APP_ICON_TITLES.get(opt, opt.capitalize())
+	_layout_phone_chrome()
+
+
+const APP_ICON_TITLES := {
+	"resources": "Resources",
+	"upgrades": "Upgrades",
+	"family": "Family",
+	"misc": "Misc",
+}
+
+
+func _setup_app_icon_hover() -> void:
+	for child in $MenuOptions.get_children():
+		if child is TextureButton:
+			_wire_app_icon_hover(child as TextureButton)
+
+
+func _wire_app_icon_hover(btn: TextureButton) -> void:
+	var title: String = APP_ICON_TITLES.get(btn.name.to_lower(), btn.name)
+	var base_scale := btn.scale
+	btn.focus_mode = Control.FOCUS_NONE
+	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn.texture_pressed = btn.texture_normal
+	if btn.texture_normal:
+		btn.pivot_offset = btn.texture_normal.get_size() * 0.5
+	btn.mouse_entered.connect(func() -> void:
+		_set_app_icon_hover(btn, base_scale, true)
+	)
+	btn.mouse_exited.connect(func() -> void:
+		_set_app_icon_hover(btn, base_scale, false)
+	)
+	btn.button_down.connect(func() -> void:
+		btn.scale = base_scale * 0.94
+		btn.modulate = Color(0.82, 0.82, 0.82, 1.0)
+	)
+	btn.button_up.connect(func() -> void:
+		if btn.is_hovered():
+			_set_app_icon_hover(btn, base_scale, true)
+		else:
+			_set_app_icon_hover(btn, base_scale, false)
+	)
+
+
+func _set_app_icon_hover(btn: TextureButton, base_scale: Vector2, hovered: bool) -> void:
+	if hovered:
+		btn.scale = base_scale * 1.12
+		btn.modulate = Color(1.22, 1.22, 1.22, 1.0)
+	else:
+		btn.scale = base_scale
+		btn.modulate = Color.WHITE
+
+
+var _app_icon_tooltip: PanelContainer
+
+
+func _show_app_icon_tooltip(btn: TextureButton, title: String) -> void:
+	if _app_icon_tooltip == null:
+		_app_icon_tooltip = PanelContainer.new()
+		_app_icon_tooltip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(0.05, 0.06, 0.1, 0.92)
+		style.border_color = Color(1.0, 0.86, 0.42, 1.0)
+		style.set_border_width_all(2)
+		style.set_content_margin_all(6)
+		style.set_corner_radius_all(4)
+		_app_icon_tooltip.add_theme_stylebox_override("panel", style)
+		var label := Label.new()
+		label.name = "Text"
+		label.add_theme_color_override("font_color", Color(0.98, 0.96, 0.9))
+		label.add_theme_font_size_override("font_size", 14)
+		_app_icon_tooltip.add_child(label)
+		$"../Canvas/Control".add_child(_app_icon_tooltip)
+	var text_label: Label = _app_icon_tooltip.get_node("Text")
+	text_label.text = title
+	_app_icon_tooltip.reset_size()
+	_app_icon_tooltip.global_position = btn.get_global_rect().position + Vector2(
+		(btn.get_global_rect().size.x - _app_icon_tooltip.size.x) * 0.5,
+		-36.0
+	)
+	_app_icon_tooltip.show()
+
+
+func _hide_app_icon_tooltip() -> void:
+	if _app_icon_tooltip:
+		_app_icon_tooltip.hide()
+
+
+func _style_stats_label() -> void:
+	var stats_label: Label = $Stats/Money
+	stats_label.visible = false
+	stats_label.text = ""
+
+
+func _fit_stats_label() -> void:
+	var stats_label: Label = $Stats/Money
+	var content_height: float = float(stats_label.get_content_height())
+	stats_label.offset_bottom = stats_label.offset_top + content_height + 4.0
+
+
+func _style_shop_groups() -> void:
+	for group_name in ["ResourceGroup", "UpgradesGroup", "FamilyGroup", "MiscGroup"]:
+		var group := get_node_or_null(group_name) as CanvasGroup
+		if group:
+			_style_shop_group(group)
+
+
+func _style_shop_group(group: CanvasGroup) -> void:
+	var vbox := group.get_node_or_null("VBoxContainer") as VBoxContainer
+	if vbox == null:
+		return
+	vbox.add_theme_constant_override("separation", 5)
+	for child in vbox.get_children():
+		if child is HBoxContainer:
+			_style_shop_row(child as HBoxContainer)
+		elif child is Label:
+			_style_shop_label(child as Label, false)
+			child.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			child.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+			if child.name in ["FamilyStatus", "TonightBills"]:
+				child.add_theme_font_size_override("font_size", PHONE_FONT_BODY)
+				child.custom_minimum_size = Vector2(SHOP_ROW_WIDTH, 0)
+
+
+func _style_shop_row(row: HBoxContainer) -> void:
+	row.add_theme_constant_override("separation", 8)
+	row.custom_minimum_size = Vector2(SHOP_ROW_WIDTH, 36)
+	var name_label: Label = null
+	var price_label: Label = null
+	var action_btn: Button = null
+	for child in row.get_children():
+		if child is Label:
+			var label := child as Label
+			if label.name.begins_with("Spacer"):
+				label.visible = false
+				label.text = ""
+				label.custom_minimum_size = Vector2.ZERO
+				label.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+			elif label.name == "Price":
+				price_label = label
+			elif label.name == "Label":
+				name_label = label
+			else:
+				_style_shop_label(label, false)
+		elif child is Button:
+			action_btn = child as Button
+	if name_label:
+		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		name_label.custom_minimum_size = Vector2(72, 0)
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		_style_shop_label(name_label, false)
+	if price_label:
+		price_label.size_flags_horizontal = Control.SIZE_SHRINK_END
+		price_label.custom_minimum_size = Vector2(68, 0)
+		price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		price_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+		_style_shop_label(price_label, true)
+	if action_btn:
+		action_btn.size_flags_horizontal = Control.SIZE_SHRINK_END
+		action_btn.custom_minimum_size = Vector2(56, 30)
+		_style_shop_button(action_btn)
+
+
+func _style_shop_label(label: Label, is_price: bool) -> void:
+	label.add_theme_color_override(
+		"font_color",
+		SHOP_PRICE if is_price else SHOP_TEXT
+	)
+	label.add_theme_font_size_override("font_size", PHONE_FONT_PRICE if is_price else PHONE_FONT_SHOP)
+	label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+
+
+func _position_phone_tabs() -> void:
+	var tabs := $MenuOptions as HBoxContainer
+	tabs.scale = Vector2(0.152, 0.152)
+	tabs.offset_left = -168.0
+	tabs.offset_top = PHONE_TABS_Y
+	tabs.offset_right = 900.0
+	tabs.offset_bottom = PHONE_TABS_Y + 64.0
+	tabs.add_theme_constant_override("separation", 12)
+
+
+func _on_back_pressed() -> void:
+	SfxController.play_click()
+	if page != home:
+		go_home(page)
+
+
+func _style_shop_button(button: Button) -> void:
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = SHOP_BTN_BG
+	normal.set_corner_radius_all(4)
+	normal.set_content_margin_all(6)
+	var hover := normal.duplicate()
+	hover.bg_color = SHOP_BTN_BG.lightened(0.12)
+	var disabled := normal.duplicate()
+	disabled.bg_color = SHOP_BTN_DISABLED
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", hover)
+	button.add_theme_stylebox_override("disabled", disabled)
+	button.add_theme_font_size_override("font_size", PHONE_FONT_BTN)
+	button.add_theme_color_override("font_color", Color.WHITE)
+	button.add_theme_color_override("font_disabled_color", Color(0.92, 0.94, 0.96))
+
+
 func _setup_new_day_hint() -> void:
+	new_day_hint_pill = PanelContainer.new()
+	new_day_hint_pill.name = "NewDayHintPill"
+	new_day_hint_pill.position = Vector2(-142, 108)
+	new_day_hint_pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	new_day_hint_pill.z_index = 40
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.42, 0.07, 0.09, 0.94)
+	style.border_color = Color(1.0, 0.38, 0.32, 1.0)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(18)
+	style.set_content_margin_all(12)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	new_day_hint_pill.add_theme_stylebox_override("panel", style)
+
 	new_day_hint = Label.new()
 	new_day_hint.name = "NewDayHint"
 	new_day_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	new_day_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	new_day_hint.custom_minimum_size = Vector2(340, 0)
-	new_day_hint.position = Vector2(-170, 120)
-	new_day_hint.add_theme_color_override("font_color", Color(1.0, 0.45, 0.35))
+	new_day_hint.custom_minimum_size = Vector2(280, 0)
+	new_day_hint.add_theme_color_override("font_color", Color(1.0, 0.94, 0.9))
+	new_day_hint.add_theme_font_size_override("font_size", PHONE_FONT_WARNING)
 	new_day_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	$HomeBtn.add_sibling(new_day_hint)
+	new_day_hint_pill.add_child(new_day_hint)
+	$HomeBtn.add_sibling(new_day_hint_pill)
+
+
+func _setup_bed_button_caption() -> void:
+	if bed_action_caption:
+		return
+	bed_action_caption = PanelContainer.new()
+	bed_action_caption.name = "BedActionCaption"
+	bed_action_caption.position = Vector2(-118, 246)
+	bed_action_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bed_action_caption.z_index = 40
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.08, 0.12, 0.28, 0.94)
+	style.border_color = Color(0.72, 0.82, 1.0, 0.95)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(14)
+	style.set_content_margin_all(10)
+	style.content_margin_left = 14
+	style.content_margin_right = 14
+	bed_action_caption.add_theme_stylebox_override("panel", style)
+
+	bed_action_label = Label.new()
+	bed_action_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	bed_action_label.add_theme_color_override("font_color", Color(0.92, 0.96, 1.0))
+	bed_action_label.add_theme_font_size_override("font_size", PHONE_FONT_BODY)
+	bed_action_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bed_action_caption.add_child(bed_action_label)
+	$HomeBtn.add_sibling(bed_action_caption)
+	_refresh_bed_button_caption()
+
+
+func _setup_stock_hud() -> void:
+	var canvas_layer: CanvasLayer = $"../Canvas"
+	var existing := canvas_layer.get_node_or_null("StockHud") as PanelContainer
+	if existing:
+		stock_hud = existing
+		stock_hud_label = stock_hud.get_node_or_null("VBox/StockLabel") as Label
+		_refresh_stock_hud()
+		return
+
+	stock_hud = PanelContainer.new()
+	stock_hud.name = "StockHud"
+	stock_hud.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	stock_hud.offset_left = 24.0
+	stock_hud.offset_top = 24.0
+	stock_hud.offset_right = 300.0
+	stock_hud.offset_bottom = 220.0
+	stock_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stock_hud.process_mode = Node.PROCESS_MODE_ALWAYS
+
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.07, 0.14, 0.92)
+	style.border_color = Color(0.95, 0.78, 0.28, 0.9)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(10)
+	style.set_content_margin_all(12)
+	style.content_margin_left = 14
+	style.content_margin_right = 14
+	stock_hud.add_theme_stylebox_override("panel", style)
+
+	var vbox := VBoxContainer.new()
+	vbox.name = "VBox"
+	vbox.add_theme_constant_override("separation", 8)
+	stock_hud.add_child(vbox)
+
+	var title := Label.new()
+	title.name = "TitleLabel"
+	title.text = "STOCK"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 18)
+	title.add_theme_color_override("font_color", Color(0.95, 0.78, 0.28))
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(title)
+
+	stock_hud_label = Label.new()
+	stock_hud_label.name = "StockLabel"
+	stock_hud_label.add_theme_font_size_override("font_size", 17)
+	stock_hud_label.add_theme_color_override("font_color", Color(0.92, 0.96, 1.0))
+	stock_hud_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(stock_hud_label)
+
+	canvas_layer.add_child(stock_hud)
+	_refresh_stock_hud()
+
+
+func _setup_restart_hud() -> void:
+	var restart_row := $MiscGroup/VBoxContainer.get_node_or_null("RestartRow")
+	if restart_row:
+		restart_row.visible = false
+
+	var canvas_layer: CanvasLayer = $"../Canvas"
+	if canvas_layer.get_node_or_null("RestartHud"):
+		restart_button = canvas_layer.get_node("RestartHud") as Button
+		return
+
+	restart_button = Button.new()
+	restart_button.name = "RestartHud"
+	restart_button.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	restart_button.offset_left = -248.0
+	restart_button.offset_top = -72.0
+	restart_button.offset_right = -24.0
+	restart_button.offset_bottom = -24.0
+	restart_button.text = "Start over"
+	restart_button.focus_mode = Control.FOCUS_NONE
+	restart_button.process_mode = Node.PROCESS_MODE_ALWAYS
+	restart_button.add_theme_font_size_override("font_size", 18)
+	restart_button.add_theme_color_override("font_color", Color(0.94, 0.96, 1.0))
+	restart_button.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.55))
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.28, 0.08, 0.1, 0.94)
+	style.border_color = Color(1.0, 0.45, 0.4, 0.95)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(10)
+	style.set_content_margin_all(10)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	restart_button.add_theme_stylebox_override("normal", style)
+	restart_button.add_theme_stylebox_override("hover", style)
+	restart_button.add_theme_stylebox_override("pressed", style)
+	restart_button.pressed.connect(_on_restart_pressed)
+	restart_button.mouse_entered.connect(_on_ui_hover)
+	canvas_layer.add_child(restart_button)
+
+
+func _refresh_stock_hud() -> void:
+	if stock_hud_label == null:
+		return
+	stock_hud_label.text = PlayerStatController.format_stock_summary()
+
+
+func _refresh_bed_button_caption() -> void:
+	if bed_action_label == null:
+		return
+	if page == home:
+		bed_action_label.text = "Go to bed"
+	else:
+		bed_action_label.text = "Phone home"
+	bed_action_caption.visible = true
 
 
 func _setup_meta_labels() -> void:
@@ -485,20 +1145,23 @@ func _setup_meta_labels() -> void:
 
 
 func _refresh_new_day_hint() -> void:
-	if new_day_hint == null:
+	if new_day_hint == null or new_day_hint_pill == null:
+		return
+	if GameStateController.is_game_over:
+		new_day_hint_pill.visible = false
 		return
 	var reason := FamilyStateController.start_day_block_reason()
 	new_day_hint.text = reason
-	new_day_hint.visible = not reason.is_empty()
+	new_day_hint_pill.visible = not reason.is_empty() and page == home
 
 
 func _flash_new_day_hint() -> void:
-	if new_day_hint == null:
+	if new_day_hint_pill == null:
 		return
 	_refresh_new_day_hint()
-	new_day_hint.modulate = Color(1.5, 1.2, 1.2)
+	new_day_hint_pill.modulate = Color(1.5, 1.2, 1.2)
 	var tween := create_tween()
-	tween.tween_property(new_day_hint, "modulate", Color.WHITE, 0.35)
+	tween.tween_property(new_day_hint_pill, "modulate", Color.WHITE, 0.35)
 
 
 func _wire_button_sfx(node: Node) -> void:

@@ -598,10 +598,10 @@ texture = ExtResource("5_g8ebx")
 position = Vector2(349, -610)
 
 [node name="Money" type="Label" parent="Node2D/Stats" unique_id=666033550]
-offset_left = -594.0
-offset_top = 23.0
-offset_right = -532.0
-offset_bottom = 46.0
+offset_left = -585.0
+offset_top = 14.0
+offset_right = -332.0
+offset_bottom = 150.0
 metadata/_edit_use_anchors_ = true
 
 [node name="HomeBtn" type="Button" parent="Node2D" unique_id=441180160]
@@ -659,7 +659,7 @@ layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 bbcode_enabled = true
-text = "Go home"
+text = "Phone home"
 fit_content = true
 autowrap_mode = 0
 
