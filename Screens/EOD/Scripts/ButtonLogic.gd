@@ -1325,9 +1325,6 @@ func _setup_new_day_hint() -> void:
 	$HomeBtn.add_sibling(new_day_hint_pill)
 
 
-const BED_CAPTION_CENTER := Vector2(-40.0, 200.0)  # over phone_blank home bezel
-
-
 func _setup_bed_button_caption() -> void:
 	if bed_action_caption:
 		return
@@ -1362,7 +1359,15 @@ func _layout_bed_button_caption() -> void:
 	var sz := bed_action_caption.get_combined_minimum_size()
 	if sz.x < 1.0:
 		sz = bed_action_caption.size
-	bed_action_caption.position = BED_CAPTION_CENTER - sz * 0.5
+	# Sit on the HomeBtn hit target (scaled 8x over the phone home circle).
+	var home_btn := $HomeBtn as Control
+	var btn_tl := Vector2(home_btn.offset_left, home_btn.offset_top)
+	var btn_size := Vector2(
+		home_btn.offset_right - home_btn.offset_left,
+		home_btn.offset_bottom - home_btn.offset_top
+	) * home_btn.scale
+	var center := btn_tl + btn_size * 0.5
+	bed_action_caption.position = center - sz * 0.5
 
 
 func _setup_stock_hud() -> void:

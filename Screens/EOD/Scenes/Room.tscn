@@ -605,10 +605,10 @@ offset_bottom = 150.0
 metadata/_edit_use_anchors_ = true
 
 [node name="HomeBtn" type="Button" parent="Node2D" unique_id=441180160]
-offset_left = -72.0
-offset_top = 178.0
-offset_right = -64.0
-offset_bottom = 186.0
+offset_left = -44.0
+offset_top = 176.0
+offset_right = -36.0
+offset_bottom = 184.0
 scale = Vector2(8, 8)
 
 [node name="MenuOptions" type="HBoxContainer" parent="Node2D" unique_id=1794590763]
