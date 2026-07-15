@@ -66,8 +66,7 @@ func _process(delta: float) -> void:
 
 
 func _poverty_stress() -> float:
-	var money := maxf(float(PlayerStats.playerMoney), 0.0)
-	return 1.0 - clampf(money / COMFORT_MONEY, 0.0, 1.0)
+	return PlayerStatController.poverty_stress()
 
 
 func play_track(key: String) -> void:
@@ -102,3 +101,14 @@ func stop() -> void:
 	_player.stop()
 	_ghost.stop()
 	_current = ""
+
+
+func on_audio_settings_changed() -> void:
+	_ensure_players()
+	var idx := AudioServer.get_bus_index(BUS_NAME)
+	if idx >= 0:
+		AudioServer.set_bus_mute(idx, not AudioSettings.music_enabled)
+	if not AudioSettings.music_enabled:
+		stop()
+	elif not _current.is_empty():
+		play_track(_current)
