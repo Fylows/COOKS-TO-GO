@@ -39,6 +39,7 @@ offset_bottom = 1052.0
 text = "end day"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1490396313]
+layer = 999
 
 [node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_nvp4f")]
 
