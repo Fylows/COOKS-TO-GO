@@ -325,8 +325,8 @@ func _setup_weather_banner() -> void:
 	weather_banner = PanelContainer.new()
 	weather_banner.name = "WeatherBanner"
 	weather_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	weather_banner.offset_left = -140.0
-	weather_banner.offset_right = 140.0
+	weather_banner.offset_left = -220.0
+	weather_banner.offset_right = 220.0
 	weather_banner.offset_top = 64.0
 	weather_banner.offset_bottom = 64.0
 	weather_banner.grow_vertical = Control.GROW_DIRECTION_END
@@ -353,14 +353,18 @@ func _setup_weather_banner() -> void:
 	weather_banner_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	weather_banner_label.add_theme_font_size_override("font_size", 16)
 	weather_banner_label.add_theme_color_override("font_color", Color(0.95, 0.96, 1.0))
-	var blurb := PlayerStatController.weather_effect_blurb()
-	if blurb.is_empty():
-		weather_banner_label.text = PlayerStatController.weather_title()
+	# Same forecast the morning briefing used: this stall shift.
+	if PlayerStatController.morning_forecast.is_empty():
+		var blurb := PlayerStatController.weather_effect_blurb()
+		if blurb.is_empty():
+			weather_banner_label.text = PlayerStatController.weather_title()
+		else:
+			weather_banner_label.text = "%s · %s" % [
+				PlayerStatController.weather_title(),
+				blurb,
+			]
 	else:
-		weather_banner_label.text = "%s · %s" % [
-			PlayerStatController.weather_title(),
-			blurb,
-		]
+		weather_banner_label.text = PlayerStatController.morning_forecast
 	weather_banner.add_child(weather_banner_label)
 	weather_banner.modulate.a = 0.0
 	$HUD.add_child(weather_banner)
