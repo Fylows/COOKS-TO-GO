@@ -3,9 +3,8 @@ class_name OrderController
 
 const ORDER_SCENE: PackedScene = preload("res://Orders/Scenes/Order.tscn")
 
-const FOOD_AMOUNT_MULTIPLIER: int = 3
-const FOOD_MIN_QUANTITY: int = 1
-const FOOD_MAX_QUANTITY: int = 50
+const FOOD_QUANTITY_LIST: Array[int] = [1,3,5,7,10]
+const FOOD_PROGRESSION_DAYS_DIVISOR: int = 5
 const SELL_PRICE_PER_ITEM: int = 5
 
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
@@ -14,13 +13,14 @@ const SELL_PRICE_PER_ITEM: int = 5
 
 ## Helper function for generating random food quantity
 func get_random_food_quantity(days_passed: int) -> int:
-	var maximum_quantity: int = clampi(
-		days_passed * FOOD_AMOUNT_MULTIPLIER,
-		FOOD_MIN_QUANTITY,
-		FOOD_MAX_QUANTITY
-	)
-
-	return randi_range(FOOD_MIN_QUANTITY, maximum_quantity)
+	var list_size: int = FOOD_QUANTITY_LIST.size()
+	var starting_index: int = clampi(
+		days_passed/FOOD_PROGRESSION_DAYS_DIVISOR, 
+		0, list_size - 1)
+	var ending_index: int = clampi(starting_index + 2, 0, list_size)
+	
+	var sliced: Array[int] = FOOD_QUANTITY_LIST.slice(starting_index, ending_index)
+	return sliced.pick_random()
 		
 ## Create orders based on unlock food items with scaling quantity based on days
 func create_order(days_passed: int) -> Order:
@@ -32,13 +32,8 @@ func create_order(days_passed: int) -> Order:
 	if days_passed >= 2:
 		available_food.append("kikiam")
 
-	var item_type_count: int = randi_range(1, available_food.size())
-
-	available_food.shuffle()
-	var selected_food: Array[String] = available_food.slice(
-		0,
-		item_type_count
-	)
+	# Keep previous implementation as array of string for future scalability
+	var selected_food: Array[String] = [available_food.pick_random()]
 
 	var fishball_count : int = 0
 	var kwekwek_count : int = 0
@@ -46,6 +41,7 @@ func create_order(days_passed: int) -> Order:
 	var betamax_count : int = 0
 	var palamig_count : int = 0
 
+	# Keep previous implementation for prasing selected_fooditem for scalability
 	for food: String in selected_food:
 		var quantity: int = get_random_food_quantity(days_passed)
 
@@ -117,4 +113,4 @@ func _ready() -> void:
 	await get_tree().create_timer(2.0).timeout
 	var order3: Order = create_order(3)
 	var order4: Order = create_order(3)
-	var order5: Order = create_order(3)
+	var order5: Order = create_order(1000)
