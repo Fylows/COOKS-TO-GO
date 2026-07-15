@@ -12,6 +12,7 @@ var base_position: Vector2
 @onready var misc : CanvasGroup = $MiscGroup
 
 var categories: Dictionary
+var _active_tab: String = "resources"
 
 func _ready() -> void:
 	get_tree().paused = false
@@ -40,19 +41,22 @@ func _process(delta: float) -> void:
 	$Stats/Money.text = "%s\n%s" % [PlayerStats.player_name, balance]
 	var text = ("Palamig: %s" % PlayerStats.palamigStock) if PlayerStats.palamigUP else ""
 	$Stats/Resources.text = "Fishball: %d\nKikiam: %d\nKwek-Kwek: %d\nSauce: %s\n%s" % [PlayerStats.fishballStock, PlayerStats.kikiamStock, PlayerStats.kwekwekStock, PlayerStats.boughtSauce, text]
-	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s\n\nFamily\n%s" % [
+	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s" % [
 		PlayerStats.palamigUP,
 		PlayerStats.containerUP,
 		PlayerStats.cookUP,
 		PlayerStats.burnUP,
-		FamilyStateController.status_text(),
 	]
+	$FamilyGroup/VBoxContainer/FamilyStatus.text = FamilyStateController.status_text()
 	var med_btn: Button = $FamilyGroup/VBoxContainer/Medicine/medBtn
 	med_btn.disabled = not FamilyStateController.is_family_sick
 
 func showOpt(opt: String) -> void:
+	_active_tab = opt
 	for key in categories.keys():
 		categories[key].visible = (key == opt)
+	$Stats/Resources.visible = opt == "resources"
+	$Stats/Upgrades.visible = opt == "upgrades"
 
 func _on_upgrades_pressed() -> void:
 	showOpt("upgrades")

@@ -298,6 +298,12 @@ offset_top = -28.0
 offset_right = 154.0
 offset_bottom = 212.0
 
+[node name="FamilyStatus" type="Label" parent="Node2D/FamilyGroup/VBoxContainer"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Sick risk: 0%
+Healthy"
+
 [node name="Electricity" type="HBoxContainer" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=547100195]
 layout_mode = 2
 
