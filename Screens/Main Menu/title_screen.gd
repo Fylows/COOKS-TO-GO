@@ -27,6 +27,20 @@ func _ready() -> void:
 	_setup_endings_button()
 	_setup_endings_gallery()
 	_refresh_title_state()
+	_play_title_intro()
+
+
+func _play_title_intro() -> void:
+	var column: CanvasItem = $UiLayer/CenterRoot/Column
+	var menu: CanvasItem = $UiLayer/MenuButtons
+	for node in [column, menu]:
+		if node:
+			node.modulate.a = 0.0
+	if column:
+		UiMotion.pop_in(self, column, 0.28)
+	if menu:
+		var tween := create_tween()
+		tween.tween_property(menu, "modulate:a", 1.0, 0.3).set_delay(0.05)
 
 
 func _has_run_in_progress() -> bool:
@@ -190,6 +204,7 @@ func _setup_endings_gallery() -> void:
 	gallery_root.add_child(dim)
 
 	var panel := PanelContainer.new()
+	panel.name = "GalleryPanel"
 	panel.set_anchors_preset(Control.PRESET_CENTER)
 	panel.offset_left = -420.0
 	panel.offset_right = 420.0
@@ -328,13 +343,41 @@ func _make_ending_row(id: String) -> PanelContainer:
 func _on_endings_pressed() -> void:
 	SfxController.play_click()
 	_rebuild_gallery_rows()
-	if gallery_root:
-		gallery_root.visible = true
+	if gallery_root == null:
+		return
+	gallery_root.visible = true
+	var panel := gallery_root.get_node_or_null("GalleryPanel") as CanvasItem
+	if panel == null:
+		for child in gallery_root.get_children():
+			if child is PanelContainer:
+				panel = child
+				break
+	if panel:
+		UiMotion.pop_in(self, panel, 0.2)
 
 
 func _on_gallery_close_pressed() -> void:
 	SfxController.play_click()
-	if gallery_root:
+	if gallery_root == null:
+		return
+	var panel := gallery_root.get_node_or_null("GalleryPanel") as CanvasItem
+	if panel == null:
+		for child in gallery_root.get_children():
+			if child is PanelContainer:
+				panel = child
+				break
+	if panel:
+		var p := panel
+		UiMotion.fade_out_then_hide(self, p)
+		var tween := create_tween()
+		tween.tween_interval(0.12)
+		tween.tween_callback(func() -> void:
+			gallery_root.visible = false
+			p.visible = true
+			p.modulate.a = 1.0
+			p.scale = Vector2.ONE
+		)
+	else:
 		gallery_root.visible = false
 
 
