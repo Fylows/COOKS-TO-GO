@@ -3,11 +3,26 @@ extends Node2D
 @onready var click = $button_manager/click
 @onready var bgm = $bgm
 
+var name_field: LineEdit
+
+
 func _ready() -> void:
 	bgm.play()
+	PlayerStats.ensure_player_name()
+	name_field = LineEdit.new()
+	name_field.text = PlayerStats.player_name
+	name_field.placeholder_text = "Your name"
+	name_field.position = Vector2(710, 240)
+	name_field.size = Vector2(500, 44)
+	name_field.add_theme_font_size_override("font_size", 22)
+	add_child(name_field)
+
+
 func _on_start_pressed() -> void:
+	var typed := name_field.text.strip_edges()
+	if not typed.is_empty():
+		PlayerStats.player_name = typed
 	get_tree().change_scene_to_file("res://Screens/EOD/Scenes/Room.tscn")
-	pass
 
 func _on_quit_pressed() -> void:
 	click.play()

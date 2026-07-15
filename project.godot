@@ -21,6 +21,7 @@ PlayerStats="*uid://cirurloxsm83l"
 PlayerStatController="*uid://bf0kj6i3ab5cb"
 FamilyStateController="*res://Player/FamilyStateController.gd"
 LoanController="*res://Player/LoanController.gd"
+SbatterController="*res://Player/SbatterController.gd"
 Dialogic="*uid://ds2q0uclmolvu"
 
 [dialogic]

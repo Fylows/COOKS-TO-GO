@@ -15,6 +15,7 @@ var categories: Dictionary
 
 func _ready() -> void:
 	get_tree().paused = false
+	PlayerStats.ensure_player_name()
 	camera = get_node(camera_path)
 	base_position = position
 	categories = {
@@ -29,12 +30,14 @@ func _ready() -> void:
 	if (PlayerStats.kikiamPurchasable != true):
 		$ResourceGroup/VBoxContainer/Kikiam.visible = false
 	_refresh_loan_btn()
+	_refresh_sbatter_btn()
 
 func _process(delta: float) -> void:
 	position = base_position + camera.offset * parallax_strength
 	var money_line := PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	var loan_line := LoanController.status_text()
-	$Stats/Money.text = money_line if loan_line.is_empty() else "%s\n%s" % [money_line, loan_line]
+	var balance := money_line if loan_line.is_empty() else "%s\n%s" % [money_line, loan_line]
+	$Stats/Money.text = "%s\n%s" % [PlayerStats.player_name, balance]
 	var text = ("Palamig: %s" % PlayerStats.palamigStock) if PlayerStats.palamigUP else ""
 	$Stats/Resources.text = "Fishball: %d\nKikiam: %d\nKwek-Kwek: %d\nSauce: %s\n%s" % [PlayerStats.fishballStock, PlayerStats.kikiamStock, PlayerStats.kwekwekStock, PlayerStats.boughtSauce, text]
 	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s\n\nFamily\n%s" % [
@@ -211,6 +214,26 @@ func _refresh_loan_btn() -> void:
 		btn.disabled = true
 	else:
 		btn.text = "Borrow"
+		btn.disabled = false
+
+
+func _on_sbatter_btn_pressed() -> void:
+	var result := SbatterController.try_bet()
+	if result.is_empty():
+		return
+	$MiscGroup/VBoxContainer/SbatterResult.text = result
+	_refresh_sbatter_btn()
+
+
+func _refresh_sbatter_btn() -> void:
+	var btn: Button = $MiscGroup/VBoxContainer/Gamble/gambleBtn
+	if PlayerStats.name_spent_on_sbatter:
+		btn.text = "Gone"
+		btn.disabled = true
+	elif not SbatterController.can_bet():
+		btn.disabled = true
+	else:
+		btn.text = "Bet"
 		btn.disabled = false
 
 

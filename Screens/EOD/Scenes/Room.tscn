@@ -498,7 +498,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1325931007]
 layout_mode = 2
-text = "Bingo Plus"
+text = "Sbatter"
 
 [node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1645104393]
 layout_mode = 2
@@ -506,7 +506,7 @@ text = "                                    "
 
 [node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=716471082]
 layout_mode = 2
-text = "100 Pesos"
+text = "Your name"
 
 [node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1697950572]
 layout_mode = 2
@@ -514,8 +514,12 @@ text = "                       "
 
 [node name="gambleBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1279583]
 layout_mode = 2
-text = "Buy"
+text = "Bet"
 metadata/_edit_use_anchors_ = true
+
+[node name="SbatterResult" type="Label" parent="Node2D/MiscGroup/VBoxContainer"]
+layout_mode = 2
+autowrap_mode = 3
 
 [node name="Stats" type="CanvasGroup" parent="Node2D" unique_id=960918305]
 position = Vector2(349, -610)
@@ -568,4 +572,5 @@ text = "Start New Day"
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Anting2/antingBtn" to="Node2D" method="_on_anting_btn_pressed"]
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Weather/weatherBtn" to="Node2D" method="_on_weather_btn_pressed"]
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/JuanAngat/loanBtn" to="Node2D" method="_on_loan_btn_pressed"]
+[connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Gamble/gambleBtn" to="Node2D" method="_on_sbatter_btn_pressed"]
 [connection signal="pressed" from="Node2D/New Day" to="Node2D" method="_on_new_day_pressed"]

@@ -4,6 +4,8 @@ extends Node
 
 var daysPassed : int = 0
 var playerMoney : int = 1000
+var player_name : String = ""
+var name_spent_on_sbatter : bool = false
 var luck : float = 1.0
 
 # RESOURSES
@@ -101,3 +103,10 @@ var miscPrice : Dictionary = {
 var boughtAnting2 : bool = false
 var boughtSubscription : bool = false
 var loan_balance : int = 0
+
+
+func ensure_player_name() -> void:
+	if not player_name.is_empty():
+		return
+	var user := OS.get_environment("USER")
+	player_name = user.capitalize() if not user.is_empty() else "Vendor"
