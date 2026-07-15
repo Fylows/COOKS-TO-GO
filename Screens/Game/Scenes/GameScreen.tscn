@@ -1,18 +1,18 @@
 [gd_scene format=3 uid="uid://dhw4oitpble61"]
 
-[ext_resource type="PackedScene" uid="uid://iq1mcvj1proc" path="res://Orders/Scenes/OrderContainer.tscn" id="1_p7x0p"]
-[ext_resource type="Texture2D" uid="uid://dmscxvdcf2qke" path="res://Screens/Assets/cart_main.PNG" id="2_b7a1e"]
-[ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="3_q7e6u"]
-[ext_resource type="Script" uid="uid://d25bth6dg3orq" path="res://Screens/GameScreen.gd" id="4_gamescreen"]
-[ext_resource type="PackedScene" uid="uid://cnt482x3sc0bc" path="res://Screens/Day Over/Scenes/day_over.tscn" id="5_nvp4f"]
+[ext_resource type="Script" uid="uid://d25bth6dg3orq" path="res://Screens/Game/Scripts/GameScreen.gd" id="1_iwem0"]
+[ext_resource type="PackedScene" uid="uid://iq1mcvj1proc" path="res://Orders/Scenes/OrderContainer.tscn" id="2_vmgo5"]
+[ext_resource type="Texture2D" uid="uid://dmscxvdcf2qke" path="res://Screens/Assets/cart_main.PNG" id="3_2t8hv"]
+[ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="4_kkmty"]
+[ext_resource type="PackedScene" uid="uid://cnt482x3sc0bc" path="res://Screens/Day Over/Scenes/day_over.tscn" id="5_co4do"]
 
 [node name="GameScreen" type="Node2D" unique_id=333561420]
-script = ExtResource("4_gamescreen")
+script = ExtResource("1_iwem0")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=520455930]
 layer = 10
 
-[node name="OrderContainer" parent="HUD" unique_id=908020767 instance=ExtResource("1_p7x0p")]
+[node name="OrderContainer" parent="HUD" unique_id=908020767 instance=ExtResource("2_vmgo5")]
 
 [node name="PalamigBtn" type="Button" parent="HUD" unique_id=1086686354]
 offset_left = 24.0
@@ -24,11 +24,11 @@ text = "Palamig"
 [node name="CartMain" type="Sprite2D" parent="." unique_id=481923727]
 position = Vector2(960, 540)
 scale = Vector2(1.2, 1.2)
-texture = ExtResource("2_b7a1e")
+texture = ExtResource("3_2t8hv")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1981916952]
 position = Vector2(948, 540)
-script = ExtResource("3_q7e6u")
+script = ExtResource("4_kkmty")
 deadZone = 125
 
 [node name="Button" type="Button" parent="." unique_id=1122267757]
@@ -41,7 +41,7 @@ text = "end day"
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1490396313]
 layer = 999
 
-[node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_nvp4f")]
+[node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_co4do")]
 
 [connection signal="pressed" from="HUD/PalamigBtn" to="." method="_on_palamig_btn_pressed"]
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
