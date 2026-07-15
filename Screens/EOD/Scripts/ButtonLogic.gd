@@ -63,6 +63,8 @@ var restart_button: Button
 var lore_feed: Label
 var _starting_day: bool = false
 var phone_screen_back: ColorRect
+# Apps opened this EOD — badge clears once the player checks them.
+var _apps_checked: Dictionary = {}
 
 func _ready() -> void:
 	get_tree().paused = false
@@ -172,13 +174,14 @@ func _refresh_shop_state() -> void:
 		bills_label.text = "Tonight's bills: ~%s" % PlayerStatController.format_pesos(
 			PlayerStatController.tonight_bill_total()
 		)
-	var med_btn: Button = $FamilyGroup/VBoxContainer/Medicine/medBtn
+	var med_btn: Button = _shop_btn($FamilyGroup/VBoxContainer/Medicine)
 	var med_price: int = _essential_cost("medicine")
-	med_btn.disabled = (
-		not FamilyStateController.is_family_sick
-		or PlayerStats.paidMedicine
-		or PlayerStats.playerMoney < med_price
-	)
+	if med_btn:
+		med_btn.disabled = (
+			not FamilyStateController.is_family_sick
+			or PlayerStats.paidMedicine
+			or PlayerStats.playerMoney < med_price
+		)
 	_refresh_new_day_hint()
 	_refresh_shop_lock_state()
 	_refresh_tindahan_app_btn()
@@ -194,25 +197,25 @@ func _refresh_shop_state() -> void:
 
 
 func _refresh_shop_prices() -> void:
-	_set_price_label($ResourceGroup/VBoxContainer/Fishball/Price, _resource_cost("fishball"))
-	_set_price_label($ResourceGroup/VBoxContainer/Kikiam/Price, _resource_cost("kikiam"))
-	_set_price_label($ResourceGroup/VBoxContainer/Kwek2/Price, _resource_cost("kwek2"))
-	_set_price_label($ResourceGroup/VBoxContainer/Sauce/Price, _resource_cost("sauce"))
-	_set_price_label($ResourceGroup/VBoxContainer/Palamig/Price, _resource_cost("palamig"))
-	var app_price: Label = $ResourceGroup/VBoxContainer/AppSubscription/Price
+	_set_price_label(_shop_price($ResourceGroup/VBoxContainer/Fishball), _resource_cost("fishball"))
+	_set_price_label(_shop_price($ResourceGroup/VBoxContainer/Kikiam), _resource_cost("kikiam"))
+	_set_price_label(_shop_price($ResourceGroup/VBoxContainer/Kwek2), _resource_cost("kwek2"))
+	_set_price_label(_shop_price($ResourceGroup/VBoxContainer/Sauce), _resource_cost("sauce"))
+	_set_price_label(_shop_price($ResourceGroup/VBoxContainer/Palamig), _resource_cost("palamig"))
+	var app_price: Label = _shop_price($ResourceGroup/VBoxContainer/AppSubscription)
 	if app_price:
 		app_price.text = "%d/day" % _essential_cost("tindahanApp")
-	_set_price_label($FamilyGroup/VBoxContainer/Electricity/Price, _essential_cost("electricity"))
-	_set_price_label($FamilyGroup/VBoxContainer/Water/Price, _essential_cost("water"))
-	_set_price_label($FamilyGroup/VBoxContainer/Rent/Price, _essential_cost("rent"))
-	_set_price_label($FamilyGroup/VBoxContainer/Food/Price, _essential_cost("food"))
-	_set_price_label($FamilyGroup/VBoxContainer/Medicine/Price, _essential_cost("medicine"))
-	_set_price_label($UpgradesGroup/VBoxContainer/PalamigUpgrd/Price, _upgrade_cost("palamig"))
-	_set_price_label($UpgradesGroup/VBoxContainer/ContainerUpgrd/Price, _upgrade_cost("container"))
-	_set_price_label($UpgradesGroup/VBoxContainer/CookingUpgrd/Price, _upgrade_cost("cook"))
-	_set_price_label($UpgradesGroup/VBoxContainer/BurnUpgrd/Price, _upgrade_cost("burn"))
-	_set_price_label($MiscGroup/VBoxContainer/Anting2/Price, _misc_cost("anting"))
-	_set_price_label($MiscGroup/VBoxContainer/Weather/Price, _misc_cost("weather"))
+	_set_price_label(_shop_price($FamilyGroup/VBoxContainer/Electricity), _essential_cost("electricity"))
+	_set_price_label(_shop_price($FamilyGroup/VBoxContainer/Water), _essential_cost("water"))
+	_set_price_label(_shop_price($FamilyGroup/VBoxContainer/Rent), _essential_cost("rent"))
+	_set_price_label(_shop_price($FamilyGroup/VBoxContainer/Food), _essential_cost("food"))
+	_set_price_label(_shop_price($FamilyGroup/VBoxContainer/Medicine), _essential_cost("medicine"))
+	_set_price_label(_shop_price($UpgradesGroup/VBoxContainer/PalamigUpgrd), _upgrade_cost("palamig"))
+	_set_price_label(_shop_price($UpgradesGroup/VBoxContainer/ContainerUpgrd), _upgrade_cost("container"))
+	_set_price_label(_shop_price($UpgradesGroup/VBoxContainer/CookingUpgrd), _upgrade_cost("cook"))
+	_set_price_label(_shop_price($UpgradesGroup/VBoxContainer/BurnUpgrd), _upgrade_cost("burn"))
+	_set_price_label(_shop_price($MiscGroup/VBoxContainer/Anting2), _misc_cost("anting"))
+	_set_price_label(_shop_price($MiscGroup/VBoxContainer/Weather), _misc_cost("weather"))
 
 
 func _set_price_label(label: Label, amount: int) -> void:
@@ -220,8 +223,46 @@ func _set_price_label(label: Label, amount: int) -> void:
 		label.text = "%d Pesos" % amount
 
 
+## After _wrap_shop_cell, Label/Button live under NameWrap/PriceWrap/BtnWrap.
+func _shop_child(row: Node, child_name: String) -> Node:
+	if row == null:
+		return null
+	var direct := row.get_node_or_null(child_name)
+	if direct:
+		return direct
+	for wrap_name in ["NameWrap", "PriceWrap", "BtnWrap"]:
+		var wrap := row.get_node_or_null(wrap_name)
+		if wrap == null:
+			continue
+		var nested := wrap.get_node_or_null(child_name)
+		if nested:
+			return nested
+	return null
+
+
+func _shop_btn(row: Node) -> Button:
+	if row == null:
+		return null
+	var wrap := row.get_node_or_null("BtnWrap")
+	var root: Node = wrap if wrap else row
+	for child in root.get_children():
+		if child is Button:
+			return child as Button
+	return null
+
+
+func _shop_price(row: Node) -> Label:
+	return _shop_child(row, "Price") as Label
+
+
+func _shop_label(row: Node) -> Label:
+	return _shop_child(row, "Label") as Label
+
+
 func showOpt(opt: String) -> void:
 	_hide_app_icon_tooltip()
+	_apps_checked[opt] = true
+	_refresh_app_badges()
 	page = categories[opt]
 	$Home.visible = false
 	$Stats.visible = false
@@ -271,35 +312,46 @@ func _on_palamig_btn_pressed() -> void:
 	if PlayerStats.get("palamigUP"):
 		return
 	buyUpgrade(_upgrade_cost("palamig"), "palamigUP")
-	$UpgradesGroup/VBoxContainer/PalamigUpgrd/palamigBtn.text = "bought"
+	var btn := _shop_btn($UpgradesGroup/VBoxContainer/PalamigUpgrd)
+	if btn:
+		btn.text = "bought"
 func _on_container_btn_pressed() -> void:
 	if PlayerStats.get("containerUP"):
 		return
 	buyUpgrade(_upgrade_cost("container"), "containerUP")
-	$UpgradesGroup/VBoxContainer/ContainerUpgrd/containerBtn.text = "bought"
+	var btn := _shop_btn($UpgradesGroup/VBoxContainer/ContainerUpgrd)
+	if btn:
+		btn.text = "bought"
 func _on_cooking_btn_pressed() -> void:
 	if PlayerStats.get("cookUP"):
 		return
 	buyUpgrade(_upgrade_cost("cook"), "cookUP")
-	$UpgradesGroup/VBoxContainer/CookingUpgrd/cookingBtn.text = "bought"
+	var btn := _shop_btn($UpgradesGroup/VBoxContainer/CookingUpgrd)
+	if btn:
+		btn.text = "bought"
 func _on_burn_btn_pressed() -> void:
 	if PlayerStats.get("burnUP"):
 		return
 	buyUpgrade(_upgrade_cost("burn"), "burnUP")
-	$UpgradesGroup/VBoxContainer/BurnUpgrd/burnBtn.text = "bought"
+	var btn := _shop_btn($UpgradesGroup/VBoxContainer/BurnUpgrd)
+	if btn:
+		btn.text = "bought"
 func update_resource_visibility() -> void:
 	var palamig_row := $ResourceGroup/VBoxContainer/Palamig
-	var palamig_label: Label = palamig_row.get_node("Label") as Label
+	var palamig_label: Label = _shop_label(palamig_row)
 	palamig_row.visible = true
-	if PlayerStats.palamigUP:
-		palamig_label.text = "Palamig"
-	else:
-		palamig_label.text = "Palamig (buy container first)"
+	if palamig_label:
+		if PlayerStats.palamigUP:
+			palamig_label.text = "Palamig"
+		else:
+			palamig_label.text = "Palamig (buy container first)"
 	_refresh_resource_buy_buttons()
 
 
 func _refresh_upgrade_buttons() -> void:
-	var palamig_btn: Button = $UpgradesGroup/VBoxContainer/PalamigUpgrd/palamigBtn
+	var palamig_btn: Button = _shop_btn($UpgradesGroup/VBoxContainer/PalamigUpgrd)
+	if palamig_btn == null:
+		return
 	if PlayerStats.palamigUP:
 		palamig_btn.text = "bought"
 		palamig_btn.disabled = true
@@ -308,28 +360,31 @@ func _refresh_upgrade_buttons() -> void:
 	else:
 		palamig_btn.text = "Buy"
 		palamig_btn.disabled = PlayerStats.playerMoney < _upgrade_cost("palamig")
-	var container_btn: Button = $UpgradesGroup/VBoxContainer/ContainerUpgrd/containerBtn
-	if PlayerStats.containerUP:
+	var container_btn: Button = _shop_btn($UpgradesGroup/VBoxContainer/ContainerUpgrd)
+	if container_btn and PlayerStats.containerUP:
 		container_btn.text = "bought"
 		container_btn.disabled = true
-	var cook_btn: Button = $UpgradesGroup/VBoxContainer/CookingUpgrd/cookingBtn
-	if PlayerStats.cookUP:
+	var cook_btn: Button = _shop_btn($UpgradesGroup/VBoxContainer/CookingUpgrd)
+	if cook_btn and PlayerStats.cookUP:
 		cook_btn.text = "bought"
 		cook_btn.disabled = true
-	var burn_btn: Button = $UpgradesGroup/VBoxContainer/BurnUpgrd/burnBtn
-	if PlayerStats.burnUP:
+	var burn_btn: Button = _shop_btn($UpgradesGroup/VBoxContainer/BurnUpgrd)
+	if burn_btn and PlayerStats.burnUP:
 		burn_btn.text = "bought"
 		burn_btn.disabled = true
 
 
 func _refresh_resource_buy_buttons() -> void:
-	var palamig_btn: Button = $ResourceGroup/VBoxContainer/Palamig/buyPalamig
-	palamig_btn.disabled = (
-		not PlayerStats.palamigUP
-		or not PlayerStats.paidTindahanApp
-		or PlayerStats.playerMoney < _resource_cost("palamig")
-	)
-	var sauce_btn: Button = $ResourceGroup/VBoxContainer/Sauce/buySauce
+	var palamig_btn: Button = _shop_btn($ResourceGroup/VBoxContainer/Palamig)
+	if palamig_btn:
+		palamig_btn.disabled = (
+			not PlayerStats.palamigUP
+			or not PlayerStats.paidTindahanApp
+			or PlayerStats.playerMoney < _resource_cost("palamig")
+		)
+	var sauce_btn: Button = _shop_btn($ResourceGroup/VBoxContainer/Sauce)
+	if sauce_btn == null:
+		return
 	if PlayerStats.boughtSauce:
 		sauce_btn.text = "bought"
 		sauce_btn.disabled = true
@@ -394,7 +449,9 @@ func _on_buy_sauce_pressed() -> void:
 	if (PlayerStats.boughtSauce):
 		return
 	buyResource(_resource_cost("sauce"), "sauce")
-	$ResourceGroup/VBoxContainer/Sauce/buySauce.text = "bought"
+	var sauce_btn := _shop_btn($ResourceGroup/VBoxContainer/Sauce)
+	if sauce_btn:
+		sauce_btn.text = "bought"
 
 func _on_buy_palamig_pressed() -> void:
 	if not PlayerStats.palamigUP:
@@ -418,12 +475,16 @@ func _on_app_sub_btn_pressed() -> void:
 	if PlayerStats.paidTindahanApp:
 		return
 	if buyEssentials(_essential_cost("tindahanApp"), "paidTindahanApp"):
-		$ResourceGroup/VBoxContainer/AppSubscription/appSubBtn.text = "paid"
+		var btn := _shop_btn($ResourceGroup/VBoxContainer/AppSubscription)
+		if btn:
+			btn.text = "paid"
 		_refresh_shop_lock_state()
 
 
 func _refresh_tindahan_app_btn() -> void:
-	var btn: Button = $ResourceGroup/VBoxContainer/AppSubscription/appSubBtn
+	var btn: Button = _shop_btn($ResourceGroup/VBoxContainer/AppSubscription)
+	if btn == null:
+		return
 	if PlayerStats.paidTindahanApp:
 		btn.text = "paid"
 		btn.disabled = true
@@ -452,9 +513,9 @@ func _set_buy_buttons_disabled(group: CanvasGroup, disabled: bool, exclude_rows:
 	for row in vbox.get_children():
 		if row.name in exclude_rows:
 			continue
-		for child in row.get_children():
-			if child is Button:
-				(child as Button).disabled = disabled
+		var btn := _shop_btn(row)
+		if btn:
+			btn.disabled = disabled
 
 # FAMILY GROUP
 
@@ -466,17 +527,23 @@ func buyEssentials(price : int, essential: String) -> bool:
 	return true
 
 
+func _mark_row_bought(row: Node) -> void:
+	var btn := _shop_btn(row)
+	if btn:
+		btn.text = "bought"
+
+
 func _on_electicity_btn_pressed() -> void:
 	if PlayerStats.get("paidElectricity"):
 		return
 	if buyEssentials(_essential_cost("electricity"), "paidElectricity"):
-		$FamilyGroup/VBoxContainer/Electricity/electicityBtn.text = "bought"
+		_mark_row_bought($FamilyGroup/VBoxContainer/Electricity)
 
 func _on_water_btn_pressed() -> void:
 	if PlayerStats.get("paidWater"):
 		return
 	if buyEssentials(_essential_cost("water"), "paidWater"):
-		$FamilyGroup/VBoxContainer/Water/waterBtn.text = "bought"
+		_mark_row_bought($FamilyGroup/VBoxContainer/Water)
 
 
 func _on_rent_btn_pressed() -> void:
@@ -484,19 +551,19 @@ func _on_rent_btn_pressed() -> void:
 		return
 	if buyEssentials(_essential_cost("rent"), "paidRent"):
 		FamilyStateController.on_rent_paid()
-		$FamilyGroup/VBoxContainer/Rent/rentBtn.text = "bought"
+		_mark_row_bought($FamilyGroup/VBoxContainer/Rent)
 
 
 func _on_med_btn_pressed() -> void:
 	if FamilyStateController.try_buy_medicine():
-		$FamilyGroup/VBoxContainer/Medicine/medBtn.text = "bought"
+		_mark_row_bought($FamilyGroup/VBoxContainer/Medicine)
 
 
 func _on_food_btn_pressed() -> void:
 	if PlayerStats.get("paidFood"):
 		return
 	if buyEssentials(_essential_cost("food"), "paidFood"):
-		$FamilyGroup/VBoxContainer/Food/foodBtn.text = "bought"
+		_mark_row_bought($FamilyGroup/VBoxContainer/Food)
 
 
 # MISC
@@ -508,7 +575,7 @@ func _on_anting_btn_pressed() -> void:
 	if PlayerStats.get("boughtAnting2"):
 		return
 	buyEssentials(_misc_cost("anting"), "boughtAnting2")
-	$MiscGroup/VBoxContainer/Anting2/antingBtn.text = "bought"
+	_mark_row_bought($MiscGroup/VBoxContainer/Anting2)
 
 
 func _on_weather_btn_pressed() -> void:
@@ -517,7 +584,7 @@ func _on_weather_btn_pressed() -> void:
 	if PlayerStats.get("boughtSubscription"):
 		return
 	buyEssentials(_misc_cost("weather"), "boughtSubscription")
-	$MiscGroup/VBoxContainer/Weather/weatherBtn.text = "bought"
+	_mark_row_bought($MiscGroup/VBoxContainer/Weather)
 
 
 func _on_loan_btn_pressed() -> void:
@@ -526,10 +593,12 @@ func _on_loan_btn_pressed() -> void:
 
 
 func _refresh_loan_btn() -> void:
-	var btn: Button = $MiscGroup/VBoxContainer/JuanAngat/loanBtn
-	var price: Label = $MiscGroup/VBoxContainer/JuanAngat/Price
+	var btn: Button = _shop_btn($MiscGroup/VBoxContainer/JuanAngat)
+	var price: Label = _shop_price($MiscGroup/VBoxContainer/JuanAngat)
 	if price:
 		price.text = "+%d / owe %d" % [LoanController.payout_amount(), LoanController.repay_amount()]
+	if btn == null:
+		return
 	if PlayerStats.loan_balance > 0:
 		btn.text = "Owe %d" % PlayerStats.loan_balance
 		btn.disabled = true
@@ -571,6 +640,7 @@ func _on_main_menu_pressed() -> void:
 
 func go_home(current_group: CanvasGroup) -> void:
 	if current_group == home:
+		_refresh_app_badges()
 		return
 	current_group.visible = false
 	page = home
@@ -582,6 +652,7 @@ func go_home(current_group: CanvasGroup) -> void:
 	_refresh_tab_header("")
 	_refresh_new_day_hint()
 	_refresh_bed_button_caption()
+	_refresh_app_badges()
 	if phone_screen_back:
 		phone_screen_back.visible = false
 
@@ -631,9 +702,12 @@ func _on_home_btn_mouse_exited() -> void:
 
 
 func _refresh_sbatter_btn() -> void:
-	var btn: Button = $MiscGroup/VBoxContainer/Gamble/gambleBtn
-	var price_label: Label = $MiscGroup/VBoxContainer/Gamble/Price
-	price_label.text = SbatterController.wager_label()
+	var btn: Button = _shop_btn($MiscGroup/VBoxContainer/Gamble)
+	var price_label: Label = _shop_price($MiscGroup/VBoxContainer/Gamble)
+	if price_label:
+		price_label.text = SbatterController.wager_label()
+	if btn == null:
+		return
 	btn.focus_mode = Control.FOCUS_NONE
 	btn.mouse_filter = Control.MOUSE_FILTER_STOP
 	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -682,6 +756,7 @@ func _setup_phone_ui() -> void:
 	_style_shop_groups()
 	_position_phone_tabs()
 	_setup_app_icon_hover()
+	_setup_app_badges()
 	_setup_tab_header()
 	call_deferred("_layout_phone_chrome")
 
@@ -891,6 +966,102 @@ const APP_ICON_TITLES := {
 	"family": "Family",
 	"misc": "Misc",
 }
+
+
+func _setup_app_badges() -> void:
+	for child in $MenuOptions.get_children():
+		if child is TextureButton:
+			_ensure_app_badge(child as TextureButton)
+	_refresh_app_badges()
+
+
+func _ensure_app_badge(btn: TextureButton) -> void:
+	if btn.get_node_or_null("NotifBadge") != null:
+		return
+	# Icons are ~420px and MenuOptions is scaled ~0.15, so badge is large in
+	# local space to read as a normal phone notification pip on screen.
+	var badge := PanelContainer.new()
+	badge.name = "NotifBadge"
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.z_index = 20
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.92, 0.12, 0.16, 1.0)
+	style.set_corner_radius_all(64)
+	style.set_content_margin_all(10)
+	style.content_margin_left = 22
+	style.content_margin_right = 22
+	style.content_margin_top = 8
+	style.content_margin_bottom = 10
+	badge.add_theme_stylebox_override("panel", style)
+	var count := Label.new()
+	count.name = "Count"
+	count.text = "1"
+	count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	count.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	count.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	count.add_theme_color_override("font_color", Color.WHITE)
+	count.add_theme_font_size_override("font_size", 72)
+	badge.add_child(count)
+	btn.add_child(badge)
+	var icon_size := Vector2(420, 420)
+	if btn.texture_normal:
+		icon_size = btn.texture_normal.get_size()
+	badge.position = Vector2(icon_size.x - 110.0, -20.0)
+
+
+func _refresh_app_badges() -> void:
+	var tabs := get_node_or_null("MenuOptions") as HBoxContainer
+	if tabs == null:
+		return
+	for child in tabs.get_children():
+		if not child is TextureButton:
+			continue
+		var btn := child as TextureButton
+		var badge := btn.get_node_or_null("NotifBadge") as Control
+		if badge == null:
+			continue
+		var key := btn.name.to_lower()
+		var checked: bool = bool(_apps_checked.get(key, false))
+		var count := _app_notif_count(key)
+		badge.visible = (not checked) and count > 0
+		var label := badge.get_node_or_null("Count") as Label
+		if label:
+			label.text = str(mini(count, 9)) if count < 10 else "9+"
+
+
+## ponytail: actionable items when we know them; always ≥1 so unchecked apps nudge.
+func _app_notif_count(key: String) -> int:
+	var n := 0
+	match key:
+		"resources":
+			if not PlayerStats.paidTindahanApp:
+				n += 1
+			if PlayerStats.fishballStock <= 0:
+				n += 1
+			if PlayerStats.kwekwekStock <= 0:
+				n += 1
+			if not PlayerStats.boughtSauce:
+				n += 1
+			if PlayerStats.palamigUP and PlayerStats.palamigStock <= 0:
+				n += 1
+		"upgrades":
+			if not PlayerStats.palamigUP:
+				n += 1
+		"family":
+			if not PlayerStats.paidRent:
+				n += 1
+			if not PlayerStats.paidFood:
+				n += 1
+			if not PlayerStats.paidElectricity:
+				n += 1
+			if not PlayerStats.paidWater:
+				n += 1
+			if FamilyStateController.is_family_sick and not PlayerStats.paidMedicine:
+				n += 1
+		"misc":
+			if LoanController.can_borrow():
+				n += 1
+	return maxi(n, 1)
 
 
 func _setup_app_icon_hover() -> void:

@@ -7,6 +7,7 @@ const OUT_DIR := "res://docs/pr-screenshots/"
 const SHOTS := [
 	{"name": "01_title_name_panel", "scene": "res://Screens/Main Menu/Title_Screen/title_screen.tscn"},
 	{"name": "02_eod_phone", "scene": "res://Screens/EOD/Scenes/Room.tscn"},
+	{"name": "02b_eod_home_badges", "scene": "res://Screens/EOD/Scenes/Room.tscn", "home": true},
 	{"name": "03_stall_hud", "scene": "res://Screens/Game/Scenes/GameScreen.tscn"},
 ]
 
@@ -62,6 +63,7 @@ func _capture(shot: Dictionary) -> void:
 		var logic := scene.get_node_or_null("Node2D")
 		if logic and logic.has_method("showOpt"):
 			logic.showOpt("resources")
+	# 02b stays on home (paidTindahanApp already true) so app badges are visible.
 	if shot.name == "03_stall_hud" and scene and scene.has_method("start_day"):
 		scene.start_day()
 
