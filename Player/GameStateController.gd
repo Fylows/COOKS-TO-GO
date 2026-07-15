@@ -1,6 +1,8 @@
 extends CanvasLayer
 
 const EndingBank := preload("res://Player/EndingBank.gd")
+## Autowrap labels report a tiny min width; reset_size() collapses without this.
+const OVERLAY_WIDTH := 880.0
 
 var is_game_over: bool = false
 var is_victory_toast: bool = false
@@ -47,6 +49,17 @@ func evaluate_wins() -> bool:
 	return true
 
 
+func _layout_panel_centered() -> void:
+	_panel.custom_minimum_size = Vector2(OVERLAY_WIDTH, 0)
+	_panel.reset_size()
+	var half := _panel.size * 0.5
+	_panel.offset_left = -half.x
+	_panel.offset_right = half.x
+	_panel.offset_top = -half.y
+	_panel.offset_bottom = half.y
+	_panel.pivot_offset = half
+
+
 func _present_overlay() -> void:
 	_refresh_panel()
 	show()
@@ -54,10 +67,9 @@ func _present_overlay() -> void:
 	if _blocker:
 		_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
 		_blocker.modulate.a = 0.0
+	_layout_panel_centered()
 	_panel.modulate.a = 0.0
 	_panel.scale = Vector2(0.9, 0.9)
-	_panel.reset_size()
-	_panel.pivot_offset = _panel.size * 0.5
 	var tween := create_tween()
 	tween.set_parallel(true)
 	if _blocker:
@@ -235,73 +247,111 @@ func _build_overlay() -> void:
 	add_child(_blocker)
 
 	_panel = PanelContainer.new()
-	_panel.set_anchors_preset(Control.PRESET_CENTER)
-	_panel.offset_left = -380.0
-	_panel.offset_top = -300.0
-	_panel.offset_right = 380.0
-	_panel.offset_bottom = 310.0
+	_panel.anchor_left = 0.5
+	_panel.anchor_top = 0.5
+	_panel.anchor_right = 0.5
+	_panel.anchor_bottom = 0.5
+	_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_panel.custom_minimum_size = Vector2(OVERLAY_WIDTH, 0)
+	_panel.offset_left = -OVERLAY_WIDTH * 0.5
+	_panel.offset_right = OVERLAY_WIDTH * 0.5
+	_panel.offset_top = -200.0
+	_panel.offset_bottom = 200.0
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color(0.04, 0.03, 0.05, 0.98)
 	panel_style.border_color = Color(0.45, 0.08, 0.1, 1)
 	panel_style.set_border_width_all(2)
-	panel_style.set_content_margin_all(26)
+	panel_style.set_content_margin_all(32)
 	panel_style.set_corner_radius_all(4)
 	_panel.add_theme_stylebox_override("panel", panel_style)
 	add_child(_panel)
 
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 14)
+	vbox.add_theme_constant_override("separation", 16)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_panel.add_child(vbox)
 
 	_title = Label.new()
 	_title.text = "Wala na"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_title.add_theme_font_size_override("font_size", 34)
+	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_title.add_theme_font_size_override("font_size", 36)
 	_title.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
 	vbox.add_child(_title)
 
 	_ending_label = Label.new()
 	_ending_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_ending_label.add_theme_font_size_override("font_size", 14)
+	_ending_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_ending_label.add_theme_font_size_override("font_size", 16)
 	_ending_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
 	vbox.add_child(_ending_label)
 
 	_reason_label = Label.new()
 	_reason_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_reason_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_reason_label.add_theme_font_size_override("font_size", 20)
+	_reason_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_reason_label.add_theme_font_size_override("font_size", 22)
 	_reason_label.add_theme_color_override("font_color", Color(0.88, 0.84, 0.82))
 	vbox.add_child(_reason_label)
 
 	_detail_label = Label.new()
 	_detail_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_detail_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_detail_label.add_theme_font_size_override("font_size", 15)
+	_detail_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_detail_label.add_theme_font_size_override("font_size", 16)
 	_detail_label.add_theme_color_override("font_color", Color(0.55, 0.48, 0.48))
 	vbox.add_child(_detail_label)
 
 	_stats_label = Label.new()
 	_stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_stats_label.add_theme_font_size_override("font_size", 15)
+	_stats_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_stats_label.add_theme_font_size_override("font_size", 16)
 	_stats_label.add_theme_color_override("font_color", Color(0.42, 0.4, 0.45))
 	vbox.add_child(_stats_label)
 
 	_primary_button = Button.new()
 	_primary_button.text = "Start New Game"
-	_primary_button.custom_minimum_size = Vector2(0, 44)
-	_primary_button.add_theme_font_size_override("font_size", 18)
+	_primary_button.custom_minimum_size = Vector2(0, 48)
+	_primary_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_primary_button.add_theme_font_size_override("font_size", 20)
+	_primary_button.add_theme_color_override("font_color", Color(0.98, 0.96, 0.94))
+	_primary_button.add_theme_color_override("font_hover_color", Color(1.0, 0.94, 0.7))
+	_style_overlay_button(_primary_button, Color(0.28, 0.08, 0.1, 0.98), Color(0.9, 0.35, 0.35, 1))
 	_primary_button.pressed.connect(_on_primary_pressed)
 	vbox.add_child(_primary_button)
 
 	_secondary_button = Button.new()
 	_secondary_button.text = "New Game"
 	_secondary_button.visible = false
-	_secondary_button.custom_minimum_size = Vector2(0, 40)
-	_secondary_button.add_theme_font_size_override("font_size", 16)
+	_secondary_button.custom_minimum_size = Vector2(0, 44)
+	_secondary_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_secondary_button.add_theme_font_size_override("font_size", 18)
+	_secondary_button.add_theme_color_override("font_color", Color(0.92, 0.96, 1.0))
+	_secondary_button.add_theme_color_override("font_hover_color", Color(1.0, 0.94, 0.7))
+	_style_overlay_button(_secondary_button, Color(0.1, 0.14, 0.22, 0.98), Color(0.55, 0.7, 0.95, 1))
 	_secondary_button.pressed.connect(_on_secondary_pressed)
 	vbox.add_child(_secondary_button)
+
+
+func _style_overlay_button(button: Button, bg: Color, border: Color) -> void:
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = bg
+	normal.border_color = border
+	normal.set_border_width_all(2)
+	normal.set_corner_radius_all(8)
+	normal.set_content_margin_all(12)
+	var hover := normal.duplicate() as StyleBoxFlat
+	hover.bg_color = bg.lightened(0.18)
+	hover.border_color = border.lightened(0.12)
+	var pressed := normal.duplicate() as StyleBoxFlat
+	pressed.bg_color = bg.darkened(0.1)
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 
 func _on_primary_pressed() -> void:
