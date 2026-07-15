@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://c6okljdi8k41s" path="res://Orders/Scripts/OrderModel.gd" id="1_h4v0o"]
 [ext_resource type="Texture2D" uid="uid://dhqrqboqprwo4" path="res://Orders/Assets/order_card.png" id="2_sj65x"]
+[ext_resource type="Texture2D" uid="uid://580qltnwxw2w" path="res://Orders/Assets/ConfirmButton.png" id="3_v4dtq"]
+[ext_resource type="Texture2D" uid="uid://c47w48m67x05d" path="res://Orders/Assets/CancelButton.png" id="4_ce2of"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_7gp5a"]
 font_size = 20
@@ -35,6 +37,26 @@ label_settings = SubResource("LabelSettings_7gp5a")
 horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
 
+[node name="FoodSprite" type="TextureRect" parent="MarginContainer/VBoxContainer" unique_id=533012684]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
 [node name="ButtonContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1601016186]
 layout_mode = 2
+theme_override_constants/separation = 6
 alignment = 1
+
+[node name="ConfirmButton" type="TextureButton" parent="MarginContainer/VBoxContainer/ButtonContainer" unique_id=987696859]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture_normal = ExtResource("3_v4dtq")
+
+[node name="CancelButton" type="TextureButton" parent="MarginContainer/VBoxContainer/ButtonContainer" unique_id=1462764802]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture_normal = ExtResource("4_ce2of")
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonContainer/ConfirmButton" to="." method="_on_confirm_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonContainer/CancelButton" to="." method="_on_cancel_button_pressed"]

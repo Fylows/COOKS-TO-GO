@@ -60,6 +60,9 @@ func create_order(days_passed: int) -> Order:
 	var new_order: Order = ORDER_SCENE.instantiate()
 	order_list.add_child(new_order)
 
+	new_order.confirm_requested.connect(confirm_order)
+	new_order.cancel_requested.connect(cancel_order)
+	
 	new_order.setup_order(
 		fishball_count,
 		kwekwek_count,
