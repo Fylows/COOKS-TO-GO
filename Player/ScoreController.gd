@@ -1,6 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://high_scores.cfg"
+const EndingBank := preload("res://Player/EndingBank.gd")
 
 var run_total_earned: int = 0
 var run_peak_money: int = 0
@@ -12,6 +13,7 @@ var best_days_survived: int = 0
 var best_run_earned: int = 0
 var best_peak_money: int = 0
 var run_journal: Array = []
+var unlocked_endings: PackedStringArray = PackedStringArray()
 
 
 func _ready() -> void:
@@ -103,6 +105,34 @@ func has_high_score() -> bool:
 	return best_days_survived > 0 or best_run_earned > 0 or best_peak_money > 0
 
 
+func unlock_ending(id: String) -> void:
+	if id.is_empty() or id in unlocked_endings:
+		return
+	unlocked_endings.append(id)
+	_save()
+
+
+func unlocked_ending_count() -> int:
+	return unlocked_endings.size()
+
+
+func has_unlocked_ending(id: String) -> bool:
+	return id in unlocked_endings
+
+
+func format_endings_progress() -> String:
+	var n := unlocked_ending_count()
+	var total := EndingBank.count()
+	var bad := EndingBank.bad_count()
+	var good := EndingBank.good_count()
+	if n <= 0:
+		return "Unlock all %d endings!\n(%d bad · %d good)" % [total, bad, good]
+	if n >= total:
+		return "All %d endings unlocked." % total
+	return "Endings unlocked: %d/%d\n(%d bad · %d good)" % [n, total, bad, good]
+
+
+
 func format_last_night() -> String:
 	if PlayerStatController.last_night_report.is_empty():
 		return ""
@@ -125,6 +155,7 @@ func _save() -> void:
 	config.set_value("scores", "best_days", best_days_survived)
 	config.set_value("scores", "best_run_earned", best_run_earned)
 	config.set_value("scores", "best_peak_money", best_peak_money)
+	config.set_value("endings", "unlocked", ",".join(unlocked_endings))
 	config.save(SAVE_PATH)
 
 
@@ -135,3 +166,11 @@ func _load() -> void:
 	best_days_survived = int(config.get_value("scores", "best_days", 0))
 	best_run_earned = int(config.get_value("scores", "best_run_earned", 0))
 	best_peak_money = int(config.get_value("scores", "best_peak_money", 0))
+	var raw := str(config.get_value("endings", "unlocked", ""))
+	unlocked_endings = PackedStringArray()
+	if raw.is_empty():
+		return
+	for id in raw.split(",", false):
+		var trimmed := id.strip_edges()
+		if not trimmed.is_empty() and trimmed in EndingBank.ENDINGS and trimmed not in unlocked_endings:
+			unlocked_endings.append(trimmed)

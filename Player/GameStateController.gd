@@ -1,8 +1,12 @@
 extends CanvasLayer
 
+const EndingBank := preload("res://Player/EndingBank.gd")
+
 var is_game_over: bool = false
+var is_victory_toast: bool = false
 var reason: String = ""
 var cause_detail: String = ""
+var ending_id: String = ""
 
 var _blocker: ColorRect
 var _panel: PanelContainer
@@ -10,6 +14,9 @@ var _title: Label
 var _reason_label: Label
 var _detail_label: Label
 var _stats_label: Label
+var _ending_label: Label
+var _primary_button: Button
+var _secondary_button: Button
 
 
 func _ready() -> void:
@@ -23,15 +30,37 @@ func evaluate() -> bool:
 	if is_game_over:
 		_present_overlay()
 		return true
-	var next_reason := _compute_reason()
-	if next_reason.is_empty():
+	if _compute_reason().is_empty():
 		return false
-	_trigger(next_reason)
+	var id := EndingBank.pick_id()
+	_trigger_game_over(id)
+	return true
+
+
+func evaluate_wins() -> bool:
+	if is_game_over or is_victory_toast:
+		return false
+	var id := EndingBank.pick_good_id()
+	if id.is_empty():
+		return false
+	_trigger_win(id)
 	return true
 
 
 func reset_for_new_game() -> void:
 	is_game_over = false
+	is_victory_toast = false
+	reason = ""
+	cause_detail = ""
+	ending_id = ""
+	hide()
+	if _blocker:
+		_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+
+func dismiss_victory() -> void:
+	is_victory_toast = false
+	ending_id = ""
 	reason = ""
 	cause_detail = ""
 	hide()
@@ -40,26 +69,15 @@ func reset_for_new_game() -> void:
 
 
 func _compute_reason() -> String:
+	# Softlock / homeless check only — copy comes from EndingBank.
 	if FamilyStateController.is_homeless:
-		return _epitaph_homeless()
+		return "homeless"
 	var block := FamilyStateController.blocking_issue()
 	if block.is_empty():
 		return ""
 	if _can_resolve_block():
 		return ""
-	return _epitaph_for_block(block)
-
-
-func _epitaph_homeless() -> String:
-	cause_detail = "Three nights without rent."
-	return "You lost the house.\nYour family slept outside.\nThey didn't make it through the night."
-
-
-func _epitaph_for_block(block: String) -> String:
-	cause_detail = block
-	if FamilyStateController.is_family_sick:
-		return "The medicine never came.\nYour family got worse every hour.\nThey're gone."
-	return "The stall stayed shut.\nNo money came home.\nYour family waited until they couldn't."
+	return "softlock"
 
 
 func _available_cash() -> int:
@@ -92,13 +110,57 @@ func _can_resolve_block() -> bool:
 	return _available_cash() >= needed
 
 
-func _trigger(next_reason: String) -> void:
+func _trigger_game_over(id: String) -> void:
 	is_game_over = true
-	reason = next_reason
+	is_victory_toast = false
+	ending_id = id
+	reason = EndingBank.body_for(id)
+	cause_detail = EndingBank.detail_for(id)
+	ScoreController.unlock_ending(id)
+	_apply_overlay_theme(false)
 	_present_overlay()
 	SfxController.play_error()
 	BgmController.play_track("game_over")
 	ScoreController.on_run_end()
+
+
+func _trigger_win(id: String) -> void:
+	is_victory_toast = true
+	is_game_over = false
+	ending_id = id
+	if id not in PlayerStats.run_seen_endings:
+		PlayerStats.run_seen_endings.append(id)
+	reason = EndingBank.body_for(id)
+	cause_detail = EndingBank.detail_for(id)
+	ScoreController.unlock_ending(id)
+	_apply_overlay_theme(true)
+	_present_overlay()
+	SfxController.play_coin()
+	ScoreController.on_run_end()
+
+
+func _apply_overlay_theme(victory: bool) -> void:
+	if _panel == null:
+		return
+	var panel_style := _panel.get_theme_stylebox("panel") as StyleBoxFlat
+	if panel_style == null:
+		panel_style = StyleBoxFlat.new()
+		_panel.add_theme_stylebox_override("panel", panel_style)
+	if victory:
+		panel_style.bg_color = Color(0.03, 0.08, 0.06, 0.98)
+		panel_style.border_color = Color(0.2, 0.55, 0.32, 1)
+		_title.add_theme_color_override("font_color", Color(0.55, 0.92, 0.62))
+		_ending_label.add_theme_color_override("font_color", Color(0.85, 0.95, 0.55))
+		_primary_button.text = "Keep Going"
+		_secondary_button.visible = true
+		_secondary_button.text = "New Game"
+	else:
+		panel_style.bg_color = Color(0.04, 0.03, 0.05, 0.98)
+		panel_style.border_color = Color(0.45, 0.08, 0.1, 1)
+		_title.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
+		_ending_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
+		_primary_button.text = "Start New Game"
+		_secondary_button.visible = false
 
 
 func _present_overlay() -> void:
@@ -110,12 +172,25 @@ func _present_overlay() -> void:
 
 
 func _refresh_panel() -> void:
+	var ending_title := EndingBank.title_for(ending_id) if not ending_id.is_empty() else "Wala na"
+	_title.text = ending_title
 	_reason_label.text = reason
 	_detail_label.text = cause_detail
 	if not cause_detail.is_empty():
-		_detail_label.text += "\n%s left." % PlayerStatController.format_pesos(PlayerStats.playerMoney)
+		_detail_label.text += "\n%s in the till." % PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	else:
-		_detail_label.text = "%s left." % PlayerStatController.format_pesos(PlayerStats.playerMoney)
+		_detail_label.text = "%s in the till." % PlayerStatController.format_pesos(PlayerStats.playerMoney)
+	if _ending_label:
+		var kind := "Good ending" if EndingBank.is_good(ending_id) else "Ending"
+		var n := EndingBank.index_of(ending_id) + 1
+		var unlocked := ScoreController.unlocked_ending_count()
+		_ending_label.text = "%s %d of %d · Collection %d/%d" % [
+			kind,
+			n,
+			EndingBank.count(),
+			unlocked,
+			EndingBank.count(),
+		]
 	_stats_label.text = "This run: %s\nHigh score: %s" % [
 		ScoreController.format_run_stats(),
 		ScoreController.format_records(),
@@ -131,10 +206,10 @@ func _build_overlay() -> void:
 
 	_panel = PanelContainer.new()
 	_panel.set_anchors_preset(Control.PRESET_CENTER)
-	_panel.offset_left = -360.0
-	_panel.offset_top = -250.0
-	_panel.offset_right = 360.0
-	_panel.offset_bottom = 260.0
+	_panel.offset_left = -380.0
+	_panel.offset_top = -300.0
+	_panel.offset_right = 380.0
+	_panel.offset_bottom = 310.0
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color(0.04, 0.03, 0.05, 0.98)
 	panel_style.border_color = Color(0.45, 0.08, 0.1, 1)
@@ -151,14 +226,21 @@ func _build_overlay() -> void:
 	_title = Label.new()
 	_title.text = "Wala na"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title.add_theme_font_size_override("font_size", 42)
+	_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_title.add_theme_font_size_override("font_size", 34)
 	_title.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
 	vbox.add_child(_title)
+
+	_ending_label = Label.new()
+	_ending_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_ending_label.add_theme_font_size_override("font_size", 14)
+	_ending_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
+	vbox.add_child(_ending_label)
 
 	_reason_label = Label.new()
 	_reason_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_reason_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_reason_label.add_theme_font_size_override("font_size", 22)
+	_reason_label.add_theme_font_size_override("font_size", 20)
 	_reason_label.add_theme_color_override("font_color", Color(0.88, 0.84, 0.82))
 	vbox.add_child(_reason_label)
 
@@ -176,14 +258,30 @@ func _build_overlay() -> void:
 	_stats_label.add_theme_color_override("font_color", Color(0.42, 0.4, 0.45))
 	vbox.add_child(_stats_label)
 
-	var restart := Button.new()
-	restart.text = "Start New Game"
-	restart.custom_minimum_size = Vector2(0, 44)
-	restart.add_theme_font_size_override("font_size", 18)
-	restart.pressed.connect(_on_restart_pressed)
-	vbox.add_child(restart)
+	_primary_button = Button.new()
+	_primary_button.text = "Start New Game"
+	_primary_button.custom_minimum_size = Vector2(0, 44)
+	_primary_button.add_theme_font_size_override("font_size", 18)
+	_primary_button.pressed.connect(_on_primary_pressed)
+	vbox.add_child(_primary_button)
+
+	_secondary_button = Button.new()
+	_secondary_button.text = "New Game"
+	_secondary_button.visible = false
+	_secondary_button.custom_minimum_size = Vector2(0, 40)
+	_secondary_button.add_theme_font_size_override("font_size", 16)
+	_secondary_button.pressed.connect(_on_secondary_pressed)
+	vbox.add_child(_secondary_button)
 
 
-func _on_restart_pressed() -> void:
+func _on_primary_pressed() -> void:
+	SfxController.play_click()
+	if is_victory_toast:
+		dismiss_victory()
+		return
+	PlayerStatController.restart_game()
+
+
+func _on_secondary_pressed() -> void:
 	SfxController.play_click()
 	PlayerStatController.restart_game()
