@@ -44,11 +44,22 @@ var countdown_fill_style: StyleBoxFlat = StyleBoxFlat.new()
 
 func _ready() -> void:
 	modulate.a = 0.0
-	fade_tween = create_tween()
-	fade_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
+	scale = Vector2(0.92, 0.92)
 	countdown_bar.add_theme_stylebox_override("fill", countdown_fill_style)
 	_ensure_action_captions()
 	update_countdown_bar()
+	call_deferred("_play_appear")
+
+
+func _play_appear() -> void:
+	pivot_offset = size * 0.5
+	if fade_tween != null and fade_tween.is_valid():
+		fade_tween.kill()
+	fade_tween = create_tween()
+	fade_tween.set_parallel(true)
+	fade_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
+	fade_tween.tween_property(self, "scale", Vector2.ONE, FADE_IN_DURATION)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _ensure_action_captions() -> void:
@@ -207,7 +218,9 @@ func fade_out() -> void:
 		fade_tween.kill()
 
 	fade_tween = create_tween()
+	fade_tween.set_parallel(true)
 	fade_tween.tween_property(self, "modulate:a", 0.0, FADE_OUT_DURATION)
+	fade_tween.tween_property(self, "scale", Vector2(0.94, 0.94), FADE_OUT_DURATION)
 	await fade_tween.finished
 
 	
