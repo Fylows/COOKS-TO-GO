@@ -1,17 +1,17 @@
 extends RefCounted
 class_name LoreFeedBar
 
-## Bottom stall strip stays between audio (left) and stock (right).
-const PANEL_MIN_HEIGHT := 118.0
-const PANEL_MAX_HEIGHT := 220.0
+## Bottom-left stall card. Caps width so short lines don't span the counter.
+const PANEL_MIN_HEIGHT := 96.0
+const PANEL_MAX_HEIGHT := 180.0
 const SIDE_MARGIN_LEFT := 24.0
-const SIDE_MARGIN_RIGHT := 320.0
 const BOTTOM_MARGIN := 12.0
+const BOTTOM_WIDTH := 440.0
 const EOD_WIDTH := 400.0
 const EOD_LEFT := 24.0
 const EOD_BOTTOM := 16.0
-const CONTENT_PAD := 28.0
-const CHROME_HEIGHT := 40.0
+const CONTENT_PAD := 24.0
+const CHROME_HEIGHT := 32.0
 
 
 static func ensure(parent: Node, node_name: String = "LoreFeed") -> Label:
@@ -41,7 +41,7 @@ static func ensure(parent: Node, node_name: String = "LoreFeed") -> Label:
 	var title := Label.new()
 	title.text = "BARANGAY FEED"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 15)
+	title.add_theme_font_size_override("font_size", 13)
 	title.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(title)
@@ -78,7 +78,7 @@ static func _restyle_panel(panel: PanelContainer) -> void:
 	panel.clip_contents = true
 
 
-## Full-width strip under the stall HUD (game / day-over).
+## Left card under the stall HUD (game / day-over). Clears bottom-right audio.
 static func apply_bottom_layout(panel: Control) -> void:
 	if panel == null:
 		return
@@ -86,9 +86,9 @@ static func apply_bottom_layout(panel: Control) -> void:
 	panel.visible = true
 	panel.z_index = 20
 	panel.clip_contents = true
-	panel.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	panel.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	panel.offset_left = SIDE_MARGIN_LEFT
-	panel.offset_right = -SIDE_MARGIN_RIGHT
+	panel.offset_right = SIDE_MARGIN_LEFT + BOTTOM_WIDTH
 	_apply_height(panel, PANEL_MIN_HEIGHT)
 
 
@@ -107,9 +107,9 @@ static func apply_eod_side_layout(panel: Control) -> void:
 
 
 static func _style_feed(body: Label) -> void:
-	body.add_theme_font_size_override("font_size", 20)
+	body.add_theme_font_size_override("font_size", 17)
 	body.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
-	body.add_theme_constant_override("line_spacing", 6)
+	body.add_theme_constant_override("line_spacing", 4)
 	body.clip_text = false
 	body.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 	body.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
@@ -150,14 +150,12 @@ static func _fit_panel_to_body(panel: Control, body: Label) -> void:
 
 
 static func _panel_content_width(panel: Control) -> float:
-	if panel.has_meta("lore_layout") and str(panel.get_meta("lore_layout")) == "eod":
+	var layout := "bottom"
+	if panel.has_meta("lore_layout"):
+		layout = str(panel.get_meta("lore_layout"))
+	if layout == "eod":
 		return EOD_WIDTH
-	if panel.size.x > 1.0:
-		return panel.size.x
-	var viewport_w := 1920.0
-	if panel.get_viewport():
-		viewport_w = panel.get_viewport().get_visible_rect().size.x
-	return maxf(viewport_w - SIDE_MARGIN_LEFT - SIDE_MARGIN_RIGHT, 320.0)
+	return BOTTOM_WIDTH
 
 
 static func _apply_height(panel: Control, height: float) -> void:
@@ -167,7 +165,7 @@ static func _apply_height(panel: Control, height: float) -> void:
 		layout = str(panel.get_meta("lore_layout"))
 	if layout == "bottom":
 		bottom = BOTTOM_MARGIN
-		panel.custom_minimum_size = Vector2(0, height)
+		panel.custom_minimum_size = Vector2(BOTTOM_WIDTH, height)
 	else:
 		panel.custom_minimum_size = Vector2(EOD_WIDTH, height)
 	panel.offset_top = -(height + bottom)
@@ -180,7 +178,8 @@ static func place_stall_audio(audio: Control, _lore_panel: Control = null) -> vo
 		return
 	audio.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	audio.offset_left = 500.0
-	audio.offset_right = 820.0
+	audio.offset_right = 884.0
 	audio.offset_top = 16.0
 	audio.offset_bottom = 56.0
 	audio.z_index = 25
+	audio.clip_contents = false
