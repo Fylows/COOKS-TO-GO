@@ -56,10 +56,10 @@ scale = Vector2(-7.678791, -16.375587)
 color = Color(0.9137255, 0.92941177, 0.9647059, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Node2D/ResourceGroup" unique_id=511594472]
-offset_left = -409.0
-offset_top = -549.0
-offset_right = -189.0
-offset_bottom = -378.0
+offset_left = -272.0
+offset_top = -295.0
+offset_right = 115.0
+offset_bottom = -124.0
 
 [node name="Fishball" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer" unique_id=1376009133]
 layout_mode = 2
@@ -434,28 +434,6 @@ offset_bottom = 235.56705
 scale = Vector2(-7.678791, -16.375587)
 color = Color(0.92156863, 0.5411765, 0.25882354, 1)
 
-[node name="Stats" type="CanvasGroup" parent="Node2D" unique_id=960918305]
-position = Vector2(349, -610)
-
-[node name="Money" type="Label" parent="Node2D/Stats" unique_id=666033550]
-offset_right = 62.0
-offset_bottom = 23.0
-metadata/_edit_use_anchors_ = true
-
-[node name="Resources" type="Label" parent="Node2D/Stats" unique_id=1968668440]
-offset_left = -76.0
-offset_top = 43.0
-offset_right = -14.0
-offset_bottom = 66.0
-metadata/_edit_use_anchors_ = true
-
-[node name="Upgrades" type="Label" parent="Node2D/Stats" unique_id=228320218]
-offset_left = -74.0
-offset_top = 187.0
-offset_right = -12.0
-offset_bottom = 210.0
-metadata/_edit_use_anchors_ = true
-
 [node name="Home" type="CanvasGroup" parent="Node2D" unique_id=565726316]
 position = Vector2(349, -610)
 
@@ -466,6 +444,16 @@ texture = ExtResource("4_ukhsu")
 [node name="Phone Base" type="Sprite2D" parent="Node2D" unique_id=881558449]
 position = Vector2(-26.999998, -253.99998)
 texture = ExtResource("5_g8ebx")
+
+[node name="Stats" type="CanvasGroup" parent="Node2D" unique_id=960918305]
+position = Vector2(349, -610)
+
+[node name="Money" type="Label" parent="Node2D/Stats" unique_id=666033550]
+offset_left = -594.0
+offset_top = 23.0
+offset_right = -532.0
+offset_bottom = 46.0
+metadata/_edit_use_anchors_ = true
 
 [node name="HomeBtn" type="Button" parent="Node2D" unique_id=441180160]
 offset_left = -72.0
@@ -548,8 +536,8 @@ autowrap_mode = 0
 
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Fishball/buyFishball" to="Node2D" method="_on_buy_fishball_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kikiam/buyKikiam" to="Node2D" method="_on_buy_kikiam_pressed"]
-[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_buys_kwek_2_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_upg_pressed"]
+[connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Kwek2/buysKwek2" to="Node2D" method="_on_buys_kwek_2_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Sauce/buySauce" to="Node2D" method="_on_buy_sauce_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Palamig/buyPalamig" to="Node2D" method="_on_buy_palamig_pressed"]
 [connection signal="pressed" from="Node2D/UpgradesGroup/VBoxContainer/PalamigUpgrd/palamigBtn" to="Node2D" method="_on_palamig_btn_pressed"]

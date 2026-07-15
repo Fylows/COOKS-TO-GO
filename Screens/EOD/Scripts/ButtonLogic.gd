@@ -18,6 +18,7 @@ var categories: Dictionary
 func _ready() -> void:
 	get_tree().paused = false
 	page = home
+	go_home(page)
 	camera = get_node(camera_path)
 	base_position = position
 	categories = {
@@ -30,12 +31,29 @@ func _ready() -> void:
 		$ResourceGroup/VBoxContainer/Palamig.visible = false
 	if (PlayerStats.kikiamPurchasable != true):
 		$ResourceGroup/VBoxContainer/Kikiam.visible = false
+	update_upgrades()
+
 func _process(delta: float) -> void:
 	position = base_position + camera.offset * parallax_strength
-	$Stats/Money.text = str(PlayerStats.playerMoney)
-	var text = ("Palamig: %s" % PlayerStats.palamigStock) if PlayerStats.palamigUP else ""
-	$Stats/Resources.text = "Fishball: %d\nKikiam: %d\nKwek-Kwek: %d\nSauce: %s\n%s" % [PlayerStats.fishballStock, PlayerStats.kikiamStock, PlayerStats.kwekwekStock, PlayerStats.boughtSauce, text]
-	$Stats/Upgrades.text = "Upgrades\n\nPalamig: %s\nBigger Container: %s\nFaster Cooking: %s\nSlower Burning: %s" % [PlayerStats.palamigUP, PlayerStats.containerUP, PlayerStats.cookUP, PlayerStats.burnUP]
+	update_stats_display()
+
+func update_stats_display() -> void:
+	var palamig_text = ("Palamig Stock: %d" % PlayerStats.palamigStock) if PlayerStats.palamigUP else ""
+	var sauce_text = "Yes" if PlayerStats.boughtSauce else "No"
+
+	var lines = [
+		"DAY %d\n" % PlayerStats.daysPassed,
+		"Goal: $%d/10,000\n" % PlayerStats.playerMoney,
+		"Fishball Stock: %d" % PlayerStats.fishballStock,
+		"Kikiam Stock: %d" % PlayerStats.kikiamStock,
+		"Kwek-Kwek Stock: %d" % PlayerStats.kwekwekStock,
+		"Bought Sauce: %s" % sauce_text
+	]
+
+	if palamig_text != "":
+		lines.append(palamig_text)
+
+	$Stats/Money.text = "\n".join(lines)
 
 func showOpt(opt: String) -> void:
 	page = categories[opt]
@@ -73,25 +91,34 @@ func _on_palamig_btn_pressed() -> void:
 	if PlayerStats.get("palamigUP"):
 		return
 	buyUpgrade(PlayerStats.upgradePrices["palamig"], "palamigUP")
-	$UpgradesGroup/VBoxContainer/PalamigUpgrd/palamigBtn.text = "bought"
+	update_upgrades()
 func _on_container_btn_pressed() -> void:
 	if PlayerStats.get("containerUP"):
 		return
 	buyUpgrade(PlayerStats.upgradePrices["container"], "containerUP")
-	$UpgradesGroup/VBoxContainer/ContainerUpgrd/containerBtn.text = "bought"
+	update_upgrades()
 func _on_cooking_btn_pressed() -> void:
 	if PlayerStats.get("cookUP"):
 		return
 	buyUpgrade(PlayerStats.upgradePrices["cook"], "cookUP")
-	$UpgradesGroup/VBoxContainer/CookingUpgrd/cookingBtn.text = "bought"
+	update_upgrades()
 func _on_burn_btn_pressed() -> void:
 	if PlayerStats.get("burnUP"):
 		return
 	buyUpgrade(PlayerStats.upgradePrices["burn"], "burnUP")
-	$UpgradesGroup/VBoxContainer/BurnUpgrd/burnBtn.text = "bought"
+	update_upgrades()
 func update_resource_visibility() -> void:
 	$ResourceGroup/VBoxContainer/Palamig.visible = PlayerStats.palamigUP
-	
+
+func update_upgrades():
+	if (PlayerStats.get("palamigUP")):
+		$UpgradesGroup/VBoxContainer/PalamigUpgrd/palamigBtn.text = "bought"
+	if (PlayerStats.get("containerUP")):
+		$UpgradesGroup/VBoxContainer/ContainerUpgrd/containerBtn.text = "bought"
+	if (PlayerStats.get("cookUP")):
+		$UpgradesGroup/VBoxContainer/CookingUpgrd/cookingBtn.text = "bought"
+	if (PlayerStats.get("burnUP")):
+		$UpgradesGroup/VBoxContainer/BurnUpgrd/burnBtn.text = "bought"
 # RESOURCES
 const RESOURCE_PRICE: Dictionary = {
 	"fishball" : 50,
@@ -174,6 +201,8 @@ func _on_food_btn_pressed() -> void:
 	$FamilyGroup/VBoxContainer/Food/foodBtn.text = "bought"
 
 func go_home(currentGroup : CanvasGroup) -> void:
+	if currentGroup == home:
+		return
 	currentGroup.visible = false
 	page = home
 	home.visible = true
