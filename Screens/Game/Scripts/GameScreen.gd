@@ -1,35 +1,111 @@
 extends Node2D
 
 const PALAMIG_SCENE := preload("res://Palamig/Scenes/palamig_minigame.tscn")
+const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
+const MoneyHud := preload("res://Screens/Shared/MoneyHud.gd")
 const DAY_DURATION_SECONDS := 120.0
 
 @onready var order_controller: OrderController = $HUD/OrderContainer
 @onready var day_over: CanvasLayer = $CanvasLayer
+@onready var day_label: Label = $HUD/DayHud/DayLabel
 @onready var day_timer_label: Label = $HUD/DayHud/TimerLabel
+@onready var stock_label: Label = $HUD/StockHud/VBox/StockLabel
 @onready var pause_button: Button = $HUD/DayHud/PauseButton
+@onready var end_day_button: Button = $HUD/DayHud/EndDayButton
 @onready var money_popup_layer: Control = $HUD/MoneyPopupLayer
 
 var palamig_layer: CanvasLayer
 var palamig_game: Control
 var pending_palamig_order: Order
+var _pause_blocker: ColorRect
 
 var _day_seconds_left: float = 0.0
 var _day_active: bool = false
 var _day_paused: bool = false
 var _popup_stagger: Dictionary = {}
+var lore_feed: Label
+var money_balance_label: Label
+var money_earned_label: Label
+var money_hud_panel: PanelContainer
 
 
 func _ready() -> void:
+	get_tree().paused = false
 	$HUD.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_to_group("game_screen")
 	day_over.visible = false
 	BgmController.play_track("stall")
 	order_controller.palamig_order_started.connect(_on_palamig_order_started)
 	order_controller.order_money_earned.connect(_on_order_money_earned)
 	_setup_palamig_game()
+	lore_feed = LoreFeedBar.ensure($HUD, "LoreFeed")
+	var lore_panel := lore_feed.get_parent().get_parent() as Control
+	LoreFeedBar.apply_bottom_layout(lore_panel)
+	_layout_stall_hud(lore_panel)
+	_setup_money_hud()
+	await _play_day_start_intro()
 	start_day()
 
 
+func _layout_stall_hud(lore_panel: Control) -> void:
+	# Bottom-right corner — clear of the left-anchored day bar (Pause/Restart) and
+	# the bottom feed (which reserves the right margin). Avoids the top-bar overlap.
+	var audio := $HUD/AudioToggles as Control
+	if audio:
+		audio.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+		audio.offset_left = -300.0
+		audio.offset_right = -16.0
+		audio.offset_top = -56.0
+		audio.offset_bottom = -16.0
+		audio.z_index = 25
+	if lore_panel:
+		LoreFeedBar.refresh(lore_feed)
+
+
+func _play_day_start_intro() -> void:
+	var hud_elements: Array[CanvasItem] = [
+		$HUD/DayHud,
+		$HUD/StockHud,
+		$HUD/AudioToggles,
+		$HUD/OrderContainer,
+		$HUD/MoneyPopupLayer,
+	]
+	if money_hud_panel:
+		hud_elements.append(money_hud_panel)
+	if lore_feed:
+		var lore_panel := lore_feed.get_parent().get_parent() as CanvasItem
+		if lore_panel:
+			hud_elements.append(lore_panel)
+	for node in hud_elements:
+		node.modulate.a = 0.0
+	$CartMain.modulate.a = 0.0
+	$CartMain.scale = Vector2(0.92, 0.92)
+	var tween := create_tween()
+	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween.set_parallel(true)
+	for node in hud_elements:
+		tween.tween_property(node, "modulate:a", 1.0, 0.22)
+	tween.tween_property($CartMain, "modulate:a", 1.0, 0.22)
+	tween.tween_property($CartMain, "scale", Vector2(1.2, 1.2), 0.22)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if DayTransition.consume_fade_in():
+		await DayTransition.fade_from_black(0.2)
+	else:
+		DayTransition.release_input()
+	await tween.finished
+
+
+func _exit_tree() -> void:
+	# Day Over arms a fade-in for EOD; don't wipe it when leaving the stall.
+	if not DayTransition.is_fade_in_pending():
+		DayTransition.release_input()
+
+
 func _process(delta: float) -> void:
+	_update_money_hud()
+	_update_stock_label()
+	if LoreController.process_feed(delta):
+		LoreFeedBar.refresh(lore_feed)
 	if not _day_active or _day_paused:
 		return
 	_day_seconds_left = maxf(_day_seconds_left - delta, 0.0)
@@ -44,8 +120,14 @@ func start_day() -> void:
 	_day_active = true
 	_day_seconds_left = DAY_DURATION_SECONDS
 	_popup_stagger.clear()
+	ScoreController.begin_day()
+	LoreController.reset_for_day()
+	LoreFeedBar.refresh(lore_feed)
+	_update_day_label()
 	_update_timer_label()
+	_update_stock_label()
 	pause_button.text = "Pause"
+	_set_pause_ui(false)
 	order_controller.set_orders_paused(false)
 	order_controller.start_order_spawning(PlayerStats.daysPassed)
 
@@ -58,8 +140,14 @@ func end_day() -> void:
 	order_controller.set_orders_paused(true)
 	_close_palamig_if_open()
 	SfxController.play_end_of_day()
+	await _play_day_end_transition()
 	get_tree().paused = true
+
+
+func _play_day_end_transition() -> void:
+	await DayTransition.fade_to_black("Day Over", 0.22)
 	dayOverPopup()
+	await DayTransition.fade_from_black(0.18)
 
 
 func pause_day() -> void:
@@ -67,6 +155,8 @@ func pause_day() -> void:
 		return
 	_day_paused = true
 	order_controller.set_orders_paused(true)
+	_close_palamig_if_open()
+	_set_pause_ui(true)
 	pause_button.text = "Play"
 
 
@@ -75,7 +165,39 @@ func resume_day() -> void:
 		return
 	_day_paused = false
 	order_controller.set_orders_paused(false)
+	_set_pause_ui(false)
 	pause_button.text = "Pause"
+
+
+func _set_pause_ui(paused: bool) -> void:
+	_ensure_pause_blocker()
+	_pause_blocker.visible = paused
+	if end_day_button:
+		end_day_button.disabled = paused
+	var audio := $HUD.get_node_or_null("AudioToggles") as Control
+	if audio:
+		audio.mouse_filter = (
+			Control.MOUSE_FILTER_IGNORE if paused else Control.MOUSE_FILTER_STOP
+		)
+		for child in audio.get_children():
+			if child is BaseButton:
+				(child as BaseButton).disabled = paused
+
+
+func _ensure_pause_blocker() -> void:
+	if _pause_blocker:
+		return
+	_pause_blocker = ColorRect.new()
+	_pause_blocker.name = "PauseBlocker"
+	_pause_blocker.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_pause_blocker.color = Color(0.02, 0.03, 0.06, 0.45)
+	_pause_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+	_pause_blocker.visible = false
+	_pause_blocker.z_index = 40
+	$HUD.add_child(_pause_blocker)
+	# Keep the day bar (Pause / Restart) above the blocker.
+	$HUD/DayHud.z_index = 50
+	$HUD.move_child($HUD/DayHud, $HUD.get_child_count() - 1)
 
 
 func _close_palamig_if_open() -> void:
@@ -105,7 +227,7 @@ func _setup_palamig_game() -> void:
 
 
 func _on_palamig_order_started(order: Order) -> void:
-	if palamig_game.visible:
+	if _day_paused or palamig_game.visible:
 		return
 	pending_palamig_order = order
 	_setup_palamig_game()
@@ -159,7 +281,7 @@ func _show_money_popup(amount: int, slot_index: int) -> void:
 
 	var popup := Label.new()
 	var prefix := "+" if amount > 0 else ""
-	popup.text = "%s%d Pesos" % [prefix, amount]
+	popup.text = "%s%s" % [prefix, PlayerStatController.format_pesos(amount)]
 	popup.add_theme_font_size_override("font_size", 20)
 	popup.add_theme_color_override(
 		"font_color",
@@ -190,11 +312,41 @@ func _update_timer_label() -> void:
 	day_timer_label.text = "%02d:%02d" % [total_seconds / 60, total_seconds % 60]
 
 
+func _update_day_label() -> void:
+	day_label.text = "Day %d" % PlayerStatController.current_day_number()
+
+
+func _update_stock_label() -> void:
+	stock_label.text = PlayerStatController.format_stock_summary()
+
+
+func _setup_money_hud() -> void:
+	var overlay := get_node_or_null("MoneyHudLayer") as CanvasLayer
+	if overlay == null:
+		overlay = CanvasLayer.new()
+		overlay.name = "MoneyHudLayer"
+		overlay.layer = 55
+		overlay.process_mode = Node.PROCESS_MODE_ALWAYS
+		add_child(overlay)
+	var parts := MoneyHud.ensure(overlay, "MoneyHud")
+	money_hud_panel = parts.panel as PanelContainer
+	money_balance_label = parts.balance_label as Label
+	money_earned_label = parts.earned_label as Label
+	MoneyHud.apply_top_right_layout(money_hud_panel, 272.0, 204.0)
+	_update_money_hud()
+
+
+func _update_money_hud() -> void:
+	MoneyHud.refresh(money_balance_label, money_earned_label)
+
+
 func dayOverPopup() -> void:
 	day_over.visible = true
 
 
 func _on_button_pressed() -> void:
+	if _day_paused:
+		return
 	end_day()
 
 
@@ -203,3 +355,8 @@ func _on_pause_button_pressed() -> void:
 		resume_day()
 	else:
 		pause_day()
+
+
+func _on_restart_pressed() -> void:
+	SfxController.play_click()
+	PlayerStatController.restart_game()

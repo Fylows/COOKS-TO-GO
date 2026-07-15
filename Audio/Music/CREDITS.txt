@@ -1,7 +1,8 @@
 Music loops by Kenney (www.kenney.nl), CC0 1.0.
 Downloaded from Kenney's Sound Pack / Music Loops.
 
-title.ogg    — Swinging Pants
-eod.ogg      — Night at the Beach
-stall.ogg    — Farm Frolics
-day_over.ogg — Flowing Rocks
+title.ogg     — Swinging Pants
+eod.ogg       — Night at the Beach
+stall.ogg     — Farm Frolics
+day_over.ogg  — Flowing Rocks
+game_over.ogg — Flowing Rocks (slowed / darkened)

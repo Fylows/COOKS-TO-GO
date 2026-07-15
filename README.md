@@ -33,6 +33,7 @@ Title screen → EOD shop (phone UI) → Game screen (stall) → Day over → EO
 
 - Enter your vendor name (optional; defaults to your OS username).
 - **Play** opens the end-of-day shop.
+- **Restart** resets all progress and returns to the title screen.
 - **Credits** lists attributions.
 - **Quit** exits.
 
@@ -45,7 +46,7 @@ Manage everything from the phone UI before the next market day.
 | **Resources** | Buy fishball, kwek-kwek, kikiam, sauce, palamig stock |
 | **Upgrades** | Unlock palamig cart, bigger container, faster cooking, slower burning |
 | **Family** | Pay electricity, water, rent, food; buy medicine if someone is sick |
-| **Misc** | Anting-anting, weather app subscription, JuanAngat loan, Sbatter gamble |
+| **Misc** | Anting-anting, weather app subscription, JuanAngat loan, Sbatter gamble, **Restart** (reset save) |
 
 Press **Start New Day** when bills are handled and the family is healthy.
 
@@ -99,7 +100,7 @@ BGM pitch drops slightly when your balance is low.
 
 ### 5. Day over
 
-Shows balance and leftover stock. **Continue** advances the calendar, collects loan payments, rolls family/post-day events, and resets nightly stock and bill flags.
+Shows balance and leftover stock. **Continue** advances the calendar, collects loan payments, rolls family/post-day events, and resets bill flags. Leftover stock carries to the next day.
 
 ## Controls (in-game)
 

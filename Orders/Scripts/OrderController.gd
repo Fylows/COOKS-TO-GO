@@ -23,6 +23,7 @@ var order_slots: Array[Control] = []
 var removing_order_ids: Dictionary = {}
 var _spawning: bool = false
 var _spawn_days: int = 0
+var _orders_paused: bool = false
 
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
 @onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
@@ -80,13 +81,13 @@ func create_order(days_passed: int) -> Order:
 		push_warning("Cannot create order: all order slots are full.")
 		return null
 
-	var available_food: Array[String] = ["fishball"]
+	var available_food: Array[String] = ["fishball", "kwekwek"]
 
-	if days_passed >= 1:
-		available_food.append_array(["kwekwek", "palamig"])
+	if days_passed >= 1 and PlayerStats.palamigUP and PlayerStats.palamigStock > 0:
+		available_food.append("palamig")
 
 	if days_passed >= 2:
-		available_food.append_array(["kikiam"])
+		available_food.append("kikiam")
 
 	# Keep previous implementation as array of string for future scalability
 	var selected_food: Array[String] = [available_food.pick_random()]
@@ -124,6 +125,8 @@ func create_order(days_passed: int) -> Order:
 		palamig_count
 	)
 	new_order.start_countdown(get_order_lifetime_seconds(days_passed))
+	if _orders_paused:
+		new_order.set_countdown_paused(true)
 	
 	return new_order
 
@@ -151,6 +154,8 @@ func _remove_order(order: Order, on_removal_claimed: Callable = Callable()) -> b
 
 
 func _on_confirm_requested(order: Order) -> void:
+	if _orders_paused:
+		return
 	if not is_instance_valid(order) or order.is_queued_for_deletion():
 		return
 
@@ -201,6 +206,8 @@ func confirm_order(order: Order) -> bool:
 
 
 func cancel_order(order: Order) -> void:
+	if _orders_paused:
+		return
 	SfxController.play_cancel_order()
 	await _remove_order(order)
 
@@ -237,6 +244,7 @@ func stop_order_spawning() -> void:
 
 
 func set_orders_paused(paused: bool) -> void:
+	_orders_paused = paused
 	for slot: Control in order_slots:
 		for child in slot.get_children():
 			if child is Order:
@@ -245,8 +253,18 @@ func set_orders_paused(paused: bool) -> void:
 
 func _spawn_loop() -> void:
 	while _spawning:
+		while _spawning and _orders_paused:
+			await get_tree().create_timer(0.2).timeout
+		if not _spawning:
+			break
 		if create_order(_spawn_days) == null:
 			await get_tree().create_timer(0.5).timeout
 			continue
 		var wait_seconds: float = get_spawn_interval_seconds(_spawn_days)
-		await get_tree().create_timer(wait_seconds).timeout
+		var waited := 0.0
+		while _spawning and waited < wait_seconds:
+			if _orders_paused:
+				await get_tree().create_timer(0.2).timeout
+				continue
+			await get_tree().create_timer(0.2).timeout
+			waited += 0.2

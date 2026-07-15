@@ -38,6 +38,8 @@ func _ensure_player() -> void:
 
 
 func play(key: String) -> void:
+	if not AudioSettings.sfx_enabled:
+		return
 	if key not in SOUNDS:
 		return
 	_ensure_player()
@@ -91,3 +93,40 @@ func play_coin() -> void:
 
 func play_error() -> void:
 	play("error")
+
+
+func play_morning_rush() -> void:
+	if not AudioSettings.sfx_enabled:
+		return
+	_play_one_shot("storage", -4.0)
+	_stagger_one_shot("coin", 0.06, -6.0)
+	_stagger_one_shot("confirm", 0.12, -8.0)
+	_stagger_one_shot("fry", 0.18, -10.0)
+
+
+func _play_one_shot(key: String, volume_db: float = 0.0) -> void:
+	if key not in SOUNDS:
+		return
+	_ensure_player()
+	var player := AudioStreamPlayer.new()
+	player.stream = SOUNDS[key]
+	player.bus = BUS_NAME
+	player.volume_db = volume_db
+	player.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(player)
+	player.play()
+	player.finished.connect(player.queue_free)
+
+
+func _stagger_one_shot(key: String, delay: float, volume_db: float = 0.0) -> void:
+	var timer := get_tree().create_timer(delay, true)
+	timer.timeout.connect(func() -> void:
+		_play_one_shot(key, volume_db)
+	)
+
+
+func on_audio_settings_changed() -> void:
+	_ensure_player()
+	var idx := AudioServer.get_bus_index(BUS_NAME)
+	if idx >= 0:
+		AudioServer.set_bus_mute(idx, not AudioSettings.sfx_enabled)

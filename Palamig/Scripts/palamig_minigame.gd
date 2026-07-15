@@ -14,10 +14,11 @@ enum Step { POUR, EMPTY }
 @export var sale_price: int = 30
 @export var waste_cost: int = 6
 @export var jug_cups: int = 10
+@export var dispenser_max_cups: int = 20
 
 var current_step: Step = Step.POUR
 var cups_remaining: int
-var jug_capacity: int = 10
+var jug_capacity: int = 20
 var cup_fill: float = 0.0
 var is_pouring: bool = false
 var total_money_earned: int = 0
@@ -57,6 +58,7 @@ func _ready() -> void:
 	back_button.pressed.connect(_exit_to_game)
 	for s in ["pour", "serve", "waste", "sold_out"]:
 		var player := AudioStreamPlayer.new()
+		player.bus = "SFX"
 		player.stream = load("res://Palamig/Assets/SFX/%s.wav" % s)
 		add_child(player)
 		sfx[s] = player
@@ -84,19 +86,21 @@ func _reset_session() -> void:
 	feedback_label.text = ""
 	if results_modal:
 		results_modal.hide()
-	if order_cups_total > 0:
-		jug_capacity = stats.palamigStock if stats else 0
-		cups_remaining = jug_capacity
-		current_step = Step.POUR if cups_remaining > 0 else Step.EMPTY
-	elif stats:
-		jug_capacity = maxi(stats.palamigStock, 0)
-		cups_remaining = jug_capacity
-		current_step = Step.POUR if cups_remaining > 0 else Step.EMPTY
+	jug_capacity = _dispenser_capacity()
+	if stats:
+		cups_remaining = maxi(stats.palamigStock, 0)
 	else:
-		jug_capacity = 0
-		cups_remaining = 0
-		current_step = Step.EMPTY
+		cups_remaining = jug_cups
+	current_step = Step.POUR if cups_remaining > 0 else Step.EMPTY
 	_update_ui()
+
+
+func _dispenser_capacity() -> int:
+	# Visual full jug. Bigger Containers upgrade stretches the tank.
+	var cap := dispenser_max_cups
+	if stats and stats.get("containerUP"):
+		cap = maxi(cap, dispenser_max_cups + jug_cups)
+	return maxi(cap, 1)
 
 
 func _build_results_modal() -> void:
@@ -294,8 +298,8 @@ func _update_ui() -> void:
 	earned_value.text = PlayerStatController.format_pesos(total_money_earned)
 	lost_value.text = PlayerStatController.format_pesos(total_money_lost)
 	jug_bar.max_value = maxf(jug_capacity, 1)
-	jug_bar.value = cups_remaining
-	jug_value.text = "%d cups" % cups_remaining
+	jug_bar.value = mini(cups_remaining, jug_capacity)
+	jug_value.text = "%d / %d cups" % [cups_remaining, jug_capacity]
 	if not is_pouring and feedback_label.text == "Pouring...":
 		feedback_label.text = ""
 

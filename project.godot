@@ -22,8 +22,16 @@ PlayerStatController="*uid://bf0kj6i3ab5cb"
 FamilyStateController="*res://Player/FamilyStateController.gd"
 LoanController="*res://Player/LoanController.gd"
 SbatterController="*res://Player/SbatterController.gd"
+AudioSettings="*res://Audio/AudioSettings.gd"
 BgmController="*res://Audio/BgmController.gd"
 SfxController="*res://Audio/SfxController.gd"
+PovertyVignette="*res://Screens/Shared/PovertyVignette.gd"
+ScoreController="*res://Player/ScoreController.gd"
+GameStateController="*res://Player/GameStateController.gd"
+LoreController="*res://Player/LoreController.gd"
+DayTransition="*res://Screens/Shared/DayTransition.gd"
+CursorController="*res://Screens/Shared/CursorController.gd"
+WindowController="*res://Screens/Shared/WindowController.gd"
 Dialogic="*uid://ds2q0uclmolvu"
 
 [dialogic]
@@ -38,9 +46,10 @@ layout/default_style="Default"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/size/resizable=false
+window/size/resizable=true
+window/size/mode=3
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/stretch/aspect="keep"
 window/main_scene="uid://drwk50tl8svlb"
 
 [editor_plugins]

@@ -49,6 +49,7 @@ func _roll_sickness() -> void:
 		return
 	if randf() < sick_risk:
 		is_family_sick = true
+		PlayerStats.paidMedicine = false
 		PlayerStats.post_day_events["sickChild"].active = true
 		family_sick.emit()
 
@@ -58,14 +59,45 @@ func on_rent_paid() -> void:
 	is_homeless = false
 
 
+func reset_for_new_game() -> void:
+	sick_risk = 0.0
+	is_homeless = false
+	is_family_sick = false
+	consecutive_unpaid_rent_days = 0
+
+
 func can_start_day() -> bool:
-	return not is_family_sick
+	return start_day_block_reason().is_empty()
+
+
+func blocking_issue() -> String:
+	if not PlayerStats.paidTindahanApp:
+		var app_price: int = PlayerStatController.essential_cost("tindahanApp")
+		if PlayerStats.playerMoney < app_price:
+			return "Need %s for today's Tindahan App subscription." % PlayerStatController.format_pesos(app_price)
+		return "Pay today's Tindahan App subscription on the Resources tab."
+	if is_family_sick:
+		var price: int = PlayerStatController.essential_cost("medicine")
+		if PlayerStats.paidMedicine:
+			return "Family is still sick."
+		if PlayerStats.playerMoney < price:
+			if LoanController.can_borrow():
+				return "Need %s for medicine. Borrow from JuanAngat (Misc tab)." % PlayerStatController.format_pesos(price)
+			return "Need %s for medicine." % PlayerStatController.format_pesos(price)
+		return "Buy medicine on the Family tab first."
+	return ""
+
+
+func start_day_block_reason() -> String:
+	if GameStateController.is_game_over:
+		return GameStateController.reason
+	return blocking_issue()
 
 
 func try_buy_medicine() -> bool:
 	if not is_family_sick:
 		return false
-	var price: int = PlayerStats.essentialPrice["medicine"]
+	var price: int = PlayerStatController.essential_cost("medicine")
 	if PlayerStats.playerMoney < price or PlayerStats.paidMedicine:
 		return false
 	PlayerStatController.subtractMoney(price)
@@ -83,9 +115,9 @@ func status_text() -> String:
 	if is_homeless:
 		lines.append("Homeless")
 	if is_family_sick:
-		var price: int = PlayerStats.essentialPrice["medicine"]
+		var price: int = PlayerStatController.essential_cost("medicine")
 		if PlayerStats.playerMoney < price:
-			lines.append("Sick. Need %d Pesos for medicine." % price)
+			lines.append("Sick. Need %s for medicine." % PlayerStatController.format_pesos(price))
 			if LoanController.can_borrow():
 				lines.append("JuanAngat Paldo Loan+ is in Misc.")
 		else:
