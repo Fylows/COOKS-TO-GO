@@ -45,10 +45,7 @@ func _refresh_title_state() -> void:
 	if show_restart:
 		restart_button.text = "New Game"
 	if hint_label:
-		hint_label.text = (
-			"This is the name customers will see at your stall.\n"
-			+ "Ten ways out. Five ways through."
-		)
+		hint_label.text = "Vendor name for your stall."
 	_refresh_endings_progress_panel()
 	var records := ScoreController.format_high_scores()
 	if not records.is_empty():
@@ -61,10 +58,7 @@ func _refresh_title_state() -> void:
 		high_score_label.visible = false
 		high_score_label.text = ""
 	if endings_button:
-		endings_button.text = "Endings (%d/%d)" % [
-			ScoreController.unlocked_ending_count(),
-			EndingBank.count(),
-		]
+		endings_button.text = "Gallery"
 	_rebuild_gallery_rows()
 
 
@@ -80,23 +74,23 @@ func _setup_endings_progress_panel() -> void:
 	endings_progress_panel = PanelContainer.new()
 	endings_progress_panel.name = "EndingsProgressPanel"
 	endings_progress_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	endings_progress_panel.custom_minimum_size = Vector2(520, 0)
+	endings_progress_panel.custom_minimum_size = Vector2(420, 0)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.04, 0.03, 0.05, 0.96)
 	style.border_color = Color(0.45, 0.08, 0.1, 1)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(4)
-	style.set_content_margin_all(18)
+	style.set_content_margin_all(12)
 	endings_progress_panel.add_theme_stylebox_override("panel", style)
 
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
+	vbox.add_theme_constant_override("separation", 4)
 	endings_progress_panel.add_child(vbox)
 
 	endings_collection_label = Label.new()
 	endings_collection_label.name = "CollectionLabel"
 	endings_collection_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	endings_collection_label.add_theme_font_size_override("font_size", 14)
+	endings_collection_label.add_theme_font_size_override("font_size", 13)
 	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
 	vbox.add_child(endings_collection_label)
 
@@ -104,16 +98,13 @@ func _setup_endings_progress_panel() -> void:
 	endings_headline_label.name = "HeadlineLabel"
 	endings_headline_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	endings_headline_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	endings_headline_label.add_theme_font_size_override("font_size", 28)
+	endings_headline_label.add_theme_font_size_override("font_size", 22)
 	endings_headline_label.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
 	vbox.add_child(endings_headline_label)
 
 	endings_sub_label = Label.new()
 	endings_sub_label.name = "SubLabel"
-	endings_sub_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	endings_sub_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	endings_sub_label.add_theme_font_size_override("font_size", 15)
-	endings_sub_label.add_theme_color_override("font_color", Color(0.55, 0.48, 0.48))
+	endings_sub_label.visible = false
 	vbox.add_child(endings_sub_label)
 
 	# Place above high score (same slot the old endings text used).
@@ -128,28 +119,27 @@ func _refresh_endings_progress_panel() -> void:
 		return
 	var n := ScoreController.unlocked_ending_count()
 	var total := EndingBank.count()
-	var bad := EndingBank.bad_count()
-	var good := EndingBank.good_count()
 	var style := endings_progress_panel.get_theme_stylebox("panel") as StyleBoxFlat
-	endings_collection_label.text = "Collection %d/%d" % [n, total]
+	endings_collection_label.text = "Endings"
 	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
 	if n <= 0:
-		endings_headline_label.text = "Unlock all %d endings" % total
+		endings_headline_label.text = "%d locked" % total
 		endings_headline_label.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
 		if style:
 			style.border_color = Color(0.45, 0.08, 0.1, 1)
 	elif n >= total:
-		endings_headline_label.text = "All endings unlocked"
+		endings_headline_label.text = "All unlocked"
 		endings_headline_label.add_theme_color_override("font_color", Color(0.55, 0.92, 0.62))
 		endings_collection_label.add_theme_color_override("font_color", Color(0.85, 0.95, 0.55))
 		if style:
 			style.border_color = Color(0.2, 0.55, 0.32, 1)
 	else:
-		endings_headline_label.text = "%d of %d unlocked" % [n, total]
+		endings_headline_label.text = "%d / %d" % [n, total]
 		endings_headline_label.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
 		if style:
 			style.border_color = Color(0.45, 0.08, 0.1, 1)
-	endings_sub_label.text = "%d bad · %d good — open the gallery to see locked silhouettes." % [bad, good]
+	if endings_sub_label:
+		endings_sub_label.visible = false
 	endings_progress_panel.visible = true
 
 
@@ -228,10 +218,9 @@ func _setup_endings_gallery() -> void:
 	var sub := Label.new()
 	sub.name = "GallerySub"
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	sub.add_theme_font_size_override("font_size", 15)
+	sub.add_theme_font_size_override("font_size", 14)
 	sub.add_theme_color_override("font_color", Color(0.75, 0.8, 0.9))
-	sub.text = "Locked cards stay silhouettes. Unlock hint sits under each."
+	sub.text = "Locked = silhouette + hint"
 	vbox.add_child(sub)
 
 	var scroll := ScrollContainer.new()
@@ -311,16 +300,13 @@ func _make_ending_row(id: String) -> PanelContainer:
 		title.add_theme_color_override("font_color", Color(0.55, 0.58, 0.65))
 	text_col.add_child(title)
 
-	var body := Label.new()
-	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	body.add_theme_font_size_override("font_size", 14)
-	if unlocked:
-		body.text = EndingBank.detail_for(id)
-		body.add_theme_color_override("font_color", Color(0.82, 0.86, 0.92))
-	else:
+	if not unlocked:
+		var body := Label.new()
+		body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		body.add_theme_font_size_override("font_size", 13)
 		body.text = EndingBank.hint_for(id)
 		body.add_theme_color_override("font_color", Color(0.62, 0.66, 0.74))
-	text_col.add_child(body)
+		text_col.add_child(body)
 
 	var kind := Label.new()
 	kind.add_theme_font_size_override("font_size", 12)
