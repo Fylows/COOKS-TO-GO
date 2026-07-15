@@ -91,3 +91,10 @@ func play_coin() -> void:
 
 func play_error() -> void:
 	play("error")
+
+
+func on_audio_settings_changed() -> void:
+	_ensure_player()
+	var idx := AudioServer.get_bus_index(BUS_NAME)
+	if idx >= 0:
+		AudioServer.set_bus_mute(idx, not AudioSettings.sfx_enabled)

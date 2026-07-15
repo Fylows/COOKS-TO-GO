@@ -57,6 +57,7 @@ func _ready() -> void:
 	back_button.pressed.connect(_exit_to_game)
 	for s in ["pour", "serve", "waste", "sold_out"]:
 		var player := AudioStreamPlayer.new()
+		player.bus = "SFX"
 		player.stream = load("res://Palamig/Assets/SFX/%s.wav" % s)
 		add_child(player)
 		sfx[s] = player
