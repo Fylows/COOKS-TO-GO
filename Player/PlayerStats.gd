@@ -100,6 +100,10 @@ var paidFood : bool = false
 var paidMedicine : bool = false
 var paidTindahanApp : bool = false
 
+# First-night coach: pay app → buy stock → start day (day 0 only).
+var first_night_done: bool = false
+var first_night_bought_stock: bool = false
+
 
 # MISC
 var miscPrice : Dictionary = {
@@ -110,6 +114,11 @@ var miscPrice : Dictionary = {
 var boughtAnting2 : bool = false
 var boughtSubscription : bool = false
 var loan_balance : int = 0
+
+# Run trackers for good endings / briefing.
+var ever_homeless: bool = false
+var consecutive_basics_streak: int = 0
+var run_seen_endings: PackedStringArray = PackedStringArray()
 
 
 func ensure_player_name() -> void:
@@ -143,9 +152,14 @@ func reset_new_game() -> void:
 	paidFood = false
 	paidMedicine = false
 	paidTindahanApp = false
+	first_night_done = false
+	first_night_bought_stock = false
 	boughtAnting2 = false
 	boughtSubscription = false
 	loan_balance = 0
+	ever_homeless = false
+	consecutive_basics_streak = 0
+	run_seen_endings = PackedStringArray()
 	for key in post_day_events.keys():
 		post_day_events[key].active = false
 	for key in pre_day_events.keys():

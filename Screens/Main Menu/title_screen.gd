@@ -1,8 +1,19 @@
 extends Node2D
 
+const EndingBank := preload("res://Player/EndingBank.gd")
+
 @onready var name_field: LineEdit = $UiLayer/CenterRoot/Column/NamePanel/VBox/NameField
+@onready var hint_label: Label = $UiLayer/CenterRoot/Column/NamePanel/VBox/HintLabel
 @onready var high_score_label: Label = $UiLayer/CenterRoot/Column/HighScoreLabel
 @onready var restart_button: Button = $UiLayer/CenterRoot/Column/RestartButton
+
+var endings_button: Button
+var gallery_root: Control
+var gallery_list: VBoxContainer
+var endings_progress_panel: PanelContainer
+var endings_collection_label: Label
+var endings_headline_label: Label
+var endings_sub_label: Label
 
 
 func _ready() -> void:
@@ -12,6 +23,9 @@ func _ready() -> void:
 	name_field.text = PlayerStats.player_name
 	name_field.grab_focus()
 	name_field.select_all()
+	_setup_endings_progress_panel()
+	_setup_endings_button()
+	_setup_endings_gallery()
 	_refresh_title_state()
 
 
@@ -30,13 +44,316 @@ func _refresh_title_state() -> void:
 	restart_button.visible = show_restart
 	if show_restart:
 		restart_button.text = "New Game"
+	if hint_label:
+		hint_label.text = (
+			"This is the name customers will see at your stall.\n"
+			+ "Ten ways out. Five ways through."
+		)
+	_refresh_endings_progress_panel()
 	var records := ScoreController.format_high_scores()
-	high_score_label.visible = ScoreController.has_high_score() or show_restart
-	if high_score_label.visible:
-		if records.is_empty() and show_restart:
-			high_score_label.text = "This run\n%s" % ScoreController.format_run_stats()
-		else:
-			high_score_label.text = records
+	if not records.is_empty():
+		high_score_label.visible = true
+		high_score_label.text = records
+	elif show_restart:
+		high_score_label.visible = true
+		high_score_label.text = "This run\n%s" % ScoreController.format_run_stats()
+	else:
+		high_score_label.visible = false
+		high_score_label.text = ""
+	if endings_button:
+		endings_button.text = "Endings (%d/%d)" % [
+			ScoreController.unlocked_ending_count(),
+			EndingBank.count(),
+		]
+	_rebuild_gallery_rows()
+
+
+func _setup_endings_progress_panel() -> void:
+	var column: VBoxContainer = $UiLayer/CenterRoot/Column
+	endings_progress_panel = column.get_node_or_null("EndingsProgressPanel") as PanelContainer
+	if endings_progress_panel:
+		endings_collection_label = endings_progress_panel.find_child("CollectionLabel", true, false) as Label
+		endings_headline_label = endings_progress_panel.find_child("HeadlineLabel", true, false) as Label
+		endings_sub_label = endings_progress_panel.find_child("SubLabel", true, false) as Label
+		return
+
+	endings_progress_panel = PanelContainer.new()
+	endings_progress_panel.name = "EndingsProgressPanel"
+	endings_progress_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	endings_progress_panel.custom_minimum_size = Vector2(520, 0)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.03, 0.05, 0.96)
+	style.border_color = Color(0.45, 0.08, 0.1, 1)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(18)
+	endings_progress_panel.add_theme_stylebox_override("panel", style)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	endings_progress_panel.add_child(vbox)
+
+	endings_collection_label = Label.new()
+	endings_collection_label.name = "CollectionLabel"
+	endings_collection_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	endings_collection_label.add_theme_font_size_override("font_size", 14)
+	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
+	vbox.add_child(endings_collection_label)
+
+	endings_headline_label = Label.new()
+	endings_headline_label.name = "HeadlineLabel"
+	endings_headline_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	endings_headline_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	endings_headline_label.add_theme_font_size_override("font_size", 28)
+	endings_headline_label.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
+	vbox.add_child(endings_headline_label)
+
+	endings_sub_label = Label.new()
+	endings_sub_label.name = "SubLabel"
+	endings_sub_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	endings_sub_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	endings_sub_label.add_theme_font_size_override("font_size", 15)
+	endings_sub_label.add_theme_color_override("font_color", Color(0.55, 0.48, 0.48))
+	vbox.add_child(endings_sub_label)
+
+	# Place above high score (same slot the old endings text used).
+	var hs := column.get_node_or_null("HighScoreLabel")
+	column.add_child(endings_progress_panel)
+	if hs:
+		column.move_child(endings_progress_panel, hs.get_index())
+
+
+func _refresh_endings_progress_panel() -> void:
+	if endings_progress_panel == null:
+		return
+	var n := ScoreController.unlocked_ending_count()
+	var total := EndingBank.count()
+	var bad := EndingBank.bad_count()
+	var good := EndingBank.good_count()
+	var style := endings_progress_panel.get_theme_stylebox("panel") as StyleBoxFlat
+	endings_collection_label.text = "Collection %d/%d" % [n, total]
+	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
+	if n <= 0:
+		endings_headline_label.text = "Unlock all %d endings" % total
+		endings_headline_label.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
+		if style:
+			style.border_color = Color(0.45, 0.08, 0.1, 1)
+	elif n >= total:
+		endings_headline_label.text = "All endings unlocked"
+		endings_headline_label.add_theme_color_override("font_color", Color(0.55, 0.92, 0.62))
+		endings_collection_label.add_theme_color_override("font_color", Color(0.85, 0.95, 0.55))
+		if style:
+			style.border_color = Color(0.2, 0.55, 0.32, 1)
+	else:
+		endings_headline_label.text = "%d of %d unlocked" % [n, total]
+		endings_headline_label.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
+		if style:
+			style.border_color = Color(0.45, 0.08, 0.1, 1)
+	endings_sub_label.text = "%d bad · %d good — open the gallery to see locked silhouettes." % [bad, good]
+	endings_progress_panel.visible = true
+
+
+func _setup_endings_button() -> void:
+	var column: VBoxContainer = $UiLayer/CenterRoot/Column
+	endings_button = column.get_node_or_null("EndingsButton") as Button
+	if endings_button:
+		if not endings_button.pressed.is_connected(_on_endings_pressed):
+			endings_button.pressed.connect(_on_endings_pressed)
+		return
+	endings_button = Button.new()
+	endings_button.name = "EndingsButton"
+	endings_button.focus_mode = Control.FOCUS_NONE
+	endings_button.custom_minimum_size = Vector2(220, 40)
+	endings_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	endings_button.add_theme_font_size_override("font_size", 18)
+	endings_button.add_theme_color_override("font_color", Color(0.94, 0.96, 1.0))
+	endings_button.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.55))
+	endings_button.pressed.connect(_on_endings_pressed)
+	endings_button.mouse_entered.connect(_on_endings_mouse_entered)
+	# Sit under Restart / above audio.
+	var audio := column.get_node_or_null("AudioToggles")
+	if audio:
+		column.add_child(endings_button)
+		column.move_child(endings_button, audio.get_index())
+	else:
+		column.add_child(endings_button)
+
+
+func _setup_endings_gallery() -> void:
+	var ui: CanvasLayer = $UiLayer
+	gallery_root = ui.get_node_or_null("EndingsGallery") as Control
+	if gallery_root:
+		gallery_list = gallery_root.find_child("GalleryList", true, false) as VBoxContainer
+		return
+
+	gallery_root = Control.new()
+	gallery_root.name = "EndingsGallery"
+	gallery_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	gallery_root.visible = false
+	gallery_root.mouse_filter = Control.MOUSE_FILTER_STOP
+	ui.add_child(gallery_root)
+
+	var dim := ColorRect.new()
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0.02, 0.03, 0.06, 0.88)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	gallery_root.add_child(dim)
+
+	var panel := PanelContainer.new()
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	panel.offset_left = -420.0
+	panel.offset_right = 420.0
+	panel.offset_top = -360.0
+	panel.offset_bottom = 360.0
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.05, 0.06, 0.1, 0.98)
+	style.border_color = Color(1.0, 0.86, 0.42, 0.95)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(18)
+	panel.add_theme_stylebox_override("panel", style)
+	gallery_root.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	panel.add_child(vbox)
+
+	var header := Label.new()
+	header.text = "Endings"
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	header.add_theme_font_size_override("font_size", 28)
+	header.add_theme_color_override("font_color", Color(1.0, 0.9, 0.55))
+	vbox.add_child(header)
+
+	var sub := Label.new()
+	sub.name = "GallerySub"
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	sub.add_theme_font_size_override("font_size", 15)
+	sub.add_theme_color_override("font_color", Color(0.75, 0.8, 0.9))
+	sub.text = "Locked cards stay silhouettes. Unlock hint sits under each."
+	vbox.add_child(sub)
+
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.custom_minimum_size = Vector2(0, 520)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	vbox.add_child(scroll)
+
+	gallery_list = VBoxContainer.new()
+	gallery_list.name = "GalleryList"
+	gallery_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	gallery_list.add_theme_constant_override("separation", 10)
+	scroll.add_child(gallery_list)
+
+	var close_btn := Button.new()
+	close_btn.text = "Close"
+	close_btn.custom_minimum_size = Vector2(0, 42)
+	close_btn.add_theme_font_size_override("font_size", 18)
+	close_btn.pressed.connect(_on_gallery_close_pressed)
+	vbox.add_child(close_btn)
+
+
+func _rebuild_gallery_rows() -> void:
+	if gallery_list == null:
+		return
+	for child in gallery_list.get_children():
+		child.queue_free()
+	for id in EndingBank.ENDING_ORDER:
+		gallery_list.add_child(_make_ending_row(id))
+
+
+func _make_ending_row(id: String) -> PanelContainer:
+	var unlocked := ScoreController.has_unlocked_ending(id)
+	var good := EndingBank.is_good(id)
+	var row := PanelContainer.new()
+	row.custom_minimum_size = Vector2(760, 0)
+	var style := StyleBoxFlat.new()
+	if unlocked:
+		style.bg_color = Color(0.08, 0.12, 0.1, 0.95) if good else Color(0.12, 0.07, 0.08, 0.95)
+		style.border_color = Color(0.35, 0.82, 0.5, 0.9) if good else Color(0.85, 0.35, 0.35, 0.9)
+	else:
+		style.bg_color = Color(0.04, 0.04, 0.06, 0.96)
+		style.border_color = Color(0.28, 0.3, 0.36, 0.9)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(12)
+	row.add_theme_stylebox_override("panel", style)
+
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 14)
+	row.add_child(h)
+
+	var silhouette := ColorRect.new()
+	silhouette.custom_minimum_size = Vector2(56, 56)
+	if unlocked:
+		silhouette.color = Color(0.25, 0.7, 0.4, 1) if good else Color(0.7, 0.2, 0.22, 1)
+	else:
+		silhouette.color = Color(0.08, 0.08, 0.1, 1)
+	h.add_child(silhouette)
+
+	var text_col := VBoxContainer.new()
+	text_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_col.add_theme_constant_override("separation", 4)
+	h.add_child(text_col)
+
+	var title := Label.new()
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title.add_theme_font_size_override("font_size", 18)
+	if unlocked:
+		title.text = EndingBank.title_for(id)
+		title.add_theme_color_override(
+			"font_color",
+			Color(0.7, 0.95, 0.75) if good else Color(1.0, 0.78, 0.72)
+		)
+	else:
+		title.text = "???"
+		title.add_theme_color_override("font_color", Color(0.55, 0.58, 0.65))
+	text_col.add_child(title)
+
+	var body := Label.new()
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.add_theme_font_size_override("font_size", 14)
+	if unlocked:
+		body.text = EndingBank.detail_for(id)
+		body.add_theme_color_override("font_color", Color(0.82, 0.86, 0.92))
+	else:
+		body.text = EndingBank.hint_for(id)
+		body.add_theme_color_override("font_color", Color(0.62, 0.66, 0.74))
+	text_col.add_child(body)
+
+	var kind := Label.new()
+	kind.add_theme_font_size_override("font_size", 12)
+	kind.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	kind.custom_minimum_size = Vector2(70, 0)
+	if unlocked:
+		kind.text = "GOOD" if good else "BAD"
+		kind.add_theme_color_override(
+			"font_color",
+			Color(0.55, 0.9, 0.6) if good else Color(0.95, 0.5, 0.45)
+		)
+	else:
+		kind.text = "LOCKED"
+		kind.add_theme_color_override("font_color", Color(0.45, 0.48, 0.55))
+	h.add_child(kind)
+	return row
+
+
+func _on_endings_pressed() -> void:
+	SfxController.play_click()
+	_rebuild_gallery_rows()
+	if gallery_root:
+		gallery_root.visible = true
+
+
+func _on_gallery_close_pressed() -> void:
+	SfxController.play_click()
+	if gallery_root:
+		gallery_root.visible = false
+
+
+func _on_endings_mouse_entered() -> void:
+	SfxController.play_hover()
 
 
 func _on_start_pressed(_text: String = "") -> void:
