@@ -52,6 +52,7 @@ var bed_action_label: Label
 var stock_hud: PanelContainer
 var stock_hud_label: Label
 var restart_button: Button
+var _starting_day: bool = false
 
 func _ready() -> void:
 	get_tree().paused = false
@@ -174,8 +175,9 @@ func _refresh_shop_state() -> void:
 	var run_log: Label = $MiscGroup/VBoxContainer.get_node_or_null("RunLog") as Label
 	if run_log:
 		run_log.text = ScoreController.format_journal()
-	GameStateController.evaluate()
 	if GameStateController.is_game_over:
+		_present_game_over()
+	elif GameStateController.evaluate():
 		_present_game_over()
 
 
@@ -570,9 +572,12 @@ func _on_home_btn_pressed() -> void:
 			showOpt("family")
 		_flash_new_day_hint()
 		return
+	if _starting_day:
+		return
+	_starting_day = true
 	$"../Canvas/Control/NextDayTooltip".hide()
 	PlayerStatController.newDay()
-	DayTransition.transition_to_scene(
+	await DayTransition.transition_to_scene(
 		"res://Screens/Game/Scenes/GameScreen.tscn",
 		"Opening the stall...",
 		0.2,
