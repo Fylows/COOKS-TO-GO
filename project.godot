@@ -36,6 +36,7 @@ window/size/viewport_height=1080
 window/size/resizable=false
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/main_scene="uid://drwk50tl8svlb"
 
 [editor_plugins]
 
