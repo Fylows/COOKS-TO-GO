@@ -2,10 +2,16 @@
 
 [ext_resource type="Script" uid="uid://c6okljdi8k41s" path="res://Orders/Scripts/OrderModel.gd" id="1_h4v0o"]
 [ext_resource type="Texture2D" uid="uid://dhqrqboqprwo4" path="res://Orders/Assets/order_card.png" id="2_sj65x"]
+[ext_resource type="Texture2D" uid="uid://580qltnwxw2w" path="res://Orders/Assets/ConfirmButton.png" id="3_v4dtq"]
+[ext_resource type="Script" uid="uid://cafk86nrhv6lf" path="res://Shared/Scripts/ButtonEffects.gd" id="4_0olbd"]
+[ext_resource type="Texture2D" uid="uid://c47w48m67x05d" path="res://Orders/Assets/CancelButton.png" id="4_ce2of"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_7gp5a"]
 font_size = 20
 font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_countdown_bg"]
+bg_color = Color(0, 0, 0, 0)
 
 [node name="Order" type="PanelContainer" unique_id=401757635]
 propagate_maximum_size = false
@@ -35,6 +41,47 @@ label_settings = SubResource("LabelSettings_7gp5a")
 horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
 
+[node name="FoodSprite" type="TextureRect" parent="MarginContainer/VBoxContainer" unique_id=533012684]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
 [node name="ButtonContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1601016186]
 layout_mode = 2
+theme_override_constants/separation = 6
 alignment = 1
+
+[node name="ConfirmButton" type="TextureButton" parent="MarginContainer/VBoxContainer/ButtonContainer" unique_id=987696859]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture_normal = ExtResource("3_v4dtq")
+script = ExtResource("4_0olbd")
+
+[node name="CancelButton" type="TextureButton" parent="MarginContainer/VBoxContainer/ButtonContainer" unique_id=1462764802]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture_normal = ExtResource("4_ce2of")
+script = ExtResource("4_0olbd")
+
+[node name="CountdownOverlay" type="Control" parent="." unique_id=1552665426]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CountdownBar" type="ProgressBar" parent="CountdownOverlay" unique_id=1896911569]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -5.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_countdown_bg")
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonContainer/ConfirmButton" to="." method="_on_confirm_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
