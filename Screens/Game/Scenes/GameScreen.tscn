@@ -12,7 +12,33 @@ script = ExtResource("1_iwem0")
 [node name="HUD" type="CanvasLayer" parent="." unique_id=520455930]
 layer = 10
 
+[node name="DayHud" type="HBoxContainer" parent="HUD"]
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 320.0
+offset_bottom = 56.0
+theme_override_constants/separation = 16
+
+[node name="TimerLabel" type="Label" parent="HUD/DayHud"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "02:00"
+
+[node name="PauseButton" type="Button" parent="HUD/DayHud"]
+layout_mode = 2
+text = "Pause"
+
+[node name="MoneyPopupLayer" type="Control" parent="HUD"]
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
 [node name="OrderContainer" parent="HUD" unique_id=908020767 instance=ExtResource("2_vmgo5")]
+offset_left = 24.0
+offset_top = 64.0
+offset_right = 988.0
+offset_bottom = 304.0
 
 [node name="CartMain" type="Sprite2D" parent="." unique_id=481923727]
 position = Vector2(960, 540)
@@ -37,3 +63,4 @@ layer = 999
 [node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_co4do")]
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="HUD/DayHud/PauseButton" to="." method="_on_pause_button_pressed"]

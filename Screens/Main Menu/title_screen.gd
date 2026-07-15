@@ -1,7 +1,4 @@
 extends Node2D
-@onready var hover = $button_manager/hover
-@onready var click = $button_manager/click
-@onready var bgm = $bgm
 
 var name_field: LineEdit
 
@@ -19,26 +16,27 @@ func _ready() -> void:
 
 
 func _on_start_pressed() -> void:
+	SfxController.play_click()
 	var typed := name_field.text.strip_edges()
 	if not typed.is_empty():
 		PlayerStats.player_name = typed
 	get_tree().change_scene_to_file("res://Screens/EOD/Scenes/Room.tscn")
 
 func _on_quit_pressed() -> void:
-	click.play()
+	SfxController.play_click()
 	get_tree().quit()
 
 func _on_credit_pressed() -> void:
-	click.play()
+	SfxController.play_click()
 	get_tree().change_scene_to_file("res://Screens/Main Menu/Credit/credit.tscn")
 
 func _on_start_mouse_entered() -> void:
-	hover.play()
+	SfxController.play_hover()
 
 
 func _on_quit_mouse_entered() -> void:
-	hover.play()
+	SfxController.play_hover()
 
 
 func _on_credit_mouse_entered() -> void:
-	hover.play()
+	SfxController.play_hover()
