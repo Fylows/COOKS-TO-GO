@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cryib1vn4l6o5"
-path="res://.godot/imported/Kwekwek_RawFull.png-0a8e5d1724970455176c1c154479ed9f.ctex"
+uid="uid://c1odjv1kcef62"
+path="res://.godot/imported/Kikiam_Raw.png-e3ec684f2fe8ab461c2177b1f7b24471.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Kwekwek/Kwekwek_RawFull.png"
-dest_files=["res://.godot/imported/Kwekwek_RawFull.png-0a8e5d1724970455176c1c154479ed9f.ctex"]
+source_file="res://Shared/Assets/Kikiam/Kikiam_Raw.png"
+dest_files=["res://.godot/imported/Kikiam_Raw.png-e3ec684f2fe8ab461c2177b1f7b24471.ctex"]
 
 [params]
 

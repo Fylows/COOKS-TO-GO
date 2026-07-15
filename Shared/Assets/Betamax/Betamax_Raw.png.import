@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cyog5stu8nhnr"
-path="res://.godot/imported/Fishball_RawFull.png-86a75a9271b29708ec06583d35685d91.ctex"
+uid="uid://bm3wm8bnhofcn"
+path="res://.godot/imported/Betamax_Raw.png-4b8b715af0fa17eb9ed9a7f9ad8c959e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Fishball/Fishball_RawFull.png"
-dest_files=["res://.godot/imported/Fishball_RawFull.png-86a75a9271b29708ec06583d35685d91.ctex"]
+source_file="res://Shared/Assets/Betamax/Betamax_Raw.png"
+dest_files=["res://.godot/imported/Betamax_Raw.png-4b8b715af0fa17eb9ed9a7f9ad8c959e.ctex"]
 
 [params]
 

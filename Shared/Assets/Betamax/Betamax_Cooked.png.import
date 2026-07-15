@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1odjv1kcef62"
-path="res://.godot/imported/Kikiam_RawFull.png-0b4e1b580500cb2709b721b089dae3f4.ctex"
+uid="uid://bcafc08elc4hx"
+path="res://.godot/imported/Betamax_Cooked.png-13fa4a7ca9f0d108400b896d60a47230.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Kikiam/Kikiam_RawFull.png"
-dest_files=["res://.godot/imported/Kikiam_RawFull.png-0b4e1b580500cb2709b721b089dae3f4.ctex"]
+source_file="res://Shared/Assets/Betamax/Betamax_Cooked.png"
+dest_files=["res://.godot/imported/Betamax_Cooked.png-13fa4a7ca9f0d108400b896d60a47230.ctex"]
 
 [params]
 
