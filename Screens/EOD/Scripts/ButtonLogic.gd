@@ -1252,8 +1252,10 @@ func _style_shop_row(row: HBoxContainer) -> void:
 		_wrap_shop_cell(row, price_label, "PriceWrap", Vector2(168, 28), Control.SIZE_SHRINK_END, false)
 	if action_btn:
 		_style_shop_button(action_btn)
-		action_btn.clip_text = true
-		_wrap_shop_cell(row, action_btn, "BtnWrap", Vector2(96, 30), Control.SIZE_SHRINK_END)
+		action_btn.clip_text = false
+		action_btn.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+		# Wide enough for "Subscribe" at PHONE_FONT_BTN with button padding.
+		_wrap_shop_cell(row, action_btn, "BtnWrap", Vector2(122, 32), Control.SIZE_SHRINK_END)
 
 
 ## Caps a shop-row child's layout width. Labels/Buttons ignore custom_minimum_size
