@@ -78,7 +78,7 @@ layout_mode = 2
 size_flags_vertical = 0
 
 [node name="WorkArea" type="Control" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost"]
-custom_minimum_size = Vector2(280, 380)
+custom_minimum_size = Vector2(300, 360)
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("2_visuals")
@@ -95,8 +95,7 @@ mouse_filter = 2
 [node name="TubArea" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
 layout_mode = 0
 offset_right = 180.0
-offset_bottom = 248.0
-theme_override_constants/separation = 8
+offset_bottom = 220.0
 mouse_filter = 2
 
 [node name="BigTub" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/TubArea" instance=ExtResource("3_vessel")]
@@ -110,17 +109,10 @@ fill_cavity_bottom = 0.771
 fill_width_top_frac = 0.82
 fill_width_bottom_frac = 0.691
 
-[node name="Label" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/TubArea"]
-custom_minimum_size = Vector2(180, 20)
-layout_mode = 2
-text = "Palamig dispenser"
-horizontal_alignment = 1
-
 [node name="ServeArea" type="VBoxContainer" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
 layout_mode = 0
 offset_right = 90.0
-offset_bottom = 168.0
-theme_override_constants/separation = 8
+offset_bottom = 140.0
 mouse_filter = 2
 
 [node name="Cup" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/ServeArea" instance=ExtResource("3_vessel")]
@@ -132,9 +124,17 @@ fill_cavity_bottom = 0.944
 fill_width_top_frac = 0.791
 fill_width_bottom_frac = 0.5
 
-[node name="Label" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow/ServeArea"]
-custom_minimum_size = Vector2(90, 20)
-layout_mode = 2
+[node name="JugLabel" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
+layout_mode = 0
+offset_right = 180.0
+offset_bottom = 20.0
+text = "Dispenser"
+horizontal_alignment = 1
+
+[node name="CupLabel" type="Label" parent="CenterRoot/MarginContainer/VBox/WorkAreaHost/WorkArea/ContentRow"]
+layout_mode = 0
+offset_right = 90.0
+offset_bottom = 20.0
 text = "Customer's cup"
 horizontal_alignment = 1
 
