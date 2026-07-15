@@ -12,9 +12,9 @@ const ORDER_START_LIFETIME_SECONDS: float = 20.0
 const ORDER_MIN_LIFETIME_SECONDS: float = 8.0
 const ORDER_LIFETIME_DECREASE: float = 2.0
 const ORDER_LIFETIME_DECREASE_INTERVAL: int = 3
-const ORDER_SPAWN_INTERVAL_MIN_SECONDS: int = 1
-const ORDER_SPAWN_INTERVAL_MAX_SECONDS: int = 5
-const ORDER_SPAWN_INTERVAL_DECREASE_DAYS: int = 3
+const ORDER_SPAWN_INTERVAL_MIN_SECONDS: float = 0.5
+const ORDER_SPAWN_INTERVAL_BASE_SECONDS: float = 5.0
+const ORDER_SPAWN_INTERVAL_INCREASE_DAYS: int = 3
 
 var order_slots: Array[Control] = []
 var removing_order_ids: Dictionary = {}
@@ -182,9 +182,26 @@ func _on_order_expired(order: Order) -> void:
 func expire_order(order: Order) -> void:
 	await _remove_order(order)
 
-func start_order_spawning() -> void:
-	pass
+func get_order_interval(days_passed: int) -> float:
+	var decrease_steps: int = floori(float(maxi(days_passed, 0)) / ORDER_SPAWN_INTERVAL_INCREASE_DAYS)
+	var interval: float = ORDER_SPAWN_INTERVAL_BASE_SECONDS - decrease_steps
+	return maxf(interval, ORDER_SPAWN_INTERVAL_MIN_SECONDS)
+	
 
+var spawn_orders: bool = false
+
+func start_order_spawning(days_passed: int) -> void:
+	spawn_orders = true
+	var order_interval: float = get_order_interval(days_passed)
+	while true:
+		create_order(days_passed)
+		await get_tree().create_timer(order_interval).timeout
+
+
+func stop_order_spawning() -> void:
+	spawn_orders = false
+	
+	
 # Quick test
 func _ready() -> void:
 	setup_order_slots()

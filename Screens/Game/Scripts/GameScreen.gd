@@ -31,7 +31,6 @@ func _on_palamig_done(_earned: int, _lost: int) -> void:
 	palamig_game.hide()
 	_update_palamig_btn()
 
-
 func _update_palamig_btn() -> void:
 	palamig_btn.visible = PlayerStats.palamigStock > 0
 
