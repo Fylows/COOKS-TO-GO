@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://canwap6ma5prx"
-path="res://.godot/imported/Kwekkwek_CookingAnim.png-1d0cfc881159c325ba6ee991fda43fab.ctex"
+path="res://.godot/imported/Kwekwek_CookingAnim.png-b5973cde7fbd30953e10c0ee33c77f16.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Kwekwek/Kwekkwek_CookingAnim.png"
-dest_files=["res://.godot/imported/Kwekkwek_CookingAnim.png-1d0cfc881159c325ba6ee991fda43fab.ctex"]
+source_file="res://Shared/Assets/Kwekwek/Kwekwek_CookingAnim.png"
+dest_files=["res://.godot/imported/Kwekwek_CookingAnim.png-b5973cde7fbd30953e10c0ee33c77f16.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://mqgctq02fene"
-path="res://.godot/imported/Kwekkwek_Cooked.png-bbb161510b270ee67344c8c168fdc2c4.ctex"
+uid="uid://lb25twn5yf14"
+path="res://.godot/imported/Kwekwek_RawAnim.png-c13427b48136b0e2d7e7e4eeee1c99a2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Kwekwek/Kwekkwek_Cooked.png"
-dest_files=["res://.godot/imported/Kwekkwek_Cooked.png-bbb161510b270ee67344c8c168fdc2c4.ctex"]
+source_file="res://Shared/Assets/Kwekwek/Kwekwek_RawAnim.png"
+dest_files=["res://.godot/imported/Kwekwek_RawAnim.png-c13427b48136b0e2d7e7e4eeee1c99a2.ctex"]
 
 [params]
 
