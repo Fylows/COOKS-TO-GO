@@ -59,18 +59,7 @@ func _ensure_action_captions() -> void:
 		return
 	var hint := box.get_parent().get_node_or_null("ActionHint") as Label
 	if hint:
-		return
-	hint = Label.new()
-	hint.name = "ActionHint"
-	hint.text = "Serve · Pass"
-	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	hint.add_theme_font_size_override("font_size", 12)
-	hint.add_theme_color_override("font_color", Color(0.15, 0.15, 0.18, 1))
-	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var vbox := box.get_parent()
-	if vbox:
-		vbox.add_child(hint)
-		vbox.move_child(hint, box.get_index())
+		hint.visible = false
 
 
 func _caption_action_button(btn: TextureButton, caption: String) -> void:
