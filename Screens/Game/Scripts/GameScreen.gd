@@ -29,6 +29,7 @@ var money_earned_label: Label
 var money_hud_panel: PanelContainer
 var weather_banner: PanelContainer
 var weather_banner_label: Label
+var _weather_banner_tween: Tween
 
 
 func _ready() -> void:
@@ -52,7 +53,7 @@ func _ready() -> void:
 
 
 func _layout_stall_hud(lore_panel: Control) -> void:
-	# Bottom-right corner — clear of the left-anchored day bar (Pause/Restart) and
+	# Bottom-right corner. Clear of the left-anchored day bar (Pause/Restart) and
 	# the bottom feed (which reserves the right margin). Avoids the top-bar overlap.
 	var audio := $HUD/AudioToggles as Control
 	if audio:
@@ -324,37 +325,42 @@ func _setup_weather_banner() -> void:
 	weather_banner = PanelContainer.new()
 	weather_banner.name = "WeatherBanner"
 	weather_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	weather_banner.offset_left = -280.0
-	weather_banner.offset_right = 280.0
-	weather_banner.offset_top = 72.0
-	weather_banner.offset_bottom = 148.0
+	weather_banner.offset_left = -140.0
+	weather_banner.offset_right = 140.0
+	weather_banner.offset_top = 64.0
+	weather_banner.offset_bottom = 64.0
+	weather_banner.grow_vertical = Control.GROW_DIRECTION_END
 	weather_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	weather_banner.z_index = 30
 	var style := StyleBoxFlat.new()
 	var key := PlayerStatController.weather_key()
 	match key:
 		"willRain":
-			style.bg_color = Color(0.08, 0.14, 0.28, 0.94)
-			style.border_color = Color(0.45, 0.65, 0.95, 0.95)
+			style.bg_color = Color(0.08, 0.14, 0.28, 0.97)
+			style.border_color = Color(0.55, 0.75, 1.0, 1.0)
 		"awasan":
-			style.bg_color = Color(0.28, 0.14, 0.06, 0.94)
-			style.border_color = Color(0.95, 0.62, 0.28, 0.95)
+			style.bg_color = Color(0.28, 0.14, 0.06, 0.97)
+			style.border_color = Color(1.0, 0.7, 0.35, 1.0)
 		_:
-			style.bg_color = Color(0.08, 0.12, 0.1, 0.92)
-			style.border_color = Color(0.55, 0.78, 0.55, 0.9)
+			style.bg_color = Color(0.08, 0.12, 0.1, 0.96)
+			style.border_color = Color(0.6, 0.85, 0.6, 1.0)
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(8)
 	weather_banner.add_theme_stylebox_override("panel", style)
 	weather_banner_label = Label.new()
 	weather_banner_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	weather_banner_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	weather_banner_label.add_theme_font_size_override("font_size", 18)
+	weather_banner_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	weather_banner_label.add_theme_font_size_override("font_size", 16)
 	weather_banner_label.add_theme_color_override("font_color", Color(0.95, 0.96, 1.0))
-	weather_banner_label.text = "%s — %s" % [
-		PlayerStatController.weather_title(),
-		PlayerStatController.weather_effect_blurb(),
-	]
+	var blurb := PlayerStatController.weather_effect_blurb()
+	if blurb.is_empty():
+		weather_banner_label.text = PlayerStatController.weather_title()
+	else:
+		weather_banner_label.text = "%s · %s" % [
+			PlayerStatController.weather_title(),
+			blurb,
+		]
 	weather_banner.add_child(weather_banner_label)
 	weather_banner.modulate.a = 0.0
 	$HUD.add_child(weather_banner)
@@ -363,12 +369,22 @@ func _setup_weather_banner() -> void:
 func _flash_weather_banner() -> void:
 	if weather_banner == null:
 		return
+	if _weather_banner_tween and _weather_banner_tween.is_valid():
+		_weather_banner_tween.kill()
 	weather_banner.modulate.a = 0.0
-	var tween := create_tween()
-	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	tween.tween_property(weather_banner, "modulate:a", 1.0, 0.25)
-	tween.tween_interval(3.2)
-	tween.tween_property(weather_banner, "modulate:a", 0.0, 0.45)
+	_weather_banner_tween = create_tween()
+	_weather_banner_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 1.0, 0.25)
+	_weather_banner_tween.tween_interval(3.2)
+	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 0.0, 0.45)
+
+
+func hold_weather_banner() -> void:
+	if weather_banner == null:
+		return
+	if _weather_banner_tween and _weather_banner_tween.is_valid():
+		_weather_banner_tween.kill()
+	weather_banner.modulate.a = 1.0
 
 
 func _update_stock_label() -> void:
