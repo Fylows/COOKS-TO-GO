@@ -154,7 +154,9 @@ func fade_out() -> void:
 
 	
 func _on_confirm_button_pressed() -> void:
+	SfxController.play_confirm_order()
 	confirm_requested.emit(self)
+
 
 func _on_cancel_button_pressed() -> void:
 	cancel_requested.emit(self)

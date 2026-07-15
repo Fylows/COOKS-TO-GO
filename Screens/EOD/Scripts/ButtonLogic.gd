@@ -33,6 +33,7 @@ func _ready() -> void:
 		$ResourceGroup/VBoxContainer/Kikiam.visible = false
 	_refresh_loan_btn()
 	_refresh_sbatter_btn()
+	_wire_button_sfx(self)
 
 func _process(delta: float) -> void:
 	position = base_position + camera.offset * parallax_strength
@@ -223,6 +224,7 @@ func _refresh_loan_btn() -> void:
 
 
 func _on_sbatter_btn_pressed() -> void:
+	SfxController.play_gambling()
 	var result := SbatterController.try_bet()
 	if result.is_empty():
 		return
@@ -250,3 +252,21 @@ func _on_new_day_pressed() -> void:
 		return
 	PlayerStatController.newDay()
 	get_tree().change_scene_to_file("res://Screens/Game/Scenes/GameScreen.tscn")
+
+
+func _wire_button_sfx(node: Node) -> void:
+	for child in node.get_children():
+		if child is BaseButton and child.name != "gambleBtn":
+			if not child.pressed.is_connected(_on_ui_button_pressed):
+				child.pressed.connect(_on_ui_button_pressed)
+			if not child.mouse_entered.is_connected(_on_ui_hover):
+				child.mouse_entered.connect(_on_ui_hover)
+		_wire_button_sfx(child)
+
+
+func _on_ui_button_pressed() -> void:
+	SfxController.play_click()
+
+
+func _on_ui_hover() -> void:
+	SfxController.play_hover()

@@ -2,6 +2,7 @@ extends MarginContainer
 class_name OrderController
 
 signal palamig_order_started(order: Order)
+signal order_money_earned(amount: int, slot_index: int)
 
 const ORDER_SCENE: PackedScene = preload("res://Orders/Scenes/Order.tscn")
 
@@ -20,10 +21,16 @@ const ORDER_SPAWN_INTERVAL_DECREASE_DAYS: int = 3
 
 var order_slots: Array[Control] = []
 var removing_order_ids: Dictionary = {}
+var _spawning: bool = false
+var _spawn_days: int = 0
 
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
 @onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
 @onready var order_list: HBoxContainer = $OrderList
+
+
+func _ready() -> void:
+	setup_order_slots()
 
 
 func setup_order_slots() -> void:
@@ -149,6 +156,7 @@ func _on_confirm_requested(order: Order) -> void:
 
 	if order.is_palamig_order():
 		if not stats or stats.palamigStock <= 0:
+			SfxController.play_error()
 			return
 		order.stop_countdown()
 		palamig_order_started.emit(order)
@@ -170,6 +178,7 @@ func confirm_order(order: Order) -> bool:
 
 	for stock_var: String in needed:
 		if stats.get(stock_var) < needed[stock_var]:
+			SfxController.play_error()
 			return false
 
 	var total_items: int = (
@@ -178,16 +187,21 @@ func confirm_order(order: Order) -> bool:
 		+ order.kikiam_count
 		+ order.palamig_count
 	)
+	var earnings: int = total_items * SELL_PRICE_PER_ITEM
+	var slot_index: int = order_slots.find(order.get_parent())
 
 	var complete_order_sale := func() -> void:
 		for stock_var: String in needed:
 			stats.set(stock_var, stats.get(stock_var) - needed[stock_var])
-		stat_controller.addMoney(total_items * SELL_PRICE_PER_ITEM)
+		stat_controller.addMoney(earnings)
+		order_money_earned.emit(earnings, maxi(slot_index, 0))
+		SfxController.play_coin()
 
 	return await _remove_order(order, complete_order_sale)
 
 
 func cancel_order(order: Order) -> void:
+	SfxController.play_cancel_order()
 	await _remove_order(order)
 
 
@@ -202,23 +216,28 @@ func _on_order_expired(order: Order) -> void:
 func expire_order(order: Order) -> void:
 	await _remove_order(order)
 
-func start_order_spawning() -> void:
-	pass
 
-# Quick test
-func _ready() -> void:
-	setup_order_slots()
+func get_spawn_interval_seconds(days_passed: int) -> float:
+	var decrease: int = floori(float(maxi(days_passed, 0)) / ORDER_SPAWN_INTERVAL_DECREASE_DAYS)
+	var min_seconds: int = maxi(ORDER_SPAWN_INTERVAL_MIN_SECONDS - decrease, 1)
+	var max_seconds: int = maxi(ORDER_SPAWN_INTERVAL_MAX_SECONDS - decrease, min_seconds)
+	return randf_range(float(min_seconds), float(max_seconds))
 
-	var order0: Order = create_order(0)
-	await get_tree().create_timer(1.0).timeout
-	var order1: Order = create_order(1)
-	await get_tree().create_timer(1.0).timeout
-	var order2: Order = create_order(2)
-	await get_tree().create_timer(1.0).timeout
-	cancel_order(order0)
-	await get_tree().create_timer(1.0).timeout
-	var order3: Order = create_order(3)
-	await get_tree().create_timer(1.0).timeout
-	var order4: Order = create_order(3)
-	await get_tree().create_timer(1.0).timeout
-	var order5: Order = create_order(1000)
+
+func start_order_spawning(days_passed: int) -> void:
+	_spawn_days = days_passed
+	if _spawning:
+		return
+	_spawning = true
+	_spawn_loop()
+
+
+func stop_order_spawning() -> void:
+	_spawning = false
+
+
+func _spawn_loop() -> void:
+	while _spawning:
+		create_order(_spawn_days)
+		var wait_seconds: float = get_spawn_interval_seconds(_spawn_days)
+		await get_tree().create_timer(wait_seconds).timeout

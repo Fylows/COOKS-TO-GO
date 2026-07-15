@@ -23,6 +23,7 @@ FamilyStateController="*res://Player/FamilyStateController.gd"
 LoanController="*res://Player/LoanController.gd"
 SbatterController="*res://Player/SbatterController.gd"
 BgmController="*res://Audio/BgmController.gd"
+SfxController="*res://Audio/SfxController.gd"
 Dialogic="*uid://ds2q0uclmolvu"
 
 [dialogic]
