@@ -117,7 +117,7 @@ func weather_title() -> String:
 		"willRain":
 			return "Ulan"
 		"awasan":
-			return "Awasan"
+			return "Init"
 		"none":
 			return "Clear"
 		_:
@@ -128,11 +128,11 @@ func weather_title() -> String:
 func morning_forecast_line() -> String:
 	match weather_key():
 		"willRain":
-			return "Bukas ulan. Expect a slow line at the tarp."
+			return "Bukas uulan. Konti lang ang lalabas, slow day sa cart."
 		"awasan":
-			return "Bukas awasan. Palamig will sell if the jug is full."
+			return "Bukas ang init. Kung may palamig ka, uubusin nila."
 		"none":
-			return "Bukas clear skies. Regular foot traffic, no drama."
+			return "Bukas maganda ang panahon. Normal lang ang araw."
 		_:
 			return ""
 
@@ -141,11 +141,11 @@ func morning_forecast_line() -> String:
 func stall_weather_line() -> String:
 	match weather_key():
 		"willRain":
-			return "Ulan on the street. Customers drip in slow."
+			return "Umuulan. Customers papasok nang mabagal."
 		"awasan":
-			return "Awasan heat. Palamig is the whole personality."
+			return "Ang init ngayon. Palamig ang bida."
 		"none":
-			return "Clear day. Cook like you mean it."
+			return "Okay ang panahon. Magbenta ka nang todo."
 		_:
 			return ""
 
@@ -183,21 +183,13 @@ func palamig_order_bias() -> float:
 
 
 func _refresh_morning_forecast() -> void:
-	if weather_key().is_empty():
-		morning_forecast = ""
-		return
-	var blurb := weather_effect_blurb()
-	# Overnight EOD: weather for tomorrow's open after Go to bed.
-	if blurb.is_empty():
-		morning_forecast = "Tomorrow · %s" % weather_title()
-	else:
-		morning_forecast = "Tomorrow · %s · %s" % [weather_title(), blurb]
+	morning_forecast = morning_forecast_line()
 
 
 func morning_briefing_lines() -> PackedStringArray:
 	var lines: PackedStringArray = PackedStringArray()
 	for line in last_night_report:
-		if line == "Quiet night.":
+		if line == "Quiet night." or line == "Tahimik lang kagabi.":
 			continue
 		lines.append(line)
 		if lines.size() >= 2:
@@ -265,19 +257,19 @@ func apply_post_day_events() -> void:
 
 func _build_night_report(loan_paid: int) -> void:
 	if loan_paid > 0:
-		last_night_report.append("JuanAngat −%s" % format_pesos(loan_paid))
+		last_night_report.append("JuanAngat kumuha −%s" % format_pesos(loan_paid))
 	if PlayerStats.post_day_events.sickChild.active:
-		last_night_report.append("Anak may lagnat")
+		last_night_report.append("Anak may lagnat kagabi")
 	if PlayerStats.post_day_events.nanakawan.active and _night_stolen > 0:
-		last_night_report.append("Nanakaw −%s" % format_pesos(_night_stolen))
+		last_night_report.append("Nanakawan −%s" % format_pesos(_night_stolen))
 	elif PlayerStats.post_day_events.nanakawan.active:
-		last_night_report.append("Nanakaw (walang pera)")
+		last_night_report.append("May magnanakaw (walang nakuha)")
 	if _night_stock_stolen > 0:
-		last_night_report.append("−%d fishball" % _night_stock_stolen)
+		last_night_report.append("Nawala −%d fishball" % _night_stock_stolen)
 	if PlayerStats.post_day_events.extraMoney.active and _night_gained > 0:
-		last_night_report.append("Naiwan +%s" % format_pesos(_night_gained))
+		last_night_report.append("May naiwan +%s" % format_pesos(_night_gained))
 	if last_night_report.is_empty():
-		last_night_report.append("Quiet night.")
+		last_night_report.append("Tahimik lang kagabi.")
 
 
 func resetStats() -> void:

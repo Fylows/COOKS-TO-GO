@@ -70,7 +70,7 @@ func pick_items(max_items: int) -> PackedStringArray:
 func _build_feed() -> String:
 	var items := pick_items(MAX_FEED_ITEMS)
 	if items.is_empty():
-		return "Walang chismis for now."
+		return "Walang chismis for now, pre."
 	return "\n".join(items)
 
 
@@ -157,8 +157,8 @@ func _compute_tags() -> Dictionary:
 
 	tags["night_theft"] = _report_has("nanakaw")
 	tags["night_luck"] = _report_has("naiwan")
-	tags["night_sick"] = _report_has("sick")
-	tags["night_quiet"] = _report_has("Quiet night")
+	tags["night_sick"] = _report_has("lagnat") or _report_has("sick")
+	tags["night_quiet"] = _report_has("Tahimik") or _report_has("Quiet night")
 
 	tags["rain_day"] = PlayerStats.pre_day_events.willRain.active
 	tags["awasan_day"] = PlayerStats.pre_day_events.awasan.active
