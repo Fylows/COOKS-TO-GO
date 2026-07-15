@@ -5,6 +5,7 @@ const SAVE_PATH := "user://high_scores.cfg"
 var run_total_earned: int = 0
 var run_peak_money: int = 0
 var today_earned: int = 0
+var last_day_earned: int = 0
 var best_day_earned: int = 0
 
 var best_days_survived: int = 0
@@ -20,6 +21,7 @@ func _ready() -> void:
 func reset_run() -> void:
 	run_total_earned = 0
 	today_earned = 0
+	last_day_earned = 0
 	best_day_earned = 0
 	run_peak_money = PlayerStats.playerMoney
 	run_journal.clear()
@@ -40,8 +42,15 @@ func record_income(amount: int) -> void:
 
 func on_day_end() -> void:
 	best_day_earned = maxi(best_day_earned, today_earned)
+	last_day_earned = today_earned
 	today_earned = 0
 	_commit_records()
+
+
+func earnings_for_display() -> int:
+	if today_earned > 0:
+		return today_earned
+	return last_day_earned
 
 
 func on_run_end() -> void:
