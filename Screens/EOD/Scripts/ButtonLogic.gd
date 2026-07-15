@@ -1406,15 +1406,28 @@ func _layout_bed_button_caption() -> void:
 	var sz := bed_action_caption.get_combined_minimum_size()
 	if sz.x < 1.0:
 		sz = bed_action_caption.size
-	# Phone Base sits at (-27, -254). Home circle is on the bezel under the glass.
-	var center := Vector2(-27.0, 208.0)
-	bed_action_caption.position = center - sz * 0.5
-	# Keep the invisible HomeBtn under the pill so either path still works.
+	# Phone Base at (-27, -254). Home circle on the bezel (~y 208).
+	# Park the pill on the glass above the circle, not on top of it.
+	var phone_x := -27.0
+	var circle := Vector2(phone_x, 208.0)
+	var label_center := Vector2(phone_x, 142.0)
+	bed_action_caption.position = label_center - sz * 0.5
+	# Invisible hit covers pill + home circle.
 	var home_btn := $HomeBtn as Control
-	var hit := Vector2(maxf(sz.x, 64.0), maxf(sz.y, 40.0))
+	var pill_tl := bed_action_caption.position
+	var pill_br := pill_tl + sz
+	var circle_half := Vector2(36.0, 36.0)
+	var hit_tl := Vector2(
+		minf(pill_tl.x, circle.x - circle_half.x),
+		minf(pill_tl.y, circle.y - circle_half.y)
+	)
+	var hit_br := Vector2(
+		maxf(pill_br.x, circle.x + circle_half.x),
+		maxf(pill_br.y, circle.y + circle_half.y)
+	)
 	home_btn.scale = Vector2.ONE
-	home_btn.position = center - hit * 0.5
-	home_btn.size = hit
+	home_btn.position = hit_tl
+	home_btn.size = hit_br - hit_tl
 
 
 func _setup_stock_hud() -> void:
