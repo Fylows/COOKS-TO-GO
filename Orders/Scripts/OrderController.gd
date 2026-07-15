@@ -8,6 +8,10 @@ const FOOD_PROGRESSION_DAYS_DIVISOR: int = 5
 const SELL_PRICE_PER_ITEM: int = 5
 const ORDER_SLOT_COUNT: int = 5
 const ORDER_SLOT_SIZE: Vector2 = Vector2(180, 240)
+const ORDER_START_LIFETIME_SECONDS: float = 20.0
+const ORDER_MIN_LIFETIME_SECONDS: float = 8.0
+const ORDER_LIFETIME_DECREASE: float = 2.0
+const ORDER_LIFETIME_DECREASE_INTERVAL: int = 3
 
 var order_slots: Array[Control] = []
 
@@ -49,6 +53,12 @@ func get_random_food_quantity(days_passed: int) -> int:
 	
 	var sliced: Array[int] = FOOD_QUANTITY_LIST.slice(starting_index, ending_index)
 	return sliced.pick_random()
+
+
+func get_order_lifetime_seconds(days_passed: int) -> float:
+	var decrease_steps: int = floori(float(maxi(days_passed, 0)) / ORDER_LIFETIME_DECREASE_INTERVAL)
+	var lifetime: float = ORDER_START_LIFETIME_SECONDS - (decrease_steps * ORDER_LIFETIME_DECREASE)
+	return maxf(lifetime, ORDER_MIN_LIFETIME_SECONDS)
 		
 ## Create orders based on unlock food items with scaling quantity based on days
 func create_order(days_passed: int) -> Order:
@@ -95,6 +105,7 @@ func create_order(days_passed: int) -> Order:
 
 	new_order.confirm_requested.connect(confirm_order)
 	new_order.cancel_requested.connect(cancel_order)
+	new_order.expired.connect(_on_order_expired)
 	
 	new_order.setup_order(
 		fishball_count,
@@ -103,6 +114,7 @@ func create_order(days_passed: int) -> Order:
 		betamax_count,
 		palamig_count
 	)
+	new_order.start_countdown(get_order_lifetime_seconds(days_passed))
 	
 	return new_order
 
@@ -137,6 +149,18 @@ func confirm_order(order: Order) -> bool:
 
 
 func cancel_order(order: Order) -> void:
+	await order.fade_out()
+	order.queue_free()
+
+
+func _on_order_expired(order: Order) -> void:
+	expire_order(order)
+
+
+func expire_order(order: Order) -> void:
+	if not is_instance_valid(order):
+		return
+
 	await order.fade_out()
 	order.queue_free()
 

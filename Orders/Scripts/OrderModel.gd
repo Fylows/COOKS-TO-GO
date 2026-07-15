@@ -6,6 +6,7 @@ class_name Order
 
 signal confirm_requested(order: Order)
 signal cancel_requested(order: Order)
+signal expired(order: Order)
 
 const FOOD_TEXTURES: Dictionary = {
 	"fishball": preload("res://Shared/Assets/Fishball/Fishball_Cooked.png"),
@@ -17,6 +18,9 @@ const FOOD_TEXTURES: Dictionary = {
 
 const FADE_IN_DURATION: float = 0.25
 const FADE_OUT_DURATION: float = 0.25
+const COUNTDOWN_GREEN: Color = Color(0.2, 0.8, 0.25)
+const COUNTDOWN_YELLOW: Color = Color(1.0, 0.72, 0.16)
+const COUNTDOWN_RED: Color = Color(0.9, 0.18, 0.14)
 
 # FOOD ITEMS
 var fishball_count : int = 0
@@ -25,10 +29,14 @@ var kikiam_count : int = 0
 var betamax_count : int = 0
 var palamig_count : int = 0
 var fade_tween: Tween
+var countdown_lifetime_seconds: float = 0.0
+var countdown_remaining_seconds: float = 0.0
+var countdown_active: bool = false
 
 
 @onready var order_label: Label = $MarginContainer/VBoxContainer/Label
 @onready var food_sprite: TextureRect = $MarginContainer/VBoxContainer/FoodSprite
+@onready var countdown_bar: ProgressBar = $CountdownOverlay/CountdownBar
 
 @onready var confirm_button: TextureButton = $MarginContainer/VBoxContainer/ButtonContainer/ConfirmButton
 @onready var cancel_button: TextureButton = $MarginContainer/VBoxContainer/ButtonContainer/CancelButton
@@ -38,6 +46,12 @@ func _ready() -> void:
 	modulate.a = 0.0
 	fade_tween = create_tween()
 	fade_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
+	update_countdown_bar()
+
+
+func _process(delta: float) -> void:
+	if countdown_active:
+		update_countdown(delta)
 
 
 ## Create order instance
@@ -75,7 +89,54 @@ func update_order_card_ui() -> void:
 	food_sprite.show()
 	
 
+func start_countdown(duration_seconds: float) -> void:
+	countdown_lifetime_seconds = maxf(duration_seconds, 0.0)
+	countdown_remaining_seconds = countdown_lifetime_seconds
+	countdown_active = countdown_lifetime_seconds > 0.0
+	update_countdown_bar()
+
+
+func stop_countdown() -> void:
+	countdown_active = false
+
+
+func update_countdown(delta: float) -> void:
+	countdown_remaining_seconds = maxf(countdown_remaining_seconds - delta, 0.0)
+	update_countdown_bar()
+
+	if countdown_remaining_seconds <= 0.0:
+		countdown_active = false
+		expired.emit(self)
+
+
+func update_countdown_bar() -> void:
+	var ratio: float = get_countdown_ratio()
+	countdown_bar.value = ratio * countdown_bar.max_value
+	countdown_bar.add_theme_stylebox_override("fill", _get_countdown_fill_style(ratio))
+
+
+func get_countdown_ratio() -> float:
+	if countdown_lifetime_seconds <= 0.0:
+		return 0.0
+
+	return clampf(countdown_remaining_seconds / countdown_lifetime_seconds, 0.0, 1.0)
+
+
+func _get_countdown_fill_style(ratio: float) -> StyleBoxFlat:
+	var fill_style: StyleBoxFlat = StyleBoxFlat.new()
+
+	if ratio > 0.6:
+		fill_style.bg_color = COUNTDOWN_GREEN
+	elif ratio > 0.25:
+		fill_style.bg_color = COUNTDOWN_YELLOW
+	else:
+		fill_style.bg_color = COUNTDOWN_RED
+
+	return fill_style
+
+
 func fade_out() -> void:
+	stop_countdown()
 	confirm_button.disabled = true
 	cancel_button.disabled = true
 
