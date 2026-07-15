@@ -1,10 +1,23 @@
 [gd_scene format=3 uid="uid://dhw4oitpble61"]
 
-[ext_resource type="Script" path="res://Screens/Game/Scripts/GameScreen.gd" id="1_iwem0"]
+[ext_resource type="Script" uid="uid://d25bth6dg3orq" path="res://Screens/Game/Scripts/GameScreen.gd" id="1_iwem0"]
 [ext_resource type="PackedScene" uid="uid://iq1mcvj1proc" path="res://Orders/Scenes/OrderContainer.tscn" id="2_vmgo5"]
 [ext_resource type="Texture2D" uid="uid://dmscxvdcf2qke" path="res://Screens/Assets/cart_main.PNG" id="3_2t8hv"]
 [ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="4_kkmty"]
+[ext_resource type="Script" uid="uid://br8ap87vd11cs" path="res://Cart/Scripts/CookingController.gd" id="4_vmgo5"]
+[ext_resource type="PackedScene" uid="uid://crbte2p67k7gm" path="res://Cart/Food/FoodItemSprite.tscn" id="5_2t8hv"]
 [ext_resource type="PackedScene" uid="uid://cnt482x3sc0bc" path="res://Screens/Day Over/Scenes/day_over.tscn" id="5_co4do"]
+[ext_resource type="Texture2D" uid="uid://cyog5stu8nhnr" path="res://Shared/Assets/Fishball/Fishball_Raw.png" id="6_mctc2"]
+[ext_resource type="Script" uid="uid://djeq3a4ph822g" path="res://Cart/Scripts/FoodBtn.gd" id="7_ms0na"]
+[ext_resource type="Texture2D" uid="uid://c1odjv1kcef62" path="res://Shared/Assets/Kikiam/Kikiam_Raw.png" id="8_vbp14"]
+[ext_resource type="Texture2D" uid="uid://bm3wm8bnhofcn" path="res://Shared/Assets/Betamax/Betamax_Raw.png" id="9_im1l0"]
+[ext_resource type="Texture2D" uid="uid://bhyb46itatfr5" path="res://Shared/Assets/Kwekwek/Kwekwek_Raw.png" id="10_d0sag"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fousb"]
+radius = 315.03198
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_axv6w"]
+size = Vector2(362.5, 214.99997)
 
 [node name="GameScreen" type="Node2D" unique_id=333561420]
 script = ExtResource("1_iwem0")
@@ -12,42 +25,106 @@ script = ExtResource("1_iwem0")
 [node name="HUD" type="CanvasLayer" parent="." unique_id=520455930]
 layer = 10
 
-[node name="DayHud" type="HBoxContainer" parent="HUD"]
+[node name="DayHud" type="HBoxContainer" parent="HUD" unique_id=1030362571]
 offset_left = 24.0
 offset_top = 16.0
 offset_right = 320.0
 offset_bottom = 56.0
 theme_override_constants/separation = 16
 
-[node name="TimerLabel" type="Label" parent="HUD/DayHud"]
+[node name="TimerLabel" type="Label" parent="HUD/DayHud" unique_id=376505114]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "02:00"
 
-[node name="PauseButton" type="Button" parent="HUD/DayHud"]
+[node name="PauseButton" type="Button" parent="HUD/DayHud" unique_id=828592048]
 layout_mode = 2
 text = "Pause"
 
-[node name="EndDayButton" type="Button" parent="HUD/DayHud"]
+[node name="EndDayButton" type="Button" parent="HUD/DayHud" unique_id=893070794]
 layout_mode = 2
 text = "End Day"
 
-[node name="MoneyPopupLayer" type="Control" parent="HUD"]
+[node name="MoneyPopupLayer" type="Control" parent="HUD" unique_id=620846486]
+layout_mode = 3
 anchors_preset = 0
 offset_right = 1920.0
 offset_bottom = 1080.0
 mouse_filter = 2
 
 [node name="OrderContainer" parent="HUD" unique_id=908020767 instance=ExtResource("2_vmgo5")]
-offset_left = 24.0
 offset_top = 64.0
-offset_right = 988.0
 offset_bottom = 304.0
 
-[node name="CartMain" type="Sprite2D" parent="." unique_id=481923727]
+[node name="CartMain" type="Sprite2D" parent="." unique_id=481923727 node_paths=PackedStringArray("pan_area", "container_area")]
 position = Vector2(960, 540)
 scale = Vector2(1.2, 1.2)
 texture = ExtResource("3_2t8hv")
+script = ExtResource("4_vmgo5")
+food_item_scene = ExtResource("5_2t8hv")
+pan_area = NodePath("PanArea")
+container_area = NodePath("ContainerArea")
+
+[node name="PanArea" type="Area2D" parent="CartMain" unique_id=2108540401]
+position = Vector2(-150, 278.3333)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CartMain/PanArea" unique_id=413010593]
+position = Vector2(39.166668, 89.166664)
+scale = Vector2(0.9929829, 0.8595677)
+shape = SubResource("CircleShape2D_fousb")
+
+[node name="ContainerArea" type="Area2D" parent="CartMain" unique_id=1949242202]
+position = Vector2(502.5, 322.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CartMain/ContainerArea" unique_id=1176843116]
+position = Vector2(-1.25, 28.33319)
+shape = SubResource("RectangleShape2D_axv6w")
+
+[node name="Fishball Button" type="TextureButton" parent="CartMain" unique_id=19515280 node_paths=PackedStringArray("cooking_controller")]
+offset_left = -793.3334
+offset_right = 230.66663
+offset_bottom = 1024.0
+scale = Vector2(0.1423222, 0.17010947)
+texture_normal = ExtResource("6_mctc2")
+script = ExtResource("7_ms0na")
+cooking_controller = NodePath("..")
+stock_variable_name = "fishballStock"
+
+[node name="Kikiam Button" type="TextureButton" parent="CartMain" unique_id=1269722399 node_paths=PackedStringArray("cooking_controller")]
+offset_left = -629.1666
+offset_top = -0.8333337
+offset_right = 394.83337
+offset_bottom = 1023.1667
+scale = Vector2(0.14204739, 0.16973083)
+texture_normal = ExtResource("8_vbp14")
+script = ExtResource("7_ms0na")
+food_type = 1
+cooking_controller = NodePath("..")
+stock_variable_name = "kikiamStock"
+
+[node name="Betamax Button" type="TextureButton" parent="CartMain" unique_id=768008471 node_paths=PackedStringArray("cooking_controller")]
+offset_left = -794.1666
+offset_top = 184.16664
+offset_right = 229.83337
+offset_bottom = 1208.1666
+scale = Vector2(0.14476849, 0.1730817)
+texture_normal = ExtResource("9_im1l0")
+script = ExtResource("7_ms0na")
+food_type = 2
+cooking_controller = NodePath("..")
+stock_variable_name = "betamaxStock"
+
+[node name="Kwekwek Button" type="TextureButton" parent="CartMain" unique_id=539684730 node_paths=PackedStringArray("cooking_controller")]
+offset_left = -629.99994
+offset_top = 171.66667
+offset_right = 394.00006
+offset_bottom = 1195.6666
+scale = Vector2(0.14817233, 0.17635499)
+texture_normal = ExtResource("10_d0sag")
+script = ExtResource("7_ms0na")
+food_type = 3
+cooking_controller = NodePath("..")
+stock_variable_name = "kwekwekStock"
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1981916952]
 position = Vector2(948, 540)
@@ -58,6 +135,10 @@ deadZone = 125
 layer = 999
 
 [node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_co4do")]
+offset_left = 9.0
+offset_top = 77.0
+offset_right = 9.0
+offset_bottom = 77.0
 
-[connection signal="pressed" from="HUD/DayHud/EndDayButton" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="HUD/DayHud/PauseButton" to="." method="_on_pause_button_pressed"]
+[connection signal="pressed" from="HUD/DayHud/EndDayButton" to="." method="_on_button_pressed"]

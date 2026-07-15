@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bhyb46itatfr5"
-path="res://.godot/imported/Kwekwek_Raw.png-bc8535d413c811fc57c7b594a7c0717d.ctex"
+uid="uid://ip1o25j8nby2"
+path="res://.godot/imported/02_palamig_order.png-9e9314fa0aec6d2728220eabdefadc52.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Kwekwek/Kwekwek_Raw.png"
-dest_files=["res://.godot/imported/Kwekwek_Raw.png-bc8535d413c811fc57c7b594a7c0717d.ctex"]
+source_file="res://Palamig/Docs/02_palamig_order.png"
+dest_files=["res://.godot/imported/02_palamig_order.png-9e9314fa0aec6d2728220eabdefadc52.ctex"]
 
 [params]
 

@@ -13,6 +13,7 @@ var luck : float = 1.0
 var fishballStock : int = 0
 var kwekwekStock : int = 0
 var kikiamStock : int = 0
+var betamaxStock: int = 0
 var boughtSauce : bool = false
 var palamigStock : int = 0
 

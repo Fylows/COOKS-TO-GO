@@ -1,6 +1,7 @@
 extends Control
 
 var _continuing: bool = false
+var _ready_done := false
 
 @onready var money_label: Label = $PanelContainer/VBox/MoneyLabel
 @onready var stock_label: Label = $PanelContainer/VBox/StockLabel
@@ -9,7 +10,9 @@ var _continuing: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
-
+	_ready_done = true
+	if visible: 
+		_on_visibility_changed()
 
 func _on_button_pressed() -> void:
 	if _continuing:
@@ -22,7 +25,7 @@ func _on_button_pressed() -> void:
 
 
 func _on_visibility_changed() -> void:
-	if not visible:
+	if not visible or not _ready_done:
 		return
 	BgmController.play_track("day_over")
 	_refresh_summary()

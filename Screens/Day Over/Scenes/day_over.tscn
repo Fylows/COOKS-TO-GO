@@ -165,24 +165,24 @@ offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="PanelContainer"]
+[node name="VBox" type="VBoxContainer" parent="PanelContainer" unique_id=1433029201]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="TitleLabel" type="Label" parent="PanelContainer/VBox" unique_id=1145757690]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Day Over"
 horizontal_alignment = 1
 
-[node name="MoneyLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="MoneyLabel" type="Label" parent="PanelContainer/VBox" unique_id=648440814]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Balance:"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="StockLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="StockLabel" type="Label" parent="PanelContainer/VBox" unique_id=1724236454]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Stock left:"
