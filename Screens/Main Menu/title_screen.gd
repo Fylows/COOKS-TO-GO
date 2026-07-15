@@ -30,7 +30,7 @@ func _on_quit_pressed() -> void:
 
 func _on_credit_pressed() -> void:
 	click.play()
-	get_tree().change_scene_to_file("res://Scenes/Menu/Credit/credit.tscn")
+	get_tree().change_scene_to_file("res://Screens/Main Menu/Credit/credit.tscn")
 
 func _on_start_mouse_entered() -> void:
 	hover.play()
