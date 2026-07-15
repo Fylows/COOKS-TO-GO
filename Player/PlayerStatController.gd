@@ -8,7 +8,7 @@ var _night_stolen: int = 0
 var _night_gained: int = 0
 
 static func format_pesos(amount: int) -> String:
-	return "%d Pesos" % amount
+	return "₱%d" % amount
 
 
 static func current_day_number() -> int:

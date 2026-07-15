@@ -57,9 +57,9 @@ func try_bet() -> String:
 		if won:
 			PlayerStats.sbatter_won = true
 			PlayerStatController.addMoney(WIN_PAYOUT)
-			return "%s won %d Pesos at %d%% odds. Sbatter kept your name anyway." % [
+			return "%s won %s at %d%% odds. Sbatter kept your name anyway." % [
 				old_name,
-				WIN_PAYOUT,
+				PlayerStatController.format_pesos(WIN_PAYOUT),
 				pct,
 			]
 		return "%s lost at %d%% odds. You are %s now." % [old_name, pct, PlayerStats.player_name]
@@ -69,7 +69,11 @@ func try_bet() -> String:
 	if won:
 		PlayerStats.sbatter_won = true
 		PlayerStatController.addMoney(WIN_PAYOUT)
-		return "Won %d Pesos! (−%s, %d%% odds)" % [WIN_PAYOUT, PlayerStatController.format_pesos(cost), pct]
+		return "Won %s! (−%s, %d%% odds)" % [
+			PlayerStatController.format_pesos(WIN_PAYOUT),
+			PlayerStatController.format_pesos(cost),
+			pct,
+		]
 	return "Lost %s. Only %d%% chance left next time." % [
 		PlayerStatController.format_pesos(cost),
 		get_win_chance_percent(),

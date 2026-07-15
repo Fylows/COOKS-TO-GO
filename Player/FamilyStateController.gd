@@ -74,7 +74,7 @@ func blocking_issue() -> String:
 	if not PlayerStats.paidTindahanApp:
 		var app_price: int = PlayerStatController.essential_cost("tindahanApp")
 		if PlayerStats.playerMoney < app_price:
-			return "Need %d Pesos for today's Tindahan App subscription." % app_price
+			return "Need %s for today's Tindahan App subscription." % PlayerStatController.format_pesos(app_price)
 		return "Pay today's Tindahan App subscription on the Resources tab."
 	if is_family_sick:
 		var price: int = PlayerStatController.essential_cost("medicine")
@@ -82,8 +82,8 @@ func blocking_issue() -> String:
 			return "Family is still sick."
 		if PlayerStats.playerMoney < price:
 			if LoanController.can_borrow():
-				return "Need %d Pesos for medicine. Borrow from JuanAngat (Misc tab)." % price
-			return "Need %d Pesos for medicine." % price
+				return "Need %s for medicine. Borrow from JuanAngat (Misc tab)." % PlayerStatController.format_pesos(price)
+			return "Need %s for medicine." % PlayerStatController.format_pesos(price)
 		return "Buy medicine on the Family tab first."
 	return ""
 
@@ -117,7 +117,7 @@ func status_text() -> String:
 	if is_family_sick:
 		var price: int = PlayerStatController.essential_cost("medicine")
 		if PlayerStats.playerMoney < price:
-			lines.append("Sick. Need %d Pesos for medicine." % price)
+			lines.append("Sick. Need %s for medicine." % PlayerStatController.format_pesos(price))
 			if LoanController.can_borrow():
 				lines.append("JuanAngat Paldo Loan+ is in Misc.")
 		else:

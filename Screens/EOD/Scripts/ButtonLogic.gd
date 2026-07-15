@@ -157,7 +157,7 @@ func _refresh_wallet_hud() -> void:
 			wallet_earned_label.text = "Today: +%s" % PlayerStatController.format_pesos(earned)
 			wallet_earned_label.add_theme_color_override("font_color", Color(0.45, 0.92, 0.55))
 		else:
-			wallet_earned_label.text = "Today: +0 Pesos"
+			wallet_earned_label.text = "Today: +%s" % PlayerStatController.format_pesos(0)
 			wallet_earned_label.add_theme_color_override("font_color", Color(0.72, 0.76, 0.86))
 
 
@@ -204,7 +204,7 @@ func _refresh_shop_prices() -> void:
 	_set_price_label(_shop_price($ResourceGroup/VBoxContainer/Palamig), _resource_cost("palamig"))
 	var app_price: Label = _shop_price($ResourceGroup/VBoxContainer/AppSubscription)
 	if app_price:
-		app_price.text = "%d/day" % _essential_cost("tindahanApp")
+		app_price.text = "%s/day" % PlayerStatController.format_pesos(_essential_cost("tindahanApp"))
 	_set_price_label(_shop_price($FamilyGroup/VBoxContainer/Electricity), _essential_cost("electricity"))
 	_set_price_label(_shop_price($FamilyGroup/VBoxContainer/Water), _essential_cost("water"))
 	_set_price_label(_shop_price($FamilyGroup/VBoxContainer/Rent), _essential_cost("rent"))
@@ -220,7 +220,7 @@ func _refresh_shop_prices() -> void:
 
 func _set_price_label(label: Label, amount: int) -> void:
 	if label:
-		label.text = "%d Pesos" % amount
+		label.text = PlayerStatController.format_pesos(amount)
 
 
 ## After _wrap_shop_cell, Label/Button live under NameWrap/PriceWrap/BtnWrap.
@@ -614,7 +614,7 @@ func _on_sbatter_btn_pressed() -> void:
 		return
 	if not SbatterController.can_bet():
 		SfxController.play_error()
-		$MiscGroup/VBoxContainer/SbatterResult.text = "Not enough Pesos for this bet."
+		$MiscGroup/VBoxContainer/SbatterResult.text = "Not enough money for this bet."
 		_refresh_sbatter_btn()
 		return
 	SfxController.play_gambling()
