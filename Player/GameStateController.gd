@@ -47,15 +47,24 @@ func evaluate_wins() -> bool:
 	return true
 
 
-func reset_for_new_game() -> void:
-	is_game_over = false
-	is_victory_toast = false
-	reason = ""
-	cause_detail = ""
-	ending_id = ""
-	hide()
+func _present_overlay() -> void:
+	_refresh_panel()
+	show()
+	layer = 2500
 	if _blocker:
-		_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
+		_blocker.modulate.a = 0.0
+	_panel.modulate.a = 0.0
+	_panel.scale = Vector2(0.9, 0.9)
+	_panel.reset_size()
+	_panel.pivot_offset = _panel.size * 0.5
+	var tween := create_tween()
+	tween.set_parallel(true)
+	if _blocker:
+		tween.tween_property(_blocker, "modulate:a", 1.0, 0.2)
+	tween.tween_property(_panel, "modulate:a", 1.0, 0.22)
+	tween.tween_property(_panel, "scale", Vector2.ONE, 0.22)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func dismiss_victory() -> void:
@@ -63,9 +72,45 @@ func dismiss_victory() -> void:
 	ending_id = ""
 	reason = ""
 	cause_detail = ""
-	hide()
+	_dismiss_overlay_animated()
+
+
+func reset_for_new_game() -> void:
+	is_game_over = false
+	is_victory_toast = false
+	reason = ""
+	cause_detail = ""
+	ending_id = ""
+	_dismiss_overlay_animated(true)
+
+
+func _dismiss_overlay_animated(instant: bool = false) -> void:
+	if not visible:
+		if _blocker:
+			_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		return
+	if instant:
+		hide()
+		if _blocker:
+			_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_blocker.modulate.a = 1.0
+		_panel.modulate.a = 1.0
+		_panel.scale = Vector2.ONE
+		return
+	var tween := create_tween()
+	tween.set_parallel(true)
 	if _blocker:
-		_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		tween.tween_property(_blocker, "modulate:a", 0.0, 0.15)
+	tween.tween_property(_panel, "modulate:a", 0.0, 0.15)
+	tween.tween_property(_panel, "scale", Vector2(0.94, 0.94), 0.15)
+	tween.chain().tween_callback(func() -> void:
+		hide()
+		if _blocker:
+			_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_blocker.modulate.a = 1.0
+		_panel.modulate.a = 1.0
+		_panel.scale = Vector2.ONE
+	)
 
 
 func _compute_reason() -> String:
@@ -161,14 +206,6 @@ func _apply_overlay_theme(victory: bool) -> void:
 		_ending_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
 		_primary_button.text = "Start New Game"
 		_secondary_button.visible = false
-
-
-func _present_overlay() -> void:
-	_refresh_panel()
-	show()
-	layer = 2500
-	if _blocker:
-		_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
 
 
 func _refresh_panel() -> void:
