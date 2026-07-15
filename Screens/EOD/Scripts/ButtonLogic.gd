@@ -596,7 +596,10 @@ func _refresh_loan_btn() -> void:
 	var btn: Button = _shop_btn($MiscGroup/VBoxContainer/JuanAngat)
 	var price: Label = _shop_price($MiscGroup/VBoxContainer/JuanAngat)
 	if price:
-		price.text = "+%d / owe %d" % [LoanController.payout_amount(), LoanController.repay_amount()]
+		price.text = "+%s / owe %s" % [
+			PlayerStatController.format_pesos(LoanController.payout_amount()),
+			PlayerStatController.format_pesos(LoanController.repay_amount()),
+		]
 	if btn == null:
 		return
 	if PlayerStats.loan_balance > 0:
@@ -1215,14 +1218,15 @@ func _style_shop_row(row: HBoxContainer) -> void:
 		_wrap_shop_cell(row, name_label, "NameWrap", Vector2(24, 28), Control.SIZE_EXPAND_FILL)
 	if price_label:
 		_style_shop_label(price_label, true)
-		price_label.clip_text = true
-		price_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		# No ellipsis — grow left into the name column instead of "Your nam..."
+		price_label.clip_text = false
+		price_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		_wrap_shop_cell(row, price_label, "PriceWrap", Vector2(100, 28), Control.SIZE_SHRINK_END)
+		_wrap_shop_cell(row, price_label, "PriceWrap", Vector2(168, 28), Control.SIZE_SHRINK_END, false)
 	if action_btn:
 		_style_shop_button(action_btn)
 		action_btn.clip_text = true
-		_wrap_shop_cell(row, action_btn, "BtnWrap", Vector2(100, 30), Control.SIZE_SHRINK_END)
+		_wrap_shop_cell(row, action_btn, "BtnWrap", Vector2(96, 30), Control.SIZE_SHRINK_END)
 
 
 ## Caps a shop-row child's layout width. Labels/Buttons ignore custom_minimum_size
@@ -1233,6 +1237,7 @@ func _wrap_shop_cell(
 	wrap_name: String,
 	min_size: Vector2,
 	h_flags: int,
+	clip: bool = true,
 ) -> void:
 	var wrap := row.get_node_or_null(wrap_name) as Control
 	if wrap == null:
@@ -1241,7 +1246,6 @@ func _wrap_shop_cell(
 		var idx := cell.get_index()
 		wrap = Control.new()
 		wrap.name = wrap_name
-		wrap.clip_contents = true
 		row.add_child(wrap)
 		row.move_child(wrap, idx)
 		cell.reparent(wrap)
@@ -1251,7 +1255,7 @@ func _wrap_shop_cell(
 	wrap.custom_minimum_size = min_size
 	wrap.size_flags_horizontal = h_flags
 	wrap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	wrap.clip_contents = true
+	wrap.clip_contents = clip
 
 
 func _style_shop_label(label: Label, is_price: bool) -> void:
