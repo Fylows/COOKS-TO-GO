@@ -7,8 +7,9 @@ const SHOP_BTN_BG := Color(0.14, 0.36, 0.58)
 const SHOP_BTN_DISABLED := Color(0.35, 0.38, 0.46)
 const STATS_TEXT := Color(0.95, 0.97, 1.0)
 # Content inset inside phone_blank.PNG glass (sprite at -27,-254).
-const PHONE_PANEL_LEFT := -264.0
-const PHONE_PANEL_WIDTH := 456.0
+# ~12px inset from glass left/right so Buy buttons clear the bezel.
+const PHONE_PANEL_LEFT := -260.0
+const PHONE_PANEL_WIDTH := 440.0
 const SHOP_VBOX_LEFT := PHONE_PANEL_LEFT
 const SHOP_VBOX_RIGHT := PHONE_PANEL_LEFT + PHONE_PANEL_WIDTH
 const SHOP_ROW_WIDTH := PHONE_PANEL_WIDTH
@@ -742,6 +743,7 @@ func _apply_shop_layout(shop_top: float) -> void:
 		vbox.set_anchors_preset(Control.PRESET_TOP_LEFT)
 		vbox.custom_minimum_size = Vector2(PHONE_PANEL_WIDTH, 0)
 		vbox.size = Vector2(PHONE_PANEL_WIDTH, 0)
+		vbox.clip_contents = true
 		vbox.reset_size()
 		var content_h := maxf(float(vbox.get_combined_minimum_size().y), 120.0)
 		vbox.offset_left = SHOP_VBOX_LEFT
@@ -1009,8 +1011,9 @@ func _style_shop_group(group: CanvasGroup) -> void:
 
 func _style_shop_row(row: HBoxContainer) -> void:
 	row.add_theme_constant_override("separation", 6)
-	row.custom_minimum_size = Vector2(SHOP_ROW_WIDTH, 34)
+	row.custom_minimum_size = Vector2(0, 34)
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.clip_contents = true
 	var name_label: Label = null
 	var price_label: Label = null
 	var action_btn: Button = null
@@ -1030,23 +1033,54 @@ func _style_shop_row(row: HBoxContainer) -> void:
 				_style_shop_label(label, false)
 		elif child is Button:
 			action_btn = child as Button
+	# Labels/buttons report full text as min width and inflate the row past the
+	# glass — wrap them in fixed Controls so the HBox stays ≤ panel width.
 	if name_label:
-		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		name_label.custom_minimum_size = Vector2(64, 0)
-		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		_style_shop_label(name_label, false)
+		name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+		name_label.clip_text = true
+		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		_wrap_shop_cell(row, name_label, "NameWrap", Vector2(24, 28), Control.SIZE_EXPAND_FILL)
 	if price_label:
-		price_label.size_flags_horizontal = Control.SIZE_SHRINK_END
-		price_label.custom_minimum_size = Vector2(58, 0)
-		price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		price_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		_style_shop_label(price_label, true)
+		price_label.clip_text = true
+		price_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		_wrap_shop_cell(row, price_label, "PriceWrap", Vector2(100, 28), Control.SIZE_SHRINK_END)
 	if action_btn:
-		action_btn.size_flags_horizontal = Control.SIZE_SHRINK_END
-		action_btn.custom_minimum_size = Vector2(72, 28)
 		_style_shop_button(action_btn)
+		action_btn.clip_text = true
+		_wrap_shop_cell(row, action_btn, "BtnWrap", Vector2(100, 30), Control.SIZE_SHRINK_END)
+
+
+## Caps a shop-row child's layout width. Labels/Buttons ignore custom_minimum_size
+## as a max (text wins), so a plain Control wrapper is the cheap clamp.
+func _wrap_shop_cell(
+	row: HBoxContainer,
+	cell: Control,
+	wrap_name: String,
+	min_size: Vector2,
+	h_flags: int,
+) -> void:
+	var wrap := row.get_node_or_null(wrap_name) as Control
+	if wrap == null:
+		if cell.get_parent() != row:
+			return
+		var idx := cell.get_index()
+		wrap = Control.new()
+		wrap.name = wrap_name
+		wrap.clip_contents = true
+		row.add_child(wrap)
+		row.move_child(wrap, idx)
+		cell.reparent(wrap)
+		cell.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		cell.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	wrap.custom_minimum_size = min_size
+	wrap.size_flags_horizontal = h_flags
+	wrap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	wrap.clip_contents = true
 
 
 func _style_shop_label(label: Label, is_price: bool) -> void:
@@ -1055,7 +1089,7 @@ func _style_shop_label(label: Label, is_price: bool) -> void:
 		SHOP_PRICE if is_price else SHOP_TEXT
 	)
 	label.add_theme_font_size_override("font_size", PHONE_FONT_PRICE if is_price else PHONE_FONT_SHOP)
-	label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 
 
 func _position_phone_tabs() -> void:
