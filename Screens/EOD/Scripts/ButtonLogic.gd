@@ -1325,12 +1325,14 @@ func _setup_new_day_hint() -> void:
 	$HomeBtn.add_sibling(new_day_hint_pill)
 
 
+const BED_CAPTION_CENTER := Vector2(-40.0, 200.0)  # over phone_blank home bezel
+
+
 func _setup_bed_button_caption() -> void:
 	if bed_action_caption:
 		return
 	bed_action_caption = PanelContainer.new()
 	bed_action_caption.name = "BedActionCaption"
-	bed_action_caption.position = Vector2(-118, 246)
 	bed_action_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bed_action_caption.z_index = 40
 	var style := StyleBoxFlat.new()
@@ -1351,6 +1353,16 @@ func _setup_bed_button_caption() -> void:
 	bed_action_caption.add_child(bed_action_label)
 	$HomeBtn.add_sibling(bed_action_caption)
 	_refresh_bed_button_caption()
+
+
+func _layout_bed_button_caption() -> void:
+	if bed_action_caption == null:
+		return
+	bed_action_caption.reset_size()
+	var sz := bed_action_caption.get_combined_minimum_size()
+	if sz.x < 1.0:
+		sz = bed_action_caption.size
+	bed_action_caption.position = BED_CAPTION_CENTER - sz * 0.5
 
 
 func _setup_stock_hud() -> void:
@@ -1497,6 +1509,7 @@ func _refresh_bed_button_caption() -> void:
 	else:
 		bed_action_label.text = "Phone home"
 	bed_action_caption.visible = true
+	call_deferred("_layout_bed_button_caption")
 
 
 func _setup_meta_labels() -> void:
