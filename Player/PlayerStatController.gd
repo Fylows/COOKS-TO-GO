@@ -104,12 +104,6 @@ func endDay() -> Array:
 	_night_gained = 0
 	var loan_paid := LoanController.collect_payment()
 	FamilyStateController.process_end_of_day()
-	GameStateController.evaluate()
-	if GameStateController.is_game_over:
-		_build_night_report(loan_paid)
-		if not last_night_report.is_empty():
-			ScoreController.append_journal(last_night_report)
-		return []
 	roll_post_day()
 	apply_post_day_events()
 	_build_night_report(loan_paid)
@@ -123,6 +117,8 @@ func endDay() -> Array:
 	ScoreController.on_day_end()
 	ScoreController.append_journal(last_night_report)
 	resetStats()
+	# Evaluate after overnight drain + daily flag reset so softlocks match the morning gate.
+	GameStateController.evaluate()
 	return postDayEvents
 
 
@@ -157,21 +153,13 @@ func _build_night_report(loan_paid: int) -> void:
 
 
 func resetStats() -> void:
-	# Reset Essentials
+	# Daily bills only — stock and sauce carry overnight.
 	PlayerStats.paidElectricity = false
 	PlayerStats.paidWater = false
 	PlayerStats.paidRent = false
-	PlayerStats.paidFood= false
+	PlayerStats.paidFood = false
 	PlayerStats.paidMedicine = false
 	PlayerStats.paidTindahanApp = false
-		
-
-	# Reset Resouces
-	PlayerStats.fishballStock = 0
-	PlayerStats.kwekwekStock = 0
-	PlayerStats.kikiamStock = 0
-	PlayerStats.boughtSauce = false
-	PlayerStats.palamigStock = 0
 
 
 func restart_game() -> void:

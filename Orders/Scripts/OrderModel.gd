@@ -100,6 +100,20 @@ func stop_countdown() -> void:
 
 func set_countdown_paused(paused: bool) -> void:
 	countdown_paused = paused
+	set_interactable(not paused)
+
+
+func set_interactable(enabled: bool) -> void:
+	if confirm_button:
+		confirm_button.disabled = not enabled
+		confirm_button.mouse_filter = (
+			Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE
+		)
+	if cancel_button:
+		cancel_button.disabled = not enabled
+		cancel_button.mouse_filter = (
+			Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE
+		)
 
 
 func resume_countdown() -> void:
@@ -162,9 +176,13 @@ func fade_out() -> void:
 
 	
 func _on_confirm_button_pressed() -> void:
+	if countdown_paused or confirm_button.disabled:
+		return
 	SfxController.play_confirm_order()
 	confirm_requested.emit(self)
 
 
 func _on_cancel_button_pressed() -> void:
+	if countdown_paused or cancel_button.disabled:
+		return
 	cancel_requested.emit(self)

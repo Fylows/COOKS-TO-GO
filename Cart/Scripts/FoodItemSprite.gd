@@ -33,4 +33,9 @@ func _process(_bar: float) -> void:
 	
 func _on_area_2d_input_event(_viewport, event, _shape_idx) -> void:
 	if event is InputEventMouseButton and event.pressed:
+		var tree := get_tree()
+		if tree and tree.get_first_node_in_group("game_screen"):
+			var screen: Node = tree.get_first_node_in_group("game_screen")
+			if screen.get("_day_paused") == true:
+				return
 		cooking_controller.on_food_clicked(self)

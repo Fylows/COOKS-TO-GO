@@ -12,16 +12,12 @@ func _ready() -> void:
 
 
 func set_music_enabled(enabled: bool) -> void:
-	if music_enabled == enabled:
-		return
 	music_enabled = enabled
 	_save()
 	BgmController.on_audio_settings_changed()
 
 
 func set_sfx_enabled(enabled: bool) -> void:
-	if sfx_enabled == enabled:
-		return
 	sfx_enabled = enabled
 	_save()
 	SfxController.on_audio_settings_changed()

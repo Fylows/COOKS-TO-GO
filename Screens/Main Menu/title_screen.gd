@@ -30,13 +30,16 @@ func _refresh_title_state() -> void:
 	restart_button.visible = show_restart
 	if show_restart:
 		restart_button.text = "New Game"
-	var records := ScoreController.format_records()
-	high_score_label.visible = ScoreController.best_days_survived > 0 or show_restart
+	var records := ScoreController.format_high_scores()
+	high_score_label.visible = ScoreController.has_high_score() or show_restart
 	if high_score_label.visible:
-		high_score_label.text = records
+		if records.is_empty() and show_restart:
+			high_score_label.text = "This run\n%s" % ScoreController.format_run_stats()
+		else:
+			high_score_label.text = records
 
 
-func _on_start_pressed() -> void:
+func _on_start_pressed(_text: String = "") -> void:
 	SfxController.play_click()
 	var typed := name_field.text.strip_edges()
 	if not typed.is_empty():

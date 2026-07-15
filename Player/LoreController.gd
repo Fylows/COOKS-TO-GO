@@ -2,14 +2,43 @@ extends Node
 
 const LoreBank := preload("res://Player/LoreBank.gd")
 
-const MAX_FEED_ITEMS := 2
+const MAX_FEED_ITEMS := 1
+const FEED_INTERVAL_SECONDS := 16.0
+
+var _cached_text: String = ""
+var _tick_accum: float = 0.0
+var _rotation: int = 0
 
 
 func format_feed() -> String:
-	var items := pick_items(MAX_FEED_ITEMS)
-	if items.is_empty():
-		return ""
-	return "\n".join(items)
+	if _cached_text.is_empty():
+		force_refresh()
+	return _cached_text
+
+
+func force_refresh() -> void:
+	_cached_text = _build_feed()
+	_tick_accum = 0.0
+
+
+func reset_for_day() -> void:
+	_rotation = 0
+	_tick_accum = 0.0
+	force_refresh()
+
+
+## Advance the feed on a timer. Returns true when the visible text changed.
+func process_feed(delta: float) -> bool:
+	_tick_accum += delta
+	if not _cached_text.is_empty() and _tick_accum < FEED_INTERVAL_SECONDS:
+		return false
+	_tick_accum = 0.0
+	_rotation += 1
+	var next := _build_feed()
+	if next == _cached_text:
+		return false
+	_cached_text = next
+	return true
 
 
 func pick_items(max_items: int) -> PackedStringArray:
@@ -28,17 +57,21 @@ func pick_items(max_items: int) -> PackedStringArray:
 	if ranked.is_empty():
 		return PackedStringArray()
 
-	var offset := (
-		PlayerStats.daysPassed * 3
-		+ PlayerStats.playerMoney / 50
-		+ PlayerStats.fishballStock
-	) % ranked.size()
+	# Rotate by day + timer ticks only. Do not use live money/stock (that jumps on every sale).
+	var offset := (PlayerStats.daysPassed * 3 + _rotation) % ranked.size()
 
 	var out: PackedStringArray = PackedStringArray()
 	for i in range(mini(max_items, ranked.size())):
 		var idx := (offset + i) % ranked.size()
 		out.append(ranked[idx].line)
 	return out
+
+
+func _build_feed() -> String:
+	var items := pick_items(MAX_FEED_ITEMS)
+	if items.is_empty():
+		return "Walang chismis for now."
+	return "\n".join(items)
 
 
 func _entry_matches(entry: Dictionary, tags: Dictionary) -> bool:

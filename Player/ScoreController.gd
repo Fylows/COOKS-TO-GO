@@ -47,6 +47,11 @@ func on_day_end() -> void:
 	_commit_records()
 
 
+func begin_day() -> void:
+	today_earned = 0
+	last_day_earned = 0
+
+
 func earnings_for_display() -> int:
 	if today_earned > 0:
 		return today_earned
@@ -89,7 +94,13 @@ func format_records() -> String:
 
 
 func format_high_scores() -> String:
-	return format_records()
+	if not has_high_score():
+		return ""
+	return "High score\n%s" % format_records()
+
+
+func has_high_score() -> bool:
+	return best_days_survived > 0 or best_run_earned > 0 or best_peak_money > 0
 
 
 func format_last_night() -> String:
