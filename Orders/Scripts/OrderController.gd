@@ -6,10 +6,38 @@ const ORDER_SCENE: PackedScene = preload("res://Orders/Scenes/Order.tscn")
 const FOOD_QUANTITY_LIST: Array[int] = [1,3,5,7,10]
 const FOOD_PROGRESSION_DAYS_DIVISOR: int = 5
 const SELL_PRICE_PER_ITEM: int = 5
+const ORDER_SLOT_COUNT: int = 5
+const ORDER_SLOT_SIZE: Vector2 = Vector2(180, 240)
+
+var order_slots: Array[Control] = []
 
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
 @onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
 @onready var order_list: HBoxContainer = $OrderList
+
+
+func setup_order_slots() -> void:
+	if not order_slots.is_empty():
+		return
+
+	for index: int in range(ORDER_SLOT_COUNT):
+		var order_slot: Control = Control.new()
+		order_slot.name = "OrderSlot%d" % (index + 1)
+		order_slot.custom_minimum_size = ORDER_SLOT_SIZE
+		order_slot.size = ORDER_SLOT_SIZE
+		order_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		order_list.add_child(order_slot)
+		order_slots.append(order_slot)
+
+
+func get_first_empty_order_slot() -> Control:
+	setup_order_slots()
+
+	for order_slot: Control in order_slots:
+		if order_slot.get_child_count() == 0:
+			return order_slot
+
+	return null
 
 ## Helper function for generating random food quantity
 func get_random_food_quantity(days_passed: int) -> int:
@@ -24,6 +52,11 @@ func get_random_food_quantity(days_passed: int) -> int:
 		
 ## Create orders based on unlock food items with scaling quantity based on days
 func create_order(days_passed: int) -> Order:
+	var order_slot: Control = get_first_empty_order_slot()
+	if order_slot == null:
+		push_warning("Cannot create order: all order slots are full.")
+		return null
+
 	var available_food: Array[String] = ["fishball"]
 
 	if days_passed >= 1:
@@ -58,7 +91,7 @@ func create_order(days_passed: int) -> Order:
 				palamig_count = quantity
 
 	var new_order: Order = ORDER_SCENE.instantiate()
-	order_list.add_child(new_order)
+	order_slot.add_child(new_order)
 
 	new_order.confirm_requested.connect(confirm_order)
 	new_order.cancel_requested.connect(cancel_order)
@@ -109,6 +142,8 @@ func cancel_order(order: Order) -> void:
 
 # Quick test
 func _ready() -> void:
+	setup_order_slots()
+
 	var order0: Order = create_order(0)
 	await get_tree().create_timer(1.0).timeout
 	var order1: Order = create_order(1)
