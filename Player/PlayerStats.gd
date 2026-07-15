@@ -3,7 +3,7 @@ extends Node
 # PLAYER STATS
 
 var daysPassed : int = 0
-var playerMoney : int = 500
+var playerMoney : int = 1000
 var luck : float = 1.0
 
 # RESOURSES
@@ -67,11 +67,36 @@ var pre_day_events := {
 # UPGRADES
 var upgradePrices : Dictionary = {
 	"palamig" : 100,
-	"container" : 100,
-	"cook" : 100,
-	"burn" : 100,
+	"container" : 250,
+	"cook" : 500,
+	"burn" : 200,
 }
 var palamigUP : bool = false
 var containerUP : bool = false
 var cookUP : bool = false
 var burnUP : bool = false
+
+# ESSENTIALS
+var essentialPrice : Dictionary = {
+	"electricity" : 150,
+	"water" : 50,
+	"rent" : 75,
+	"food" : 150,
+	"medicine" : 300,
+
+}
+var paidElectricity : bool = false
+var paidWater: bool = false
+var paidRent : bool = false
+var paidFood : bool = false
+var paidMedicine : bool = false
+
+
+# MISC
+var miscPrice : Dictionary = {
+	"anting" : 250,
+	"weather" : 50 
+}
+
+var boughtAnting2 : bool = false
+var boughtSubscription : bool = false
