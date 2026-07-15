@@ -168,11 +168,11 @@ func _refresh_morning_forecast() -> void:
 		morning_forecast = ""
 		return
 	var blurb := weather_effect_blurb()
-	# Shown on EOD overnight: this is the NEXT stall open, not the day you just closed.
+	# Overnight EOD: weather for tomorrow's open after Go to bed.
 	if blurb.is_empty():
-		morning_forecast = "Next stall · %s" % weather_title()
+		morning_forecast = "Tomorrow · %s" % weather_title()
 	else:
-		morning_forecast = "Next stall · %s · %s" % [weather_title(), blurb]
+		morning_forecast = "Tomorrow · %s · %s" % [weather_title(), blurb]
 
 
 func morning_briefing_lines() -> PackedStringArray:
