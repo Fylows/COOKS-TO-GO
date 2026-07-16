@@ -5,7 +5,7 @@ const BASE_REPAY_TOTAL := 400
 
 
 func payout_amount() -> int:
-	# Keep loan strong enough to cover inflated medicine or app fees.
+	# Keep loan strong enough to cover urgent medicine or app fees.
 	var floor_pay := maxi(
 		PlayerStatController.essential_cost("medicine"),
 		PlayerStatController.essential_cost("tindahanApp") * 2,

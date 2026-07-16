@@ -1,11 +1,13 @@
 extends RefCounted
 class_name EconomyBalance
 
-## Prices and bills drift upward. Players read the numbers and build their own meta.
+## Shared economy constants and helpers.
 
 const COMFORT_MONEY := 1000.0
-const INFLATION_PER_DAY := 0.028
-const SELL_PRICE_PER_ITEM := 5
+const FISHBALL_SELL_PRICE := 7
+const KIKIAM_SELL_PRICE := 10
+const KWEKWEK_SELL_PRICE := 20
+const PALAMIG_SELL_PRICE := 10
 
 const NANAKAWAN_BASE := 100
 const NANAKAWAN_PER_DAY := 12
@@ -17,8 +19,7 @@ const EXTRA_MONEY_CAP := 95
 static func inflated_cost(base: int, days_passed: int) -> int:
 	if base <= 0:
 		return 0
-	var days := maxi(days_passed, 0)
-	return maxi(1, int(round(float(base) * pow(1.0 + INFLATION_PER_DAY, float(days)))))
+	return base
 
 
 static func essential_cost(key: String, days_passed: int = -1) -> int:
@@ -32,6 +33,18 @@ static func resource_cost(base: int, days_passed: int = -1) -> int:
 	if days_passed < 0:
 		days_passed = PlayerStats.daysPassed
 	return inflated_cost(base, days_passed)
+
+
+static func street_food_sell_price(food: int) -> int:
+	match food:
+		FoodItem.FoodName.FISHBALL:
+			return FISHBALL_SELL_PRICE
+		FoodItem.FoodName.KIKIAM:
+			return KIKIAM_SELL_PRICE
+		FoodItem.FoodName.KWEKWEK:
+			return KWEKWEK_SELL_PRICE
+		_:
+			return 0
 
 
 static func min_nightly_bills(days_passed: int = -1) -> int:

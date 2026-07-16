@@ -9,7 +9,6 @@ const ORDER_SCENE: PackedScene = preload("res://Orders/Scenes/Order.tscn")
 const FOOD_QUANTITY_LIST: Array[int] = [1,3,5,7,10]
 const FOOD_PROGRESSION_DAYS_DIVISOR: int = 5
 const PALAMIG_ORDER_QUANTITY: int = 1
-const SELL_PRICE_PER_ITEM: int = 5
 const ORDER_SLOT_COUNT: int = 5
 const ORDER_SLOT_SIZE: Vector2 = Vector2(180, 240)
 const ORDER_START_LIFETIME_SECONDS: float = 20.0
@@ -213,13 +212,11 @@ func confirm_order(order: Order) -> bool:
 		SfxController.play_error()
 		return false
 
-	var total_items: int = (
-		order.fishball_count
-		+ order.kwekwek_count
-		+ order.kikiam_count
-		+ order.palamig_count
+	var gross_earnings: int = (
+		order.fishball_count * EconomyBalance.street_food_sell_price(FoodItem.FoodName.FISHBALL)
+		+ order.kwekwek_count * EconomyBalance.street_food_sell_price(FoodItem.FoodName.KWEKWEK)
+		+ order.kikiam_count * EconomyBalance.street_food_sell_price(FoodItem.FoodName.KIKIAM)
 	)
-	var earnings: int = total_items * SELL_PRICE_PER_ITEM
 	var slot_index: int = order_slots.find(order.get_parent())
 
 	var complete_order_sale := func() -> void:
@@ -229,6 +226,12 @@ func confirm_order(order: Order) -> bool:
 				cooking.consume_cooked(food, need)
 		if order.palamig_count > 0:
 			stats.palamigStock = maxi(stats.palamigStock - order.palamig_count, 0)
+		var earnings: int = ScoreController.record_street_food_order(
+			order.fishball_count,
+			order.kwekwek_count,
+			order.kikiam_count,
+			gross_earnings
+		)
 		stat_controller.addMoney(earnings)
 		order_money_earned.emit(earnings, maxi(slot_index, 0))
 		SfxController.play_coin()
@@ -239,12 +242,16 @@ func confirm_order(order: Order) -> bool:
 func cancel_order(order: Order) -> void:
 	if _orders_paused:
 		return
-	SfxController.play_cancel_order()
-	await _remove_order(order)
+	var on_cancel_claimed := func() -> void:
+		ScoreController.record_order_cancelled()
+		SfxController.play_cancel_order()
+	await _remove_order(order, on_cancel_claimed)
 
 
 func complete_palamig_order(order: Order) -> void:
-	await _remove_order(order)
+	var on_palamig_claimed := func() -> void:
+		ScoreController.record_palamig_order_served()
+	await _remove_order(order, on_palamig_claimed)
 
 
 func _on_order_expired(order: Order) -> void:
@@ -252,7 +259,9 @@ func _on_order_expired(order: Order) -> void:
 
 
 func expire_order(order: Order) -> void:
-	await _remove_order(order)
+	var on_expire_claimed := func() -> void:
+		ScoreController.record_order_expired()
+	await _remove_order(order, on_expire_claimed)
 
 
 func get_spawn_interval_seconds(days_passed: int) -> float:
