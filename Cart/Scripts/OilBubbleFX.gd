@@ -21,7 +21,7 @@ var _cook_count: int = 0
 func setup(pan_area: Area2D) -> void:
 	if pan_area == null:
 		return
-	var shape_node := pan_area.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	var shape_node := pan_area.get_node_or_null("CollisionShape2D") as Node2D
 	if shape_node == null:
 		return
 
@@ -31,18 +31,28 @@ func setup(pan_area: Area2D) -> void:
 	position = shape_node.position
 	z_index = 2
 
-	var radius := 120.0
-	var circle := shape_node.shape as CircleShape2D
-	if circle:
-		var sx: float = absf(shape_node.scale.x)
-		var sy: float = absf(shape_node.scale.y)
-		radius = circle.radius * minf(sx, sy) * 0.72
+	var radius := _emission_radius_from_collision(shape_node)
 
 	_bubbles = _make_layer("OilBubbles", TEX_SOFT, radius, 32, 0.9, 1.7, OIL_AMBER, true)
 	_pop = _make_layer("OilPops", TEX_MID, radius * 0.85, 16, 0.5, 1.05, OIL_HOT, true)
 	_steam = _make_layer("OilSteam", TEX_STEAM, radius * 0.5, 10, 1.4, 2.5, STEAM_TINT, false)
 	# Ring texture reserved for denser pans — swap mid→ring when frying hard.
 	_apply_intensity(0)
+
+
+func _emission_radius_from_collision(shape_node: Node2D) -> float:
+	var radius := 120.0
+	if shape_node is CollisionShape2D:
+		var circle := (shape_node as CollisionShape2D).shape as CircleShape2D
+		if circle:
+			radius = circle.radius * minf(absf(shape_node.scale.x), absf(shape_node.scale.y)) * 0.72
+	elif shape_node is CollisionPolygon2D:
+		var polygon_radius := 0.0
+		for point in (shape_node as CollisionPolygon2D).polygon:
+			polygon_radius = maxf(polygon_radius, point.length())
+		if polygon_radius > 0.0:
+			radius = polygon_radius * minf(absf(shape_node.scale.x), absf(shape_node.scale.y)) * 0.72
+	return radius
 
 
 func set_cooking_count(count: int) -> void:
