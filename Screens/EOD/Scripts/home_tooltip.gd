@@ -13,7 +13,6 @@ func _input(event: InputEvent) -> void:
 		
 func _update_text() -> void:
 	var node2d = $"../../../Node2D"
-	print("node2d: ", node2d, " page: ", node2d.page if node2d else "N/A")
 	$RichTextLabel.text = "Go to bed" if node2d.page == node2d.get_node("Home") else "Phone home"
 
 func toggle(on: bool) -> void:
