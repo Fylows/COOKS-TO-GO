@@ -1,9 +1,9 @@
 extends Object
 ## Icon + count chips for the Stock HUD (EOD bagged + stall ready/raw).
 
-const ICON_PX := 40.0
-const CHIP_GAP := 12.0
-const ROW_GAP := 6.0
+const ICON_PX := 32.0
+const CHIP_GAP := 10.0
+const ROW_GAP := 4.0
 const COUNT_COLOR := Color(0.92, 0.96, 1.0)
 const MUTED_COLOR := Color(0.72, 0.82, 0.95)
 const ZERO_COLOR := Color(0.72, 0.55, 0.55)
@@ -174,9 +174,9 @@ static func _add_caption_chip(row: HBoxContainer, text: String) -> void:
 	label.text = text
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.add_theme_color_override("font_color", MUTED_COLOR)
-	PixelText.body(label)
+	PixelText.caption(label)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.custom_minimum_size = Vector2(68, ICON_PX)
+	label.custom_minimum_size = Vector2(56, ICON_PX)
 	row.add_child(label)
 
 
@@ -206,7 +206,7 @@ static func _add_chip(
 		name_label.text = fallback_name
 		name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		name_label.add_theme_color_override("font_color", MUTED_COLOR)
-		PixelText.body(name_label)
+		PixelText.caption(name_label)
 		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		chip.add_child(name_label)
 
@@ -214,7 +214,7 @@ static func _add_chip(
 	label.text = count_text
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.add_theme_color_override("font_color", ZERO_COLOR if is_zero else COUNT_COLOR)
-	PixelText.title(label)
+	PixelText.body(label)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	chip.add_child(label)
 

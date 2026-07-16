@@ -373,7 +373,6 @@ func start_day() -> void:
 
 
 func end_day() -> void:
-	print(ScoreController.get_current_day_stats())
 	if not _day_active:
 		return
 	_day_active = false
