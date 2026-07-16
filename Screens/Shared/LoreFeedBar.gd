@@ -21,6 +21,13 @@ static func ensure(parent: Node, node_name: String = "LoreFeed") -> Label:
 		if body:
 			_style_feed(body)
 			_restyle_panel(existing)
+		var vbox := existing.get_node_or_null("VBox") as VBoxContainer
+		if vbox and vbox.get_child_count() > 0:
+			var title := vbox.get_child(0) as Label
+			if title and title.name != node_name:
+				title.text = "Barangay"
+				title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+				title.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
 		return body
 
 	var panel := PanelContainer.new()
@@ -39,10 +46,10 @@ static func ensure(parent: Node, node_name: String = "LoreFeed") -> Label:
 	panel.add_child(vbox)
 
 	var title := Label.new()
-	title.text = "BARANGAY FEED"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.text = "Barangay"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	title.add_theme_font_size_override("font_size", 13)
-	title.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
+	title.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(title)
 
@@ -65,15 +72,16 @@ static func ensure(parent: Node, node_name: String = "LoreFeed") -> Label:
 
 static func _restyle_panel(panel: PanelContainer) -> void:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.03, 0.05, 0.1, 1.0)
-	style.border_color = Color(1.0, 0.86, 0.42, 0.95)
-	style.set_border_width_all(3)
+	style.bg_color = Color(0.04, 0.06, 0.1, 1.0)
+	# Cool ink border. Gold reserved for money chrome.
+	style.border_color = Color(0.48, 0.62, 0.82, 0.9)
+	style.set_border_width_all(2)
 	style.set_content_margin_all(12)
 	style.content_margin_left = 14
 	style.content_margin_right = 14
 	style.content_margin_top = 10
 	style.content_margin_bottom = 10
-	style.set_corner_radius_all(10)
+	style.set_corner_radius_all(4)
 	panel.add_theme_stylebox_override("panel", style)
 	panel.clip_contents = true
 

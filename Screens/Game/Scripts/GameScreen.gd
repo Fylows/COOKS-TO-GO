@@ -94,7 +94,7 @@ func _play_day_start_intro() -> void:
 		tween.tween_property(node, "modulate:a", 1.0, 0.22)
 	tween.tween_property($CartMain, "modulate:a", 1.0, 0.22)
 	tween.tween_property($CartMain, "scale", Vector2(1.2, 1.2), 0.22)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	if DayTransition.consume_fade_in():
 		await DayTransition.fade_from_black(0.2)
 	else:
@@ -350,8 +350,8 @@ func _setup_weather_banner() -> void:
 		_:
 			style.bg_color = Color(0.08, 0.12, 0.1, 0.96)
 			style.border_color = Color(0.6, 0.85, 0.6, 1.0)
-	style.set_border_width_all(3)
-	style.set_corner_radius_all(10)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(4)
 	style.set_content_margin_all(16)
 	style.content_margin_left = 28
 	style.content_margin_right = 28
@@ -387,7 +387,7 @@ func _flash_weather_banner() -> void:
 	_weather_banner_tween.set_parallel(true)
 	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 1.0, 0.25)
 	_weather_banner_tween.tween_property(weather_banner, "scale", Vector2.ONE, 0.28)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_weather_banner_tween.set_parallel(false)
 	_weather_banner_tween.tween_interval(3.5)
 	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 0.0, 0.4)

@@ -897,7 +897,7 @@ func _setup_wallet_hud() -> void:
 	style.bg_color = Color(0.04, 0.07, 0.14, 0.94)
 	style.border_color = Color(1.0, 0.86, 0.42, 0.9)
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(12)
+	style.set_corner_radius_all(4)
 	style.set_content_margin_all(12)
 	style.content_margin_left = 16
 	style.content_margin_right = 16
@@ -1144,7 +1144,7 @@ func _show_app_icon_tooltip(btn: TextureButton, title: String) -> void:
 		_app_icon_tooltip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var style := StyleBoxFlat.new()
 		style.bg_color = Color(0.05, 0.06, 0.1, 0.92)
-		style.border_color = Color(1.0, 0.86, 0.42, 1.0)
+		style.border_color = Color(0.48, 0.62, 0.82, 0.95)
 		style.set_border_width_all(2)
 		style.set_content_margin_all(6)
 		style.set_corner_radius_all(4)

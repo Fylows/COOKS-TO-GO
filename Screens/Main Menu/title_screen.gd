@@ -113,7 +113,7 @@ func _setup_endings_progress_panel() -> void:
 	endings_collection_label.name = "CollectionLabel"
 	endings_collection_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	endings_collection_label.add_theme_font_size_override("font_size", 18)
-	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
+	endings_collection_label.add_theme_color_override("font_color", Color(0.78, 0.86, 0.98))
 	endings_collection_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(endings_collection_label)
 
@@ -185,7 +185,7 @@ func _refresh_endings_progress_panel() -> void:
 	var style := endings_progress_panel.get_theme_stylebox("panel") as StyleBoxFlat
 	endings_collection_label.text = "Gallery"
 	endings_collection_label.add_theme_font_size_override("font_size", 18)
-	endings_collection_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
+	endings_collection_label.add_theme_color_override("font_color", Color(0.78, 0.86, 0.98))
 	endings_headline_label.add_theme_font_size_override("font_size", 28)
 	if n <= 0:
 		endings_headline_label.text = "%d locked" % total
@@ -247,9 +247,9 @@ func _setup_endings_gallery() -> void:
 	panel.offset_bottom = 380.0
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.05, 0.06, 0.1, 0.98)
-	style.border_color = Color(1.0, 0.86, 0.42, 0.95)
+	style.border_color = Color(0.48, 0.62, 0.82, 0.9)
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
+	style.set_corner_radius_all(4)
 	style.set_content_margin_all(22)
 	panel.add_theme_stylebox_override("panel", style)
 	gallery_root.add_child(panel)

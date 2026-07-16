@@ -2,11 +2,12 @@ extends Control
 
 const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
 const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
+## Pixel-snapped chrome radius (Hallmark: one radius token).
+const RADIUS := 4
 
 var _continuing: bool = false
 var lore_feed: Label
-var stock_row: HBoxContainer
-var wallet_card: PanelContainer
+var stock_strip: Label
 
 @onready var title_label: Label = $PanelContainer/VBox/TitleLabel
 @onready var subtitle_label: Label = $PanelContainer/VBox/SubtitleLabel
@@ -15,6 +16,7 @@ var wallet_card: PanelContainer
 @onready var stock_label: Label = $PanelContainer/VBox/StockLabel
 @onready var continue_button: Button = $PanelContainer/VBox/Button
 @onready var anim: AnimationPlayer = $AnimationPlayer
+@onready var panel: PanelContainer = $PanelContainer
 
 
 func _ready() -> void:
@@ -57,64 +59,76 @@ func _present_summary() -> void:
 	BgmController.play_track("day_over")
 	_refresh_summary()
 	anim.play("blur")
-	if wallet_card:
-		UiMotion.pop_in(self, wallet_card)
-	if stock_row:
-		UiMotion.pop_in(self, stock_row)
+	# One hero entrance — not wallet + chips both bouncing.
+	UiMotion.pop_in(self, panel)
 
 
 func _ensure_graphic_layout() -> void:
 	var vbox := $PanelContainer/VBox as VBoxContainer
-	vbox.add_theme_constant_override("separation", 14)
+	vbox.add_theme_constant_override("separation", 12)
 
-	# Hide list-era captions; money + chips carry the layout.
+	# Bias left — break centered-everything.
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	subtitle_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	money_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	earned_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+
 	var wallet_cap := vbox.get_node_or_null("WalletCaption") as Label
 	if wallet_cap:
 		wallet_cap.visible = false
 	var stock_cap := vbox.get_node_or_null("StockCaption") as Label
 	if stock_cap:
 		stock_cap.visible = false
+
+	# Flatten: no WalletCard shell. Money sits in the VBox directly.
+	var stale_card := vbox.get_node_or_null("WalletCard") as PanelContainer
+	if stale_card:
+		var card_vbox := stale_card.get_node_or_null("CardVBox") as VBoxContainer
+		if card_vbox:
+			for child in card_vbox.get_children():
+				child.reparent(vbox)
+				vbox.move_child(child, stale_card.get_index())
+		stale_card.queue_free()
+
 	if stock_label:
 		stock_label.visible = false
 
-	wallet_card = vbox.get_node_or_null("WalletCard") as PanelContainer
-	if wallet_card == null:
-		wallet_card = PanelContainer.new()
-		wallet_card.name = "WalletCard"
-		var style := StyleBoxFlat.new()
-		style.bg_color = Color(0.06, 0.1, 0.2, 0.98)
-		style.border_color = Color(1.0, 0.86, 0.42, 0.85)
-		style.set_border_width_all(2)
-		style.set_corner_radius_all(12)
-		style.set_content_margin_all(18)
-		wallet_card.add_theme_stylebox_override("panel", style)
-		var card_vbox := VBoxContainer.new()
-		card_vbox.name = "CardVBox"
-		card_vbox.add_theme_constant_override("separation", 6)
-		wallet_card.add_child(card_vbox)
-		# Slide money + earned into the card.
-		var money_idx := money_label.get_index()
-		vbox.add_child(wallet_card)
-		vbox.move_child(wallet_card, money_idx)
-		money_label.reparent(card_vbox)
-		earned_label.reparent(card_vbox)
+	# Kill equal chip row if a previous session created it.
+	var old_chips := vbox.get_node_or_null("StockRow") as Control
+	if old_chips:
+		old_chips.queue_free()
 
-	stock_row = vbox.get_node_or_null("StockRow") as HBoxContainer
-	if stock_row == null:
-		stock_row = HBoxContainer.new()
-		stock_row.name = "StockRow"
-		stock_row.alignment = BoxContainer.ALIGNMENT_CENTER
-		stock_row.add_theme_constant_override("separation", 10)
-		stock_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stock_strip = vbox.get_node_or_null("StockStrip") as Label
+	if stock_strip == null:
+		stock_strip = Label.new()
+		stock_strip.name = "StockStrip"
+		stock_strip.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		stock_strip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		stock_strip.add_theme_font_size_override("font_size", 18)
+		stock_strip.add_theme_color_override("font_color", Color(0.82, 0.88, 0.96))
 		var btn_idx := continue_button.get_index()
-		vbox.add_child(stock_row)
-		vbox.move_child(stock_row, btn_idx)
+		vbox.add_child(stock_strip)
+		vbox.move_child(stock_strip, btn_idx)
+
+	# Cool hairline panel. Gold reserved for money HUD / Day Over pesos.
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.05, 0.07, 0.12, 0.97)
+	panel_style.border_color = Color(0.55, 0.68, 0.88, 0.85)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(RADIUS)
+	panel_style.set_content_margin_all(28)
+	panel.add_theme_stylebox_override("panel", panel_style)
+
+	# Slight left bias vs dead center.
+	panel.offset_left = -420.0
+	panel.offset_right = 340.0
 
 
 func _style_go_home_button() -> void:
 	continue_button.text = "Go Home"
-	continue_button.custom_minimum_size = Vector2(280, 56)
-	continue_button.add_theme_font_size_override("font_size", 24)
+	continue_button.custom_minimum_size = Vector2(280, 52)
+	continue_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	continue_button.add_theme_font_size_override("font_size", 22)
 	continue_button.add_theme_color_override("font_color", Color(0.98, 0.96, 0.9))
 	continue_button.add_theme_color_override("font_hover_color", Color(1.0, 0.94, 0.7))
 	continue_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -122,8 +136,8 @@ func _style_go_home_button() -> void:
 	normal.bg_color = Color(0.14, 0.28, 0.18, 0.98)
 	normal.border_color = Color(0.55, 0.95, 0.62, 0.95)
 	normal.set_border_width_all(2)
-	normal.set_corner_radius_all(12)
-	normal.set_content_margin_all(14)
+	normal.set_corner_radius_all(RADIUS)
+	normal.set_content_margin_all(12)
 	var hover := normal.duplicate() as StyleBoxFlat
 	hover.bg_color = normal.bg_color.lightened(0.16)
 	hover.border_color = normal.border_color.lightened(0.1)
@@ -140,6 +154,7 @@ func _refresh_summary() -> void:
 	subtitle_label.text = "Sarado na ang stall. Uwi na."
 	money_label.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	money_label.add_theme_font_size_override("font_size", 48)
+	money_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.45))
 	if ScoreController.today_earned > 0:
 		earned_label.add_theme_color_override("font_color", Color(0.55, 0.95, 0.62))
 		earned_label.text = "+%s sa stall ngayon" % PlayerStatController.format_pesos(
@@ -150,60 +165,18 @@ func _refresh_summary() -> void:
 		earned_label.add_theme_color_override("font_color", Color(0.72, 0.76, 0.86))
 		earned_label.text = "Walang benta ngayon. Sayang."
 		earned_label.visible = true
-	_rebuild_stock_chips()
+	_rebuild_stock_strip()
 	continue_button.text = "Go Home"
 	LoreFeedBar.refresh(lore_feed)
 
 
-func _rebuild_stock_chips() -> void:
-	if stock_row == null:
+func _rebuild_stock_strip() -> void:
+	if stock_strip == null:
 		return
-	for child in stock_row.get_children():
-		child.free()
-	var items: Array = [
-		{"name": "Fishball", "count": PlayerStats.fishballStock, "color": Color(0.95, 0.78, 0.35)},
-		{"name": "Kwek-Kwek", "count": PlayerStats.kwekwekStock, "color": Color(1.0, 0.55, 0.22)},
-		{"name": "Kikiam", "count": PlayerStats.kikiamStock, "color": Color(0.85, 0.45, 0.35)},
-	]
+	var parts: PackedStringArray = PackedStringArray()
+	parts.append("Fishball %d" % PlayerStats.fishballStock)
+	parts.append("Kwek-Kwek %d" % PlayerStats.kwekwekStock)
+	parts.append("Kikiam %d" % PlayerStats.kikiamStock)
 	if PlayerStats.palamigUP:
-		items.append({
-			"name": "Palamig",
-			"count": PlayerStats.palamigStock,
-			"color": Color(0.35, 0.75, 0.95),
-		})
-	for item in items:
-		stock_row.add_child(_make_stock_chip(str(item.name), int(item.count), item.color))
-
-
-func _make_stock_chip(item_name: String, count: int, accent: Color) -> PanelContainer:
-	var chip := PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.08, 0.14, 0.98)
-	style.border_color = accent
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(10)
-	style.set_content_margin_all(10)
-	style.content_margin_left = 12
-	style.content_margin_right = 12
-	chip.add_theme_stylebox_override("panel", style)
-	chip.custom_minimum_size = Vector2(108, 72)
-
-	var col := VBoxContainer.new()
-	col.alignment = BoxContainer.ALIGNMENT_CENTER
-	col.add_theme_constant_override("separation", 2)
-	chip.add_child(col)
-
-	var count_label := Label.new()
-	count_label.text = str(count)
-	count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	count_label.add_theme_font_size_override("font_size", 28)
-	count_label.add_theme_color_override("font_color", accent)
-	col.add_child(count_label)
-
-	var name_label := Label.new()
-	name_label.text = item_name
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.add_theme_font_size_override("font_size", 12)
-	name_label.add_theme_color_override("font_color", Color(0.88, 0.92, 1.0))
-	col.add_child(name_label)
-	return chip
+		parts.append("Palamig %d" % PlayerStats.palamigStock)
+	stock_strip.text = " · ".join(parts)

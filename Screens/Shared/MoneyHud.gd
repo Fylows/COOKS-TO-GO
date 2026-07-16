@@ -19,7 +19,7 @@ static func ensure(parent: Node, node_name: String = "MoneyHud") -> Dictionary:
 	style.bg_color = Color(0.04, 0.07, 0.14, 0.94)
 	style.border_color = Color(1.0, 0.86, 0.42, 0.9)
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(10)
+	style.set_corner_radius_all(4)
 	style.set_content_margin_all(10)
 	style.content_margin_left = 14
 	style.content_margin_right = 14
@@ -32,7 +32,7 @@ static func ensure(parent: Node, node_name: String = "MoneyHud") -> Dictionary:
 	panel.add_child(vbox)
 
 	var balance_caption := Label.new()
-	balance_caption.text = "BALANCE"
+	balance_caption.text = "Balance"
 	balance_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	balance_caption.add_theme_font_size_override("font_size", 12)
 	balance_caption.add_theme_color_override("font_color", Color(0.72, 0.78, 0.9))

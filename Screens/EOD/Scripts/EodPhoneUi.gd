@@ -263,20 +263,25 @@ static func _style_tabs(phone: Node2D, active_key: String) -> void:
 
 
 static func _add_section_titles(phone: Node2D) -> void:
-	_insert_title(phone.get_node_or_null("ResourceGroup/VBoxContainer"), "RESTOCK")
-	_insert_title(phone.get_node_or_null("UpgradesGroup/VBoxContainer"), "UPGRADES")
-	_insert_title(phone.get_node_or_null("FamilyGroup/VBoxContainer"), "FAMILY")
-	_insert_title(phone.get_node_or_null("MiscGroup/VBoxContainer"), "EXTRAS")
+	_insert_title(phone.get_node_or_null("ResourceGroup/VBoxContainer"), "Restock")
+	_insert_title(phone.get_node_or_null("UpgradesGroup/VBoxContainer"), "Upgrades")
+	_insert_title(phone.get_node_or_null("FamilyGroup/VBoxContainer"), "Family")
+	_insert_title(phone.get_node_or_null("MiscGroup/VBoxContainer"), "Extras")
 
 
 static func _insert_title(vbox: VBoxContainer, title: String) -> void:
-	if vbox == null or vbox.get_node_or_null("SectionTitle"):
+	if vbox == null:
+		return
+	var existing := vbox.get_node_or_null("SectionTitle") as Label
+	if existing:
+		existing.text = title
+		existing.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
 		return
 	var label := Label.new()
 	label.name = "SectionTitle"
 	label.text = title
 	label.add_theme_font_size_override("font_size", 14)
-	label.add_theme_color_override("font_color", Color(0.95, 0.78, 0.28))
+	label.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
 	vbox.add_child(label)
 	var insert_idx := 0
 	if vbox.get_node_or_null("AppSubscription"):
