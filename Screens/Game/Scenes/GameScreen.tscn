@@ -74,9 +74,9 @@ text = "Restart"
 
 [node name="StockHud" type="PanelContainer" parent="HUD"]
 offset_left = 24.0
-offset_top = 64.0
-offset_right = 560.0
-offset_bottom = 108.0
+offset_top = 62.0
+offset_right = 480.0
+offset_bottom = 250.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_stock_panel")
 
 [node name="VBox" type="VBoxContainer" parent="HUD/StockHud"]
@@ -112,8 +112,10 @@ offset_bottom = 1080.0
 mouse_filter = 2
 
 [node name="OrderContainer" parent="HUD" unique_id=908020767 instance=ExtResource("2_vmgo5")]
-offset_top = 64.0
-offset_bottom = 304.0
+offset_left = 576.0
+offset_top = 0.0
+offset_right = 1540.0
+offset_bottom = 240.0
 
 [node name="CartMain" type="Sprite2D" parent="." unique_id=481923727 node_paths=PackedStringArray("pan_area", "container_area")]
 position = Vector2(960, 540)

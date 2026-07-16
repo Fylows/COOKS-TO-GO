@@ -90,6 +90,7 @@ func _style_stall_chrome() -> void:
 	_style_stock_strip()
 	if money_hud_panel:
 		MoneyHud.apply_top_right_layout(money_hud_panel, 260.0, 16.0)
+	_layout_orders_between_stock_and_wallet()
 
 
 func _style_day_bar() -> void:
@@ -136,7 +137,7 @@ func _style_stock_strip() -> void:
 	stock.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	stock.offset_left = 24.0
 	stock.offset_top = 62.0
-	stock.offset_right = 640.0
+	stock.offset_right = _restart_button_right_edge()
 	# Tall enough for Ready + Raw + Extra rows (was overlapping orders at 180).
 	stock.offset_bottom = 250.0
 	stock.z_index = 20
@@ -154,25 +155,55 @@ func _style_stock_strip() -> void:
 		title.text = "Stock"
 		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		title.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
-		PixelText.caption(title)
+		PixelText.body(title)
 	if stock_label:
 		stock_label.visible = false
 		stock_label.text = ""
 	var vbox := stock.get_node_or_null("VBox") as VBoxContainer
 	if vbox:
-		vbox.add_theme_constant_override("separation", 4)
+		vbox.add_theme_constant_override("separation", 6)
 		StockHudVisual.ensure_layout(vbox)
-	_layout_orders_under_stock()
+	_layout_orders_between_stock_and_wallet()
 
 
-func _layout_orders_under_stock() -> void:
+func _restart_button_right_edge() -> float:
+	var day_hud := $HUD/DayHud as HBoxContainer
+	var restart := $HUD/DayHud/RestartButton as Button
+	if day_hud == null or restart == null:
+		return 640.0
+	var separation := float(day_hud.get_theme_constant("separation"))
+	var cursor := day_hud.offset_left
+	for child in day_hud.get_children():
+		var control := child as Control
+		if control == null or not control.visible:
+			continue
+		var child_width := maxf(control.size.x, control.get_combined_minimum_size().x)
+		if control == restart:
+			return cursor + child_width
+		cursor += child_width + separation
+	return day_hud.offset_right
+
+
+func _layout_orders_between_stock_and_wallet() -> void:
 	var stock := $HUD/StockHud as Control
 	var orders := $HUD/OrderContainer as Control
 	if stock == null or orders == null:
 		return
-	var top := stock.offset_bottom + 12.0
+	var order_size := Vector2(
+		orders.offset_right - orders.offset_left,
+		orders.offset_bottom - orders.offset_top
+	)
+	var right_boundary := stock.offset_right + 16.0 + order_size.x
+	if money_hud_panel:
+		right_boundary = get_viewport_rect().size.x + money_hud_panel.offset_left
+	var available_gap := maxf(right_boundary - stock.offset_right - order_size.x, 0.0)
+	var left := stock.offset_right + available_gap * 0.5
+	var right := left + order_size.x
+	var top := 0.0
+	orders.offset_left = left
+	orders.offset_right = right
 	orders.offset_top = top
-	orders.offset_bottom = top + 240.0
+	orders.offset_bottom = top + order_size.y
 
 
 func _play_day_start_intro() -> void:
@@ -671,7 +702,7 @@ func _update_stock_label() -> void:
 		StockHudVisual.refresh_stall(vbox, cooking)
 	elif stock_label:
 		stock_label.text = PlayerStatController.format_stall_stock(cooking)
-	_layout_orders_under_stock()
+	_layout_orders_between_stock_and_wallet()
 
 
 func _setup_money_hud() -> void:
@@ -692,6 +723,9 @@ func _setup_money_hud() -> void:
 
 func _update_money_hud() -> void:
 	MoneyHud.refresh(money_balance_label, money_earned_label)
+	if money_hud_panel:
+		MoneyHud.apply_top_right_layout(money_hud_panel, 260.0, 16.0)
+		_layout_orders_between_stock_and_wallet()
 
 
 func dayOverPopup() -> void:
