@@ -29,9 +29,6 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_fousb"]
-radius = 315.03198
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_axv6w"]
 size = Vector2(362.5, 214.99997)
 
@@ -124,10 +121,10 @@ container_area = NodePath("ContainerArea")
 [node name="PanArea" type="Area2D" parent="CartMain" unique_id=2108540401]
 position = Vector2(-150, 278.3333)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CartMain/PanArea" unique_id=413010593]
-position = Vector2(39.166668, 89.166664)
-scale = Vector2(0.9929829, 0.8595677)
-shape = SubResource("CircleShape2D_fousb")
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="CartMain/PanArea" unique_id=413010593]
+position = Vector2(56.235676, 45.415066)
+scale = Vector2(0.96630657, 0.75061035)
+polygon = PackedVector2Array(236.7409, 7.218506, 174.6488, 70.50037, 77.19873, 76.05139, -162.54572, 62.72888, -240.1608, 32.753296, -269.4821, -36.07959, -237.49988, -180.32318, -82.343445, -223.70465, 70.29962, -218.15363, 224.07233, -166.75049)
 
 [node name="ContainerArea" type="Area2D" parent="CartMain" unique_id=1949242202]
 position = Vector2(502.5, 322.5)
@@ -173,7 +170,7 @@ stock_variable_name = "kwekwekStock"
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1981916952]
 position = Vector2(948, 540)
 script = ExtResource("4_kkmty")
-deadZone = 125
+max_offset = 150.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1490396313]
 layer = 999
