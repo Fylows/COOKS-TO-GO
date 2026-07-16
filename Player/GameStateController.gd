@@ -76,7 +76,7 @@ func _present_overlay() -> void:
 		tween.tween_property(_blocker, "modulate:a", 1.0, 0.2)
 	tween.tween_property(_panel, "modulate:a", 1.0, 0.22)
 	tween.tween_property(_panel, "scale", Vector2.ONE, 0.22)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 
 func dismiss_victory() -> void:
@@ -242,7 +242,7 @@ func _refresh_panel() -> void:
 func _build_overlay() -> void:
 	_blocker = ColorRect.new()
 	_blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_blocker.color = Color(0.01, 0.0, 0.02, 0.9)
+	_blocker.color = Color(0.08, 0.04, 0.05, 0.88)
 	_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_blocker)
 
@@ -341,7 +341,7 @@ func _style_overlay_button(button: Button, bg: Color, border: Color) -> void:
 	normal.bg_color = bg
 	normal.border_color = border
 	normal.set_border_width_all(2)
-	normal.set_corner_radius_all(8)
+	normal.set_corner_radius_all(4)
 	normal.set_content_margin_all(12)
 	var hover := normal.duplicate() as StyleBoxFlat
 	hover.bg_color = bg.lightened(0.18)

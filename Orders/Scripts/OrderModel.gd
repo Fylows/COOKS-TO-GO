@@ -59,7 +59,7 @@ func _play_appear() -> void:
 	fade_tween.set_parallel(true)
 	fade_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_DURATION)
 	fade_tween.tween_property(self, "scale", Vector2.ONE, FADE_IN_DURATION)\
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 
 func _ensure_action_captions() -> void:
