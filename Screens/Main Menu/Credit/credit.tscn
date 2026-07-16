@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://dni3ummbqg1vf"]
+[gd_scene format=3 uid="uid://dni3ummbqg1vf"]
 
-[ext_resource type="Script" path="res://Screens/Main Menu/Credit/credit.gd" id="1_credit"]
+[ext_resource type="Script" uid="uid://bt548r5fktbp7" path="res://Screens/Main Menu/Credit/credit.gd" id="1_credit"]
 [ext_resource type="Texture2D" uid="uid://cj8c6q7vsagbq" path="res://Screens/Main Menu/additionalBG/Game Menu1.png" id="2_bg"]
-[ext_resource type="Texture2D" path="res://Screens/Main Menu/Buttons/back.png" id="3_back"]
-[ext_resource type="Texture2D" path="res://Screens/Main Menu/Buttons/back_pressed.png" id="4_back_pressed"]
-[ext_resource type="Texture2D" path="res://Screens/Main Menu/Buttons/back_highlight.png" id="5_back_highlight"]
+[ext_resource type="Texture2D" uid="uid://j8023t33uuex" path="res://Screens/Main Menu/Buttons/back.png" id="3_back"]
+[ext_resource type="Texture2D" uid="uid://tbschv58t4mv" path="res://Screens/Main Menu/Buttons/back_pressed.png" id="4_back_pressed"]
+[ext_resource type="Texture2D" uid="uid://b8j5l7syma6ck" path="res://Screens/Main Menu/Buttons/back_highlight.png" id="5_back_highlight"]
 
 [sub_resource type="StyleBoxFlat" id="1_panel"]
 bg_color = Color(0.08, 0.08, 0.1, 0.82)
@@ -19,6 +19,10 @@ corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="2_back_btn"]
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
 bg_color = Color(0.12, 0.16, 0.28, 1)
 border_width_left = 2
 border_width_top = 2
@@ -29,79 +33,68 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-content_margin_left = 24.0
-content_margin_top = 12.0
-content_margin_right = 24.0
-content_margin_bottom = 12.0
 
-[node name="Credits" type="Node2D"]
+[node name="Credits" type="Node2D" unique_id=193571379]
 script = ExtResource("1_credit")
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="Background" type="Sprite2D" parent="." unique_id=999956697]
 position = Vector2(960, 540)
 texture = ExtResource("2_bg")
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=337747462]
 
-[node name="Center" type="CenterContainer" parent="UI"]
+[node name="Center" type="CenterContainer" parent="UI" unique_id=741075203]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="UI/Center"]
+[node name="Panel" type="PanelContainer" parent="UI/Center" unique_id=1040640562]
 custom_minimum_size = Vector2(760, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("1_panel")
 
-[node name="Margin" type="MarginContainer" parent="UI/Center/Panel"]
+[node name="Margin" type="MarginContainer" parent="UI/Center/Panel" unique_id=872998461]
 layout_mode = 2
 theme_override_constants/margin_left = 36
 theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 36
 theme_override_constants/margin_bottom = 32
 
-[node name="VBox" type="VBoxContainer" parent="UI/Center/Panel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="UI/Center/Panel/Margin" unique_id=210645347]
 layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="Title" type="Label" parent="UI/Center/Panel/Margin/VBox"]
+[node name="Title" type="Label" parent="UI/Center/Panel/Margin/VBox" unique_id=5322948]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
 theme_override_font_sizes/font_size = 40
 text = "Credits"
 horizontal_alignment = 1
 
-[node name="Intro" type="Label" parent="UI/Center/Panel/Margin/VBox"]
+[node name="Intro" type="Label" parent="UI/Center/Panel/Margin/VBox" unique_id=1602828904]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.86, 0.8, 1)
 theme_override_font_sizes/font_size = 24
 text = "I would like to thank"
 horizontal_alignment = 1
 
-[node name="Game" type="Label" parent="UI/Center/Panel/Margin/VBox"]
+[node name="Game" type="Label" parent="UI/Center/Panel/Margin/VBox" unique_id=727309573]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.9, 0.84, 1)
 theme_override_font_sizes/font_size = 22
-text = "Jiro, Yel and Goonard: game"
+text = "Jiro, Yel, Drew and Stimime: game"
 horizontal_alignment = 1
 
-[node name="Sprites" type="Label" parent="UI/Center/Panel/Margin/VBox"]
+[node name="Sprites" type="Label" parent="UI/Center/Panel/Margin/VBox" unique_id=1083188963]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.9, 0.84, 1)
 theme_override_font_sizes/font_size = 22
-text = "Isha and Bam: sprites"
+text = "Isha and Jana: sprites"
 horizontal_alignment = 1
 
-[node name="Story" type="Label" parent="UI/Center/Panel/Margin/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.92, 0.9, 0.84, 1)
-theme_override_font_sizes/font_size = 22
-text = "Jo, Carlos and Nat: story"
-horizontal_alignment = 1
-
-[node name="Assets" type="Label" parent="UI/Center/Panel/Margin/VBox"]
+[node name="Assets" type="Label" parent="UI/Center/Panel/Margin/VBox" unique_id=1940656608]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.76, 0.7, 1)
 theme_override_font_sizes/font_size = 18
@@ -109,19 +102,19 @@ text = "Assets — see CREDITS.md"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="BackButton" type="Button" parent="UI/Center/Panel/Margin/VBox"]
+[node name="BackButton" type="Button" parent="UI/Center/Panel/Margin/VBox" unique_id=1144164585]
+custom_minimum_size = Vector2(220, 52)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
 theme_override_colors/font_hover_color = Color(1, 0.9, 0.55, 1)
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("2_back_btn")
-theme_override_styles/hover = SubResource("2_back_btn")
 theme_override_styles/pressed = SubResource("2_back_btn")
+theme_override_styles/hover = SubResource("2_back_btn")
 text = "Back"
-custom_minimum_size = Vector2(220, 52)
 
-[node name="Back" type="TextureButton" parent="UI"]
+[node name="Back" type="TextureButton" parent="UI" unique_id=2007803608]
 visible = false
 anchors_preset = 3
 anchor_left = 1.0
@@ -139,5 +132,5 @@ texture_normal = ExtResource("3_back")
 texture_pressed = ExtResource("4_back_pressed")
 texture_hover = ExtResource("5_back_highlight")
 
-[connection signal="pressed" from="UI/Center/Panel/Margin/VBox/BackButton" to="." method="_on_back_pressed"]
 [connection signal="mouse_entered" from="UI/Center/Panel/Margin/VBox/BackButton" to="." method="_on_back_mouse_entered"]
+[connection signal="pressed" from="UI/Center/Panel/Margin/VBox/BackButton" to="." method="_on_back_pressed"]
