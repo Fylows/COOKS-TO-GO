@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ndxpg48l6bj6"
-path="res://.godot/imported/bg.PNG-d50adc752e4cc209430df4352c986c61.ctex"
+uid="uid://l5orlyqny07x"
+path="res://.godot/imported/kwekkwek_tray.PNG-a0333b7797f3e592a61151d2a0509e35.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://bg.PNG"
-dest_files=["res://.godot/imported/bg.PNG-d50adc752e4cc209430df4352c986c61.ctex"]
+source_file="res://Shared/Assets/Trays/kwekkwek_tray.PNG"
+dest_files=["res://.godot/imported/kwekkwek_tray.PNG-a0333b7797f3e592a61151d2a0509e35.ctex"]
 
 [params]
 

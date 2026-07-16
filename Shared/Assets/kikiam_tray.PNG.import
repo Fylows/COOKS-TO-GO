@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ndxpg48l6bj6"
-path="res://.godot/imported/bg.PNG-d50adc752e4cc209430df4352c986c61.ctex"
+uid="uid://blbr48jn42uph"
+path="res://.godot/imported/kikiam_tray.PNG-ece6c9bbc10d3c2ff27b575720fdc9e0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://bg.PNG"
-dest_files=["res://.godot/imported/bg.PNG-d50adc752e4cc209430df4352c986c61.ctex"]
+source_file="res://Shared/Assets/kikiam_tray.PNG"
+dest_files=["res://.godot/imported/kikiam_tray.PNG-ece6c9bbc10d3c2ff27b575720fdc9e0.ctex"]
 
 [params]
 

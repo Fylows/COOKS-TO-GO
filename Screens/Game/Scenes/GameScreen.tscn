@@ -8,11 +8,12 @@
 [ext_resource type="PackedScene" uid="uid://crbte2p67k7gm" path="res://Cart/Food/FoodItemSprite.tscn" id="5_2t8hv"]
 [ext_resource type="PackedScene" uid="uid://cnt482x3sc0bc" path="res://Screens/Day Over/Scenes/day_over.tscn" id="5_co4do"]
 [ext_resource type="Script" uid="uid://dm0mqwnoh5v3d" path="res://Screens/Shared/AudioToggles.gd" id="6_audio"]
-[ext_resource type="Texture2D" uid="uid://cyog5stu8nhnr" path="res://Shared/Assets/Fishball/Fishball_Raw.png" id="6_mctc2"]
 [ext_resource type="Script" uid="uid://djeq3a4ph822g" path="res://Cart/Scripts/FoodBtn.gd" id="7_ms0na"]
-[ext_resource type="Texture2D" uid="uid://c1odjv1kcef62" path="res://Shared/Assets/Kikiam/Kikiam_Raw.png" id="8_vbp14"]
+[ext_resource type="Texture2D" uid="uid://cq7oarqcw1u1b" path="res://Shared/Assets/Trays/fishball_tray.PNG" id="7_vbp14"]
+[ext_resource type="Texture2D" uid="uid://bye10yuedmoc" path="res://Shared/Assets/Trays/tray.PNG" id="8_vbp14"]
+[ext_resource type="Texture2D" uid="uid://d1o3i2p8xxseh" path="res://Shared/Assets/Trays/kikiam_tray.PNG" id="9_d0sag"]
 [ext_resource type="Texture2D" uid="uid://bm3wm8bnhofcn" path="res://Shared/Assets/Betamax/Betamax_Raw.png" id="9_im1l0"]
-[ext_resource type="Texture2D" uid="uid://bhyb46itatfr5" path="res://Shared/Assets/Kwekwek/Kwekwek_Raw.png" id="10_d0sag"]
+[ext_resource type="Texture2D" uid="uid://l5orlyqny07x" path="res://Shared/Assets/Trays/kwekkwek_tray.PNG" id="11_208d4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stock_panel"]
 content_margin_left = 12.0
@@ -138,28 +139,32 @@ position = Vector2(-1.25, 28.33319)
 shape = SubResource("RectangleShape2D_axv6w")
 
 [node name="Fishball Button" type="TextureButton" parent="CartMain" unique_id=19515280 node_paths=PackedStringArray("cooking_controller")]
-offset_left = -793.3334
-offset_right = 230.66663
-offset_bottom = 1024.0
+offset_left = -786.66656
+offset_top = -83.33333
+offset_right = 401.33344
+offset_bottom = 940.6666
 scale = Vector2(0.1423222, 0.17010947)
-texture_normal = ExtResource("6_mctc2")
+texture_normal = ExtResource("7_vbp14")
+texture_disabled = ExtResource("8_vbp14")
 script = ExtResource("7_ms0na")
 cooking_controller = NodePath("..")
 stock_variable_name = "fishballStock"
 
 [node name="Kikiam Button" type="TextureButton" parent="CartMain" unique_id=1269722399 node_paths=PackedStringArray("cooking_controller")]
-offset_left = -629.1666
-offset_top = -0.8333337
-offset_right = 394.83337
-offset_bottom = 1023.1667
+offset_left = -565.8333
+offset_top = -33.33333
+offset_right = 634.1667
+offset_bottom = 990.6667
 scale = Vector2(0.14204739, 0.16973083)
-texture_normal = ExtResource("8_vbp14")
+texture_normal = ExtResource("9_d0sag")
+texture_disabled = ExtResource("8_vbp14")
 script = ExtResource("7_ms0na")
 food_type = 1
 cooking_controller = NodePath("..")
 stock_variable_name = "kikiamStock"
 
 [node name="Betamax Button" type="TextureButton" parent="CartMain" unique_id=768008471 node_paths=PackedStringArray("cooking_controller")]
+visible = false
 offset_left = -794.1666
 offset_top = 184.16664
 offset_right = 229.83337
@@ -172,12 +177,13 @@ cooking_controller = NodePath("..")
 stock_variable_name = "betamaxStock"
 
 [node name="Kwekwek Button" type="TextureButton" parent="CartMain" unique_id=539684730 node_paths=PackedStringArray("cooking_controller")]
-offset_left = -629.99994
-offset_top = 171.66667
-offset_right = 394.00006
-offset_bottom = 1195.6666
+offset_left = -788.3333
+offset_top = 106.66665
+offset_right = 399.6667
+offset_bottom = 1130.6666
 scale = Vector2(0.14817233, 0.17635499)
-texture_normal = ExtResource("10_d0sag")
+texture_normal = ExtResource("11_208d4")
+texture_disabled = ExtResource("8_vbp14")
 script = ExtResource("7_ms0na")
 food_type = 3
 cooking_controller = NodePath("..")
