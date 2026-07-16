@@ -142,7 +142,10 @@ func _test_game_day_loop() -> void:
 		if slot.get_child_count() > 0:
 			order = slot.get_child(0)
 			break
-	if order != null and order.get("fishball_count") > 0 and _stats().fishballStock >= order.fishball_count:
+	if order != null and order.get("fishball_count") > 0:
+		var cooking: Node = game.get_node_or_null("CartMain")
+		if cooking and cooking.get("cooked_stock") != null:
+			cooking.cooked_stock[FoodItem.FoodName.FISHBALL] = int(order.fishball_count)
 		var money_before: int = _stats().playerMoney
 		await oc.confirm_order(order)
 		await create_timer(0.5).timeout

@@ -53,11 +53,13 @@ static func _load_styles() -> void:
 	_cta_style.bg_color = Color(0.78, 0.48, 0.12, 1)
 	_cta_style.border_color = Color(1, 0.86, 0.35, 1)
 	_cta_style.set_border_width_all(3)
+	_cta_style.set_corner_radius_all(4)
 	_cta_style.set_content_margin_all(6)
 	_hud_style = StyleBoxFlat.new()
 	_hud_style.bg_color = Color(0.08, 0.1, 0.16, 0.92)
-	_hud_style.border_color = Color(0.95, 0.78, 0.28, 0.8)
+	_hud_style.border_color = Color(0.48, 0.62, 0.82, 0.85)
 	_hud_style.set_border_width_all(2)
+	_hud_style.set_corner_radius_all(4)
 	_hud_style.set_content_margin_all(6)
 
 
@@ -81,7 +83,7 @@ static func _build_phone_frame(phone: Node2D) -> void:
 
 	var bezel := Label.new()
 	bezel.name = "PhoneTitle"
-	bezel.text = "TINDAHAN APP"
+	bezel.text = "Tindahan App"
 	bezel.position = Vector2(-420, -628)
 	bezel.add_theme_font_size_override("font_size", 14)
 	bezel.add_theme_color_override("font_color", Color(0.95, 0.78, 0.28))
@@ -293,7 +295,7 @@ static func _style_new_day_button(phone: Node2D) -> void:
 	var btn := phone.get_node_or_null("New Day") as Button
 	if btn == null:
 		return
-	btn.text = "▶  START NEW DAY"
+	btn.text = "Start new day"
 	btn.custom_minimum_size = Vector2(200, 36)
 	btn.position = Vector2(-210, 4)
 	_apply_button_styles(btn, _cta_style)
@@ -306,7 +308,7 @@ static func _style_restart_button(phone: Node2D) -> void:
 	var btn := phone.get_node_or_null("Restart Game") as Button
 	if btn == null:
 		return
-	btn.text = "↺  NEW GAME"
+	btn.text = "New game"
 	btn.custom_minimum_size = Vector2(200, 36)
 	btn.position = Vector2(10, 4)
 	var restart_style := _cta_style.duplicate() as StyleBoxFlat

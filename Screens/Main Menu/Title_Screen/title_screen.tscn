@@ -126,7 +126,7 @@ theme_override_constants/separation = 12
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
 theme_override_font_sizes/font_size = 30
-text = "CHOOSE YOUR NAME"
+text = "Choose your name"
 horizontal_alignment = 1
 
 [node name="NameField" type="LineEdit" parent="UiLayer/CenterRoot/Column/NamePanel/VBox"]

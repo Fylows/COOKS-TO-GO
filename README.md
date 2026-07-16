@@ -78,11 +78,17 @@ flowchart TB
   Home[Phone home] --> Resources
   Home --> Upgrades
   Home --> Family
-  Home --> Misc
+  Home --> Sbatter
+  Home --> Weather
+  Home --> JuanAngat
+  Home --> Extras
   Resources --> Home
   Upgrades --> Home
   Family --> Home
-  Misc --> Home
+  Sbatter --> Home
+  Weather --> Home
+  JuanAngat --> Home
+  Extras --> Home
   Home -->|Go to bed| Stall[Next market day]
 ```
 
@@ -91,7 +97,10 @@ flowchart TB
 | **Resources** | Buy fishball, kwek-kwek, kikiam, sauce, palamig stock; Tindahan App subscription |
 | **Upgrades** | Unlock palamig cart, bigger container, faster cooking, slower burning |
 | **Family** | Pay electricity, water, rent, food; buy medicine if someone is sick |
-| **Misc** | Anting-anting, weather app, JuanAngat loan, Sbatter gamble |
+| **Sbatter** | Bet (can wager your name) |
+| **Weather** | Buy the Weather App forecast |
+| **JuanAngat** | Borrow Paldo Loan+ |
+| **Extras** | Anting-anting |
 
 **Go to bed** starts the next day when bills are handled and the family is healthy. **Main Menu** returns to the title without wiping the run; **Start over** resets.
 
@@ -119,7 +128,7 @@ flowchart TB
 
 **Upgrades:** Palamig ₱100 · Container ₱250 · Faster cooking ₱500 · Slower burning ₱200
 
-**Misc:** Anting-anting ₱250 · Weather app ₱50 · JuanAngat loan +₱300 (owe ₱400) · Sbatter bet (one-time; wager your name for a chance at ₱250)
+**Extras:** Anting-anting ₱250 · **Weather** app ₱50 · **JuanAngat** loan +₱300 (owe ₱400) · **Sbatter** bet (one-time; wager your name for a chance at ₱250)
 
 Unpaid rent three nights in a row → homelessness (higher sickness risk). Skipping food, water, or electricity also raises sickness risk.
 

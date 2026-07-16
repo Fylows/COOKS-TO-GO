@@ -8,6 +8,7 @@ const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
 @onready var high_score_label: Label = $UiLayer/CenterRoot/Column/HighScoreLabel
 @onready var restart_button: Button = $UiLayer/CenterRoot/Column/RestartButton
 
+var resume_button: Button
 var endings_button: Button
 var gallery_root: Control
 var gallery_list: VBoxContainer
@@ -24,6 +25,7 @@ func _ready() -> void:
 	name_field.text = PlayerStats.player_name
 	name_field.grab_focus()
 	name_field.select_all()
+	_setup_resume_button()
 	_setup_endings_progress_panel()
 	_setup_endings_button()
 	_setup_endings_gallery()
@@ -51,26 +53,73 @@ func _has_run_in_progress() -> bool:
 		or PlayerStats.loan_balance > 0
 		or PlayerStats.name_spent_on_sbatter
 		or GameStateController.is_game_over
+		or PlayerStatController.run_suspended
 	)
 
 
+func _setup_resume_button() -> void:
+	var column: VBoxContainer = $UiLayer/CenterRoot/Column
+	resume_button = column.get_node_or_null("ResumeButton") as Button
+	if resume_button == null:
+		resume_button = Button.new()
+		resume_button.name = "ResumeButton"
+		resume_button.text = "Resume"
+		resume_button.visible = false
+		resume_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		resume_button.focus_mode = Control.FOCUS_ALL
+		resume_button.add_theme_font_size_override("font_size", 24)
+		resume_button.add_theme_color_override("font_color", Color(0.98, 0.96, 0.88))
+		resume_button.add_theme_color_override("font_hover_color", Color(1.0, 0.94, 0.55))
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(0.14, 0.36, 0.58, 1)
+		style.border_color = Color(1.0, 0.86, 0.42, 0.95)
+		style.set_border_width_all(2)
+		style.set_corner_radius_all(4)
+		style.set_content_margin_all(10)
+		style.content_margin_left = 22
+		style.content_margin_right = 22
+		var hover := style.duplicate() as StyleBoxFlat
+		hover.bg_color = style.bg_color.lightened(0.12)
+		resume_button.add_theme_stylebox_override("normal", style)
+		resume_button.add_theme_stylebox_override("hover", hover)
+		resume_button.add_theme_stylebox_override("pressed", hover)
+		resume_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		resume_button.pressed.connect(_on_resume_pressed)
+		resume_button.mouse_entered.connect(_on_resume_mouse_entered)
+		column.add_child(resume_button)
+	# Resume sits above New Game.
+	if restart_button and resume_button.get_parent() == column:
+		column.move_child(resume_button, restart_button.get_index())
+
+
 func _refresh_title_state() -> void:
-	var show_restart := _has_run_in_progress()
-	restart_button.visible = show_restart
-	if show_restart:
+	var can_resume := PlayerStatController.can_resume_run()
+	var show_new := can_resume or _has_run_in_progress()
+	if resume_button:
+		resume_button.visible = can_resume
+		if can_resume:
+			resume_button.text = "Resume · Day %d" % PlayerStatController.current_day_number()
+	restart_button.visible = show_new
+	if show_new:
 		restart_button.text = "New Game"
 	if hint_label:
-		hint_label.text = "Vendor name for your stall."
+		if can_resume:
+			hint_label.text = (
+				"Run waiting · %s in the till. Play or Resume to go back to the phone."
+				% PlayerStatController.format_pesos(PlayerStats.playerMoney)
+			)
+		else:
+			hint_label.text = "Vendor name for your stall."
 		hint_label.add_theme_font_size_override("font_size", 20)
 	_refresh_endings_progress_panel()
 	var records := ScoreController.format_high_scores()
 	if not records.is_empty():
 		high_score_label.visible = true
 		high_score_label.text = records
-	elif show_restart:
+	elif show_new:
 		high_score_label.visible = true
-			high_score_label.text = "This run\n%s" % ScoreController.format_run_stats()
-		else:
+		high_score_label.text = "This run\n%s" % ScoreController.format_run_stats()
+	else:
 		high_score_label.visible = false
 		high_score_label.text = ""
 	if high_score_label:
@@ -151,7 +200,7 @@ func _wire_endings_panel_click() -> void:
 		return
 	endings_progress_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	endings_progress_panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	endings_progress_panel.focus_mode = Control.FOCUS_NONE
+	endings_progress_panel.focus_mode = Control.FOCUS_ALL
 	if not endings_progress_panel.gui_input.is_connected(_on_endings_panel_gui_input):
 		endings_progress_panel.gui_input.connect(_on_endings_panel_gui_input)
 	if not endings_progress_panel.mouse_entered.is_connected(_on_endings_mouse_entered):
@@ -160,11 +209,20 @@ func _wire_endings_panel_click() -> void:
 		endings_progress_panel.mouse_entered.connect(_on_endings_panel_hover_on)
 	if not endings_progress_panel.mouse_exited.is_connected(_on_endings_panel_hover_off):
 		endings_progress_panel.mouse_exited.connect(_on_endings_panel_hover_off)
+	if not endings_progress_panel.focus_entered.is_connected(_on_endings_panel_hover_on):
+		endings_progress_panel.focus_entered.connect(_on_endings_panel_hover_on)
+	if not endings_progress_panel.focus_exited.is_connected(_on_endings_panel_hover_off):
+		endings_progress_panel.focus_exited.connect(_on_endings_panel_hover_off)
 
 
 func _on_endings_panel_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_on_endings_pressed()
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE]:
+			_on_endings_pressed()
+			get_viewport().set_input_as_handled()
 
 
 func _on_endings_panel_hover_on() -> void:
@@ -204,7 +262,10 @@ func _refresh_endings_progress_panel() -> void:
 		if style:
 			style.border_color = Color(0.45, 0.08, 0.1, 1)
 	if endings_sub_label:
-		endings_sub_label.visible = false
+		endings_sub_label.visible = true
+		endings_sub_label.text = "Tap to open"
+		endings_sub_label.add_theme_font_size_override("font_size", 16)
+		endings_sub_label.add_theme_color_override("font_color", Color(0.7, 0.78, 0.9))
 	endings_progress_panel.visible = true
 	endings_progress_panel.custom_minimum_size = Vector2(320, 0)
 
@@ -234,7 +295,7 @@ func _setup_endings_gallery() -> void:
 
 	var dim := ColorRect.new()
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	dim.color = Color(0.02, 0.03, 0.06, 0.88)
+	dim.color = Color(0.08, 0.05, 0.07, 0.88)
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
 	gallery_root.add_child(dim)
 
@@ -297,7 +358,7 @@ func _setup_endings_gallery() -> void:
 	close_style.bg_color = Color(0.1, 0.14, 0.24, 0.98)
 	close_style.border_color = Color(0.55, 0.7, 0.95, 0.95)
 	close_style.set_border_width_all(2)
-	close_style.set_corner_radius_all(8)
+	close_style.set_corner_radius_all(4)
 	close_style.set_content_margin_all(12)
 	var close_hover := close_style.duplicate() as StyleBoxFlat
 	close_hover.bg_color = close_style.bg_color.lightened(0.18)
@@ -349,9 +410,7 @@ func _make_ending_row(id: String) -> PanelContainer:
 		style.bg_color = Color(0.04, 0.04, 0.06, 0.96)
 		style.border_color = Color(0.28, 0.3, 0.36, 0.9)
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(6)
-	style.set_content_margin_all(14)
-	row.add_theme_stylebox_override("panel", style)
+	style.set_corner_radius_all(4)
 
 	var h := HBoxContainer.new()
 	h.add_theme_constant_override("separation", 16)
@@ -397,13 +456,13 @@ func _make_ending_row(id: String) -> PanelContainer:
 	kind.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	kind.custom_minimum_size = Vector2(96, 0)
 	if unlocked:
-		kind.text = "GOOD" if good else "BAD"
+		kind.text = "Good" if good else "Bad"
 		kind.add_theme_color_override(
 			"font_color",
 			Color(0.55, 0.9, 0.6) if good else Color(0.95, 0.5, 0.45)
 		)
 	else:
-		kind.text = "LOCKED"
+		kind.text = "Locked"
 		kind.add_theme_color_override("font_color", Color(0.55, 0.58, 0.65))
 	h.add_child(kind)
 	return row
@@ -460,12 +519,23 @@ func _on_start_pressed(_text: String = "") -> void:
 	var typed := name_field.text.strip_edges()
 	if not typed.is_empty():
 		PlayerStats.player_name = typed
-	get_tree().change_scene_to_file("res://Screens/EOD/Scenes/Room.tscn")
+	if PlayerStatController.can_resume_run():
+		PlayerStatController.resume_run()
+		return
+	get_tree().change_scene_to_file(PlayerStatController.EOD_SCENE)
+
+
+func _on_resume_pressed() -> void:
+	SfxController.play_click()
+	var typed := name_field.text.strip_edges()
+	if not typed.is_empty():
+		PlayerStats.player_name = typed
+	PlayerStatController.resume_run()
 
 
 func _on_restart_pressed() -> void:
 	SfxController.play_click()
-	PlayerStatController.restart_game()
+	PlayerStatController.prompt_restart_game(self)
 
 
 func _on_quit_pressed() -> void:
@@ -479,6 +549,10 @@ func _on_credit_pressed() -> void:
 
 
 func _on_start_mouse_entered() -> void:
+	SfxController.play_hover()
+
+
+func _on_resume_mouse_entered() -> void:
 	SfxController.play_hover()
 
 

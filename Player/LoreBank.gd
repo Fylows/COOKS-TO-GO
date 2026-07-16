@@ -66,7 +66,7 @@ static func entries() -> Array:
 		# --- JuanAngat / loan ---
 		{"need": ["loan_active", "rent_late1"], "prio": 57, "bucket": "money", "line": "JuanAngat DM: 'Pre, delayed din daw rent mo.' Chismoso."},
 		{"need": ["loan_active", "cash_rich"], "prio": 39, "bucket": "money", "line": "May utang ka pero mukhang okay ka. Turuan mo kami."},
-		{"need": ["loan_none", "cash_broke"], "prio": 31, "bucket": "money", "line": "JuanAngat waving sa Misc. Tempting, teh."},
+		{"need": ["loan_none", "cash_broke"], "prio": 31, "bucket": "money", "line": "JuanAngat app is waving. Tempting, teh."},
 		{"need": ["loan_active", "earn_hot"], "prio": 40, "bucket": "money", "line": "Maganda benta. Collector ng utang: mas mabilis pa."},
 
 		# --- Sbatter ---
@@ -84,7 +84,7 @@ static func entries() -> Array:
 		{"need": ["weather_app", "rain_day"], "prio": 44, "bucket": "online", "line": "Weather app: ulan. Customers: konti. Worth it ba?"},
 		{"need": ["weather_app", "awasan_day"], "prio": 43, "bucket": "online", "line": "Weather app: init. Palamig line forming na sa isip."},
 		{"need": ["weather_app", "cash_broke"], "prio": 41, "bucket": "online", "line": "Bayad weather app. Tubig sa bahay? Hindi. Nice."},
-		{"need": ["anting_owned", "weather_app"], "prio": 45, "bucket": "online", "line": "Maxed Misc tab. Actual luck: debatable, pre."},
+		{"need": ["anting_owned", "weather_app"], "prio": 45, "bucket": "online", "line": "Anting + Weather App. Actual luck: debatable, pre."},
 
 		# --- Stock / sauce / stall ---
 		{"need": ["no_sauce", "stall_fishball"], "prio": 22, "bucket": "stall", "line": "Customer: 'Sauce?' Ikaw: strong eye contact. 'Wala.'"},

@@ -91,7 +91,7 @@ func blocking_issue() -> String:
 			return "Family still sick"
 		if PlayerStats.playerMoney < price:
 			if LoanController.can_borrow():
-				return "Meds need %s · Misc → Loan" % PlayerStatController.format_pesos(price)
+				return "Meds need %s · JuanAngat → Borrow" % PlayerStatController.format_pesos(price)
 			return "Meds need %s" % PlayerStatController.format_pesos(price)
 		return "Family → Buy medicine"
 	return ""
@@ -131,7 +131,7 @@ func status_text() -> String:
 		if PlayerStats.playerMoney < price:
 			lines.append("Sick. Need %s for medicine." % PlayerStatController.format_pesos(price))
 			if LoanController.can_borrow():
-				lines.append("JuanAngat Paldo Loan+ is in Misc.")
+				lines.append("JuanAngat Paldo Loan+ is in its own app.")
 		else:
 			lines.append("Sick. Buy medicine.")
 	elif consecutive_unpaid_rent_days > 0:

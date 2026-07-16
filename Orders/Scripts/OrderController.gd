@@ -182,17 +182,25 @@ func confirm_order(order: Order) -> bool:
 	if not is_instance_valid(order) or order.is_queued_for_deletion() or not stats or not stat_controller:
 		return false
 
-	var needed := {
-		"fishballStock": order.fishball_count,
-		"kwekwekStock": order.kwekwek_count,
-		"kikiamStock": order.kikiam_count,
-		"palamigStock": order.palamig_count,
-	}
+	var cooking := get_tree().get_first_node_in_group("cooking_controller") as CookingController
+	if cooking == null:
+		SfxController.play_error()
+		return false
 
-	for stock_var: String in needed:
-		if stats.get(stock_var) < needed[stock_var]:
+	# Food sales need cooked/ready tray stock. Palamig stays PlayerStats stock.
+	var food_needed := {
+		FoodItem.FoodName.FISHBALL: order.fishball_count,
+		FoodItem.FoodName.KWEKWEK: order.kwekwek_count,
+		FoodItem.FoodName.KIKIAM: order.kikiam_count,
+	}
+	for food: FoodItem.FoodName in food_needed:
+		var need: int = int(food_needed[food])
+		if need > 0 and cooking.get_cooked_count(food) < need:
 			SfxController.play_error()
 			return false
+	if order.palamig_count > 0 and stats.palamigStock < order.palamig_count:
+		SfxController.play_error()
+		return false
 
 	var total_items: int = (
 		order.fishball_count
@@ -204,8 +212,12 @@ func confirm_order(order: Order) -> bool:
 	var slot_index: int = order_slots.find(order.get_parent())
 
 	var complete_order_sale := func() -> void:
-		for stock_var: String in needed:
-			stats.set(stock_var, stats.get(stock_var) - needed[stock_var])
+		for food: FoodItem.FoodName in food_needed:
+			var need: int = int(food_needed[food])
+			if need > 0:
+				cooking.consume_cooked(food, need)
+		if order.palamig_count > 0:
+			stats.palamigStock = maxi(stats.palamigStock - order.palamig_count, 0)
 		stat_controller.addMoney(earnings)
 		order_money_earned.emit(earnings, maxi(slot_index, 0))
 		SfxController.play_coin()

@@ -13,11 +13,14 @@ const SOUNDS := {
 	"end_day": preload("res://Audio/SFX/tick_001.ogg"),
 	"coin": preload("res://Audio/SFX/handleCoins.ogg"),
 	"error": preload("res://Audio/SFX/error_001.ogg"),
+	"cooked": preload("res://Audio/SFX/tick_001.ogg"),
+	"burn": preload("res://Audio/SFX/scratch_001.ogg"),
 }
 
 const BUS_NAME := "SFX"
 
 var _player: AudioStreamPlayer
+var _cook_start_cooldown_until_ms: int = 0
 
 
 func _ready() -> void:
@@ -67,6 +70,27 @@ func play_fry() -> void:
 	play("fry")
 
 
+## Drop skewers in the pan — metal pot clang (throttled when mashing).
+func play_cook_start() -> void:
+	if not AudioSettings.sfx_enabled:
+		return
+	var now := Time.get_ticks_msec()
+	if now < _cook_start_cooldown_until_ms:
+		return
+	_cook_start_cooldown_until_ms = now + 90
+	_play_one_shot("fry", -6.0)
+
+
+## Skewer finished cooking — short ready tick.
+func play_cooked() -> void:
+	_play_one_shot("cooked", -2.0)
+
+
+## Skewer burnt — harsh scrape.
+func play_burn() -> void:
+	_play_one_shot("burn", -1.0)
+
+
 func play_trash() -> void:
 	play("trash")
 
@@ -105,6 +129,8 @@ func play_morning_rush() -> void:
 
 
 func _play_one_shot(key: String, volume_db: float = 0.0) -> void:
+	if not AudioSettings.sfx_enabled:
+		return
 	if key not in SOUNDS:
 		return
 	_ensure_player()

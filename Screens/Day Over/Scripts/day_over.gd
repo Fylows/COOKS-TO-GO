@@ -21,6 +21,19 @@ var stock_strip: Label
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+	# Instance offsets in GameScreen used to shift the blur off the viewport.
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	offset_left = 0.0
+	offset_top = 0.0
+	offset_right = 0.0
+	offset_bottom = 0.0
+	var blur := $ColorRect as ColorRect
+	if blur:
+		blur.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		blur.offset_left = 0.0
+		blur.offset_top = 0.0
+		blur.offset_right = 0.0
+		blur.offset_bottom = 0.0
 	lore_feed = LoreFeedBar.ensure(self, "LoreFeed")
 	_ensure_graphic_layout()
 	_style_go_home_button()

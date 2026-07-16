@@ -359,9 +359,9 @@ func _on_primary_pressed() -> void:
 	if is_victory_toast:
 		dismiss_victory()
 		return
-	PlayerStatController.restart_game()
+	PlayerStatController.prompt_restart_game(self)
 
 
 func _on_secondary_pressed() -> void:
 	SfxController.play_click()
-	PlayerStatController.restart_game()
+	PlayerStatController.prompt_restart_game(self)

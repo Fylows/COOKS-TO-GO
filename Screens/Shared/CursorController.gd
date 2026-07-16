@@ -3,14 +3,18 @@ extends Node
 const CURSOR_FILES := {
 	Input.CURSOR_ARROW: "res://Assets/UI/cursors/cursor_arrow.png",
 	Input.CURSOR_POINTING_HAND: "res://Assets/UI/cursors/cursor_hand.png",
+	Input.CURSOR_DRAG: "res://Assets/UI/cursors/cursor_grab.png",
 	Input.CURSOR_IBEAM: "res://Assets/UI/cursors/cursor_ibeam.png",
 }
 
 const HOTSPOTS := {
 	Input.CURSOR_ARROW: Vector2(19, 12),
 	Input.CURSOR_POINTING_HAND: Vector2(15, 4),
+	Input.CURSOR_DRAG: Vector2(18, 12),
 	Input.CURSOR_IBEAM: Vector2(27, 4),
 }
+
+var _grab_hover_count: int = 0
 
 
 func _ready() -> void:
@@ -32,3 +36,15 @@ func _load_cursor_texture(path: String) -> ImageTexture:
 	if image.load(path) != OK:
 		return null
 	return ImageTexture.create_from_image(image)
+
+
+func push_grab_hover() -> void:
+	_grab_hover_count += 1
+	Input.set_default_cursor_shape(Input.CURSOR_DRAG)
+
+
+func pop_grab_hover() -> void:
+	_grab_hover_count = maxi(_grab_hover_count - 1, 0)
+	if _grab_hover_count <= 0:
+		_grab_hover_count = 0
+		Input.set_default_cursor_shape(Input.CURSOR_ARROW)

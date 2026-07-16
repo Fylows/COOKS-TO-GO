@@ -5,25 +5,31 @@ class_name MoneyHud
 static func ensure(parent: Node, node_name: String = "MoneyHud") -> Dictionary:
 	var existing := parent.get_node_or_null(node_name) as PanelContainer
 	if existing:
+		_restyle_panel(existing)
+		var vbox_ex := existing.get_node_or_null("VBox") as VBoxContainer
+		if vbox_ex and vbox_ex.get_child_count() > 0:
+			var caption := vbox_ex.get_child(0) as Label
+			if caption and caption.name != "BalanceLabel":
+				caption.text = "Wallet"
+				caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+				caption.add_theme_color_override("font_color", Color(0.72, 0.78, 0.9))
+		var bal := existing.get_node_or_null("VBox/BalanceLabel") as Label
+		if bal:
+			bal.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		var earned := existing.get_node_or_null("VBox/EarnedLabel") as Label
+		if earned:
+			earned.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		return {
 			"panel": existing,
-			"balance_label": existing.get_node("VBox/BalanceLabel") as Label,
-			"earned_label": existing.get_node("VBox/EarnedLabel") as Label,
+			"balance_label": bal,
+			"earned_label": earned,
 		}
 
 	var panel := PanelContainer.new()
 	panel.name = node_name
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.process_mode = Node.PROCESS_MODE_ALWAYS
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.07, 0.14, 0.94)
-	style.border_color = Color(1.0, 0.86, 0.42, 0.9)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(4)
-	style.set_content_margin_all(10)
-	style.content_margin_left = 14
-	style.content_margin_right = 14
-	panel.add_theme_stylebox_override("panel", style)
+	_restyle_panel(panel)
 	parent.add_child(panel)
 
 	var vbox := VBoxContainer.new()
@@ -32,8 +38,8 @@ static func ensure(parent: Node, node_name: String = "MoneyHud") -> Dictionary:
 	panel.add_child(vbox)
 
 	var balance_caption := Label.new()
-	balance_caption.text = "Balance"
-	balance_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	balance_caption.text = "Wallet"
+	balance_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	balance_caption.add_theme_font_size_override("font_size", 12)
 	balance_caption.add_theme_color_override("font_color", Color(0.72, 0.78, 0.9))
 	balance_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -41,7 +47,7 @@ static func ensure(parent: Node, node_name: String = "MoneyHud") -> Dictionary:
 
 	var balance_label := Label.new()
 	balance_label.name = "BalanceLabel"
-	balance_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	balance_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	balance_label.add_theme_font_size_override("font_size", 28)
 	balance_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.45))
 	balance_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -49,7 +55,7 @@ static func ensure(parent: Node, node_name: String = "MoneyHud") -> Dictionary:
 
 	var earned_label := Label.new()
 	earned_label.name = "EarnedLabel"
-	earned_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	earned_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	earned_label.add_theme_font_size_override("font_size", 16)
 	earned_label.add_theme_color_override("font_color", Color(0.45, 0.92, 0.55))
 	earned_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -60,6 +66,19 @@ static func ensure(parent: Node, node_name: String = "MoneyHud") -> Dictionary:
 		"balance_label": balance_label,
 		"earned_label": earned_label,
 	}
+
+
+static func _restyle_panel(panel: PanelContainer) -> void:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.04, 0.07, 0.14, 0.94)
+	# Gold is money-only chrome (design.md).
+	style.border_color = Color(1.0, 0.86, 0.42, 0.9)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(10)
+	style.content_margin_left = 14
+	style.content_margin_right = 14
+	panel.add_theme_stylebox_override("panel", style)
 
 
 static func apply_top_right_layout(panel: Control, width: float = 280.0, top: float = 16.0) -> void:
