@@ -2241,30 +2241,13 @@ func _clear_briefing_cards() -> void:
 		child.queue_free()
 
 
-func _rebuild_briefing_cards() -> void:
-	_clear_briefing_cards()
-	if _briefing_pending.is_empty():
-		briefing_stack.visible = false
-		return
-	briefing_stack.visible = true
-	briefing_stack.modulate = Color.WHITE
-	# Newest / last night first at the bottom (stack grows upward).
-	for i in _briefing_pending.size():
-		var line := _briefing_pending[i]
-		briefing_stack.add_child(_make_briefing_card(line, i))
-	# Fit stack height to cards; keep bottom edge above Go to bed clearance.
-	briefing_stack.reset_size()
-	var h := maxf(briefing_stack.get_combined_minimum_size().y, 48.0)
-	briefing_stack.offset_top = -(h + 16.0)
-	briefing_stack.offset_bottom = -16.0
-
-
 func _make_briefing_card(line: String, index: int) -> PanelContainer:
 	var card := PanelContainer.new()
 	card.name = "BriefingCard_%d" % index
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card.custom_minimum_size = Vector2(280, 0)
 	var from_weather := _is_weather_briefing_line(line)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.06, 0.08, 0.14, 1.0)
@@ -2279,10 +2262,12 @@ func _make_briefing_card(line: String, index: int) -> PanelContainer:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.add_child(row)
 
 	var text_col := VBoxContainer.new()
 	text_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_col.custom_minimum_size = Vector2(180, 0)
 	text_col.add_theme_constant_override("separation", 4)
 	text_col.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(text_col)
@@ -2298,6 +2283,7 @@ func _make_briefing_card(line: String, index: int) -> PanelContainer:
 
 	var body := Label.new()
 	body.text = line
+	body.custom_minimum_size = Vector2(180, 0)
 	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	body.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -2312,18 +2298,30 @@ func _make_briefing_card(line: String, index: int) -> PanelContainer:
 	dismiss.focus_mode = Control.FOCUS_NONE
 	dismiss.custom_minimum_size = Vector2(64, 36)
 	dismiss.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	dismiss.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS  # <- fire immediately on press
 	_style_briefing_dismiss(dismiss)
 	row.add_child(dismiss)
 
 	var ack := func() -> void:
 		_dismiss_briefing_line(line)
 	dismiss.pressed.connect(ack)
-	card.gui_input.connect(func(event: InputEvent) -> void:
-		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-			ack.call()
-	)
 	return card
 
+
+func _rebuild_briefing_cards() -> void:
+	_clear_briefing_cards()
+	if _briefing_pending.is_empty():
+		briefing_stack.visible = false
+		return
+	briefing_stack.visible = true
+	briefing_stack.modulate = Color.WHITE
+	for i in _briefing_pending.size():
+		var line := _briefing_pending[i]
+		briefing_stack.add_child(_make_briefing_card(line, i))
+	briefing_stack.reset_size()
+	var h := maxf(briefing_stack.get_combined_minimum_size().y, 48.0)
+	briefing_stack.offset_top = -(h + 100.0)   # <- was 16.0, raise this
+	briefing_stack.offset_bottom = -200.0       # <- was -16.0, raise this
 
 func _is_weather_briefing_line(line: String) -> bool:
 	if line.is_empty():

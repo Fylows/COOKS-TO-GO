@@ -36,7 +36,7 @@ radius = 315.03198
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_axv6w"]
 size = Vector2(362.5, 214.99997)
 
-[node name="GameScreen" type="Node2D" unique_id=333561420]
+[node name="GameScreen2" type="Node2D" unique_id=333561420]
 script = ExtResource("1_iwem0")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=520455930]
@@ -111,9 +111,7 @@ mouse_filter = 2
 
 [node name="OrderContainer" parent="HUD" unique_id=908020767 instance=ExtResource("2_vmgo5")]
 offset_left = 576.0
-offset_top = 0.0
 offset_right = 1540.0
-offset_bottom = 240.0
 
 [node name="CartMain" type="Sprite2D" parent="." unique_id=481923727 node_paths=PackedStringArray("pan_area", "container_area")]
 position = Vector2(960, 540)
