@@ -205,6 +205,25 @@ func _test_game_day_loop() -> void:
 		_assert(false, "OrderController script loaded (order_slots missing)")
 		return
 	var slots: Array = oc.order_slots
+	var cooking_for_pause: Node = game.get_node_or_null("CartMain")
+	if cooking_for_pause and cooking_for_pause.has_method("try_spawn_food_item"):
+		var spawned_for_pause: bool = bool(cooking_for_pause.call("try_spawn_food_item", FoodItem.FoodName.FISHBALL))
+		_assert(spawned_for_pause, "can spawn food for pause cooking test")
+		if spawned_for_pause:
+			var pan_items: Array = cooking_for_pause.get("pan_items")
+			var pause_item: FoodItem = pan_items[pan_items.size() - 1]
+			await create_timer(0.2).timeout
+			game.call("pause_day")
+			var paused_cook_time: float = pause_item.curr_cooktime
+			await create_timer(0.5).timeout
+			_assert(
+				is_equal_approx(pause_item.curr_cooktime, paused_cook_time),
+				"food cook timer stops while game is paused"
+			)
+			game.call("resume_day")
+			cooking_for_pause.call("take_item_in_pan", pause_item)
+			if pause_item.visual and is_instance_valid(pause_item.visual):
+				pause_item.visual.queue_free()
 	await create_timer(1.5).timeout
 	var order_count := 0
 	for slot in slots:

@@ -247,7 +247,22 @@ func _remove_ready_visuals(food: FoodItem.FoodName, amount: int) -> void:
 		node.queue_free()
 
 
+func _is_stall_paused() -> bool:
+	var tree := get_tree()
+	if tree == null:
+		return false
+	var screen := tree.get_first_node_in_group("game_screen")
+	return screen != null and screen.get("_day_paused") == true
+
+
 func _process(time_elapsed: float) -> void:
+	if _is_stall_paused():
+		if _oil_bubbles:
+			_oil_bubbles.set_cooking_count(0)
+		SfxController.set_pan_sizzle_active(false)
+		return
+
+	_sync_pan_sizzle()
 	var frying_count := 0
 	for item in pan_items:
 		FoodController.update_cook_state(item, time_elapsed)
