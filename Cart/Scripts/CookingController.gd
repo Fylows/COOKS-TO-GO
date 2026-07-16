@@ -80,8 +80,11 @@ func spawn_food_item(food: FoodItem.FoodName) -> void:
 func try_spawn_food_item(food: FoodItem.FoodName) -> bool:
 	var item = FoodItem.new(food)
 	item.location = FoodItem.Location.PAN
+	var had_pan_items := pan_items.size() > 0
 	if not add_item_in_pan(item):
 		return false
+	if had_pan_items:
+		SfxController.play_cook_start()
 	var visual = food_item_scene.instantiate()
 	item.visual = visual
 	visual.data = item

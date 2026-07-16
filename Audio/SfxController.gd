@@ -13,7 +13,7 @@ const SOUNDS := {
 	"end_day": preload("res://Audio/SFX/tick_001.ogg"),
 	"coin": preload("res://Audio/SFX/handleCoins.ogg"),
 	"error": preload("res://Audio/SFX/error_001.ogg"),
-	"pan_drop": preload("res://Audio/SFX/pan_drop.ogg"),
+	"cook_start": preload("res://Audio/SFX/cook_sizzle_short.mp3"),
 }
 
 const BUS_NAME := "SFX"
@@ -99,7 +99,7 @@ func stop_pan_sizzle() -> void:
 		_pan_sizzle_player.stop()
 
 
-## Drop skewers in the pan — oil splash (throttled when mashing).
+## Short oil sizzle when adding food to an active pan (throttled when mashing).
 func play_cook_start() -> void:
 	if not AudioSettings.sfx_enabled:
 		return
@@ -107,7 +107,7 @@ func play_cook_start() -> void:
 	if now < _cook_start_cooldown_until_ms:
 		return
 	_cook_start_cooldown_until_ms = now + 90
-	_play_one_shot("pan_drop", -8.0)
+	_play_one_shot("cook_start", -8.0)
 
 
 func play_trash() -> void:
