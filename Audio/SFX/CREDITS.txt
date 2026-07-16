@@ -1,0 +1,27 @@
+SFX used by COOKS-TO-GO — see also root CREDITS.md
+
+## Kenney (CC0 1.0)
+https://kenney.nl
+https://kenney.nl/assets/interface-sounds
+https://kenney.nl/assets/rpg-audio
+
+UI / stall cues (filenames kept from the packs):
+- click_001.ogg, click_002.ogg, select_001.ogg
+- confirmation_001.ogg, back_001.ogg, error_001.ogg
+- open_001.ogg, tick_001.ogg, scratch_001.ogg
+- handleCoins.ogg, dropLeather.ogg
+- metalPot1.ogg (unused spare)
+
+License: CC0 1.0 Universal. Credit to Kenney.nl appreciated, not required.
+
+## Mixkit Sound Effects Free License
+https://mixkit.co/free-sound-effects/
+
+Cook / fry cues (converted to Ogg Vorbis for the game):
+- cook_sizzle.ogg  — oil sizzle loop / fry bed
+- pan_drop.ogg     — skewer drop into oil
+- cooked_ready.ogg — ready chime
+- food_burn.ogg    — burn crackle
+
+Attribution optional under Mixkit's free sound-effects license.
+Do not redistribute the raw Mixkit library as a standalone pack.

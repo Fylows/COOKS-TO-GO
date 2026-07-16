@@ -254,8 +254,6 @@ func morning_briefing_lines() -> PackedStringArray:
 		if line == "Quiet night." or line == "Tahimik lang kagabi.":
 			continue
 		lines.append(line)
-		if lines.size() >= 2:
-			break
 	if not morning_forecast.is_empty():
 		lines.append(morning_forecast)
 	return lines

@@ -19,9 +19,22 @@ var cooked_stock := {
 var pan_items: Array[FoodItem] = []
 const MAX_CAPACITY: int = 15
 
+var _oil_bubbles: OilBubbleFX
+
 
 func _ready() -> void:
 	add_to_group("cooking_controller")
+	_setup_oil_bubbles()
+
+
+func _setup_oil_bubbles() -> void:
+	if pan_area == null:
+		return
+	_oil_bubbles = OilBubbleFX.new()
+	_oil_bubbles.name = "OilBubbleFX"
+	# Parent under PanArea inside setup() so bubbles track cart motion.
+	add_child(_oil_bubbles)
+	_oil_bubbles.setup(pan_area)
 
 
 func check_overflow() -> bool:
@@ -147,5 +160,14 @@ func _remove_ready_visuals(food: FoodItem.FoodName, amount: int) -> void:
 
 
 func _process(time_elapsed: float) -> void:
+	var frying_count := 0
 	for item in pan_items:
 		FoodController.update_cook_state(item, time_elapsed)
+		# Still in the oil: cooking or sitting ready to pull.
+		if (
+			item.cook_state == FoodItem.CookState.COOKING
+			or item.cook_state == FoodItem.CookState.COOKED
+		):
+			frying_count += 1
+	if _oil_bubbles:
+		_oil_bubbles.set_cooking_count(frying_count)

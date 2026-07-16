@@ -85,7 +85,7 @@ static func _build_phone_frame(phone: Node2D) -> void:
 	bezel.name = "PhoneTitle"
 	bezel.text = "Tindahan App"
 	bezel.position = Vector2(-420, -628)
-	bezel.add_theme_font_size_override("font_size", 14)
+	bezel.add_theme_font_size_override("font_size", 16)
 	bezel.add_theme_color_override("font_color", Color(0.95, 0.78, 0.28))
 	bezel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	phone.add_child(bezel)
@@ -132,7 +132,7 @@ static func _build_stats_hud(phone: Node2D) -> void:
 		loan.offset_top = 100.0
 		loan.offset_right = 228.0
 		loan.offset_bottom = 122.0
-		loan.add_theme_font_size_override("font_size", 14)
+		loan.add_theme_font_size_override("font_size", 16)
 		loan.add_theme_color_override("font_color", Color(1, 0.62, 0.45))
 		loan.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		stats.add_child(loan)
@@ -144,7 +144,7 @@ static func _build_stats_hud(phone: Node2D) -> void:
 		stock.offset_top = 124.0
 		stock.offset_right = 228.0
 		stock.offset_bottom = 220.0
-		stock.add_theme_font_size_override("font_size", 14)
+		stock.add_theme_font_size_override("font_size", 16)
 		stock.add_theme_color_override("font_color", Color(0.82, 0.9, 1))
 		stock.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		stats.add_child(stock)
@@ -156,7 +156,7 @@ static func _build_stats_hud(phone: Node2D) -> void:
 		run_score.offset_top = 222.0
 		run_score.offset_right = 228.0
 		run_score.offset_bottom = 244.0
-		run_score.add_theme_font_size_override("font_size", 13)
+		run_score.add_theme_font_size_override("font_size", 16)
 		run_score.add_theme_color_override("font_color", Color(0.75, 0.82, 0.95))
 		stats.add_child(run_score)
 
@@ -167,7 +167,7 @@ static func _build_stats_hud(phone: Node2D) -> void:
 		high_score.offset_top = 246.0
 		high_score.offset_right = 228.0
 		high_score.offset_bottom = 268.0
-		high_score.add_theme_font_size_override("font_size", 13)
+		high_score.add_theme_font_size_override("font_size", 16)
 		high_score.add_theme_color_override("font_color", Color(0.95, 0.78, 0.28))
 		high_score.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		stats.add_child(high_score)
@@ -177,7 +177,7 @@ static func _build_stats_hud(phone: Node2D) -> void:
 		if label:
 			label.offset_left = 4.0
 			label.offset_right = 228.0
-			label.add_theme_font_size_override("font_size", 15)
+			label.add_theme_font_size_override("font_size", 18)
 			label.add_theme_color_override("font_color", Color(0.75, 0.82, 0.95))
 
 
@@ -219,7 +219,7 @@ static func _fix_shop_row(row: HBoxContainer) -> void:
 
 	if buy_btn:
 		buy_btn.custom_minimum_size = Vector2(76, 30)
-		buy_btn.add_theme_font_size_override("font_size", 15)
+		buy_btn.add_theme_font_size_override("font_size", 18)
 		_apply_button_styles(buy_btn, _buy_style, _buy_disabled)
 
 
@@ -256,7 +256,7 @@ static func _style_tabs(phone: Node2D, active_key: String) -> void:
 			if is_active:
 				# Keep active tab bright on hover too.
 				btn.add_theme_stylebox_override("hover", _tab_active)
-			btn.add_theme_font_size_override("font_size", 15)
+			btn.add_theme_font_size_override("font_size", 18)
 			btn.add_theme_color_override(
 				"font_color",
 				Color(1, 0.92, 0.55) if is_active else Color(0.82, 0.88, 1)
@@ -282,7 +282,7 @@ static func _insert_title(vbox: VBoxContainer, title: String) -> void:
 	var label := Label.new()
 	label.name = "SectionTitle"
 	label.text = title
-	label.add_theme_font_size_override("font_size", 14)
+	label.add_theme_font_size_override("font_size", 16)
 	label.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
 	vbox.add_child(label)
 	var insert_idx := 0

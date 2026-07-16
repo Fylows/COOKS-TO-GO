@@ -1,11 +1,12 @@
 extends Node
 
+# Cook SFX: Mixkit free SFX (see Audio/SFX/CREDITS.txt). UI SFX: Kenney CC0.
 const SOUNDS := {
 	"click": preload("res://Audio/SFX/click_001.ogg"),
 	"hover": preload("res://Audio/SFX/select_001.ogg"),
 	"confirm": preload("res://Audio/SFX/confirmation_001.ogg"),
 	"cancel": preload("res://Audio/SFX/back_001.ogg"),
-	"fry": preload("res://Audio/SFX/metalPot1.ogg"),
+	"fry": preload("res://Audio/SFX/cook_sizzle.ogg"),
 	"trash": preload("res://Audio/SFX/scratch_001.ogg"),
 	"store": preload("res://Audio/SFX/dropLeather.ogg"),
 	"storage": preload("res://Audio/SFX/open_001.ogg"),
@@ -13,8 +14,9 @@ const SOUNDS := {
 	"end_day": preload("res://Audio/SFX/tick_001.ogg"),
 	"coin": preload("res://Audio/SFX/handleCoins.ogg"),
 	"error": preload("res://Audio/SFX/error_001.ogg"),
-	"cooked": preload("res://Audio/SFX/tick_001.ogg"),
-	"burn": preload("res://Audio/SFX/scratch_001.ogg"),
+	"cooked": preload("res://Audio/SFX/cooked_ready.ogg"),
+	"burn": preload("res://Audio/SFX/food_burn.ogg"),
+	"pan_drop": preload("res://Audio/SFX/pan_drop.ogg"),
 }
 
 const BUS_NAME := "SFX"
@@ -70,7 +72,7 @@ func play_fry() -> void:
 	play("fry")
 
 
-## Drop skewers in the pan — metal pot clang (throttled when mashing).
+## Drop skewers in the pan — oil splash (throttled when mashing).
 func play_cook_start() -> void:
 	if not AudioSettings.sfx_enabled:
 		return
@@ -78,17 +80,17 @@ func play_cook_start() -> void:
 	if now < _cook_start_cooldown_until_ms:
 		return
 	_cook_start_cooldown_until_ms = now + 90
-	_play_one_shot("fry", -6.0)
+	_play_one_shot("pan_drop", -8.0)
 
 
-## Skewer finished cooking — short ready tick.
+## Skewer finished cooking — soft ready chime.
 func play_cooked() -> void:
-	_play_one_shot("cooked", -2.0)
+	_play_one_shot("cooked", -4.0)
 
 
-## Skewer burnt — harsh scrape.
+## Skewer burnt — short crackle.
 func play_burn() -> void:
-	_play_one_shot("burn", -1.0)
+	_play_one_shot("burn", -3.0)
 
 
 func play_trash() -> void:

@@ -2,8 +2,14 @@ extends Control
 
 const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
 const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
+const NOTE_PAPER := preload("res://Screens/Day Over/Assets/day_over_note_paper.png")
 ## Pixel-snapped chrome radius (Hallmark: one radius token).
 const RADIUS := 4
+## Ink on paper — not cool HUD chrome.
+const INK := Color(0.18, 0.14, 0.12)
+const INK_MUTED := Color(0.38, 0.32, 0.28)
+const INK_GOLD := Color(0.55, 0.38, 0.08)
+const INK_OK := Color(0.2, 0.42, 0.22)
 
 var _continuing: bool = false
 var lore_feed: Label
@@ -78,9 +84,9 @@ func _present_summary() -> void:
 
 func _ensure_graphic_layout() -> void:
 	var vbox := $PanelContainer/VBox as VBoxContainer
-	vbox.add_theme_constant_override("separation", 12)
+	vbox.add_theme_constant_override("separation", 14)
 
-	# Bias left — break centered-everything.
+	# Bias left — break centered-everything. Reads like a handwritten tally.
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	subtitle_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	money_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -118,23 +124,33 @@ func _ensure_graphic_layout() -> void:
 		stock_strip.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		stock_strip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		stock_strip.add_theme_font_size_override("font_size", 18)
-		stock_strip.add_theme_color_override("font_color", Color(0.82, 0.88, 0.96))
+		stock_strip.add_theme_color_override("font_color", INK_MUTED)
 		var btn_idx := continue_button.get_index()
 		vbox.add_child(stock_strip)
 		vbox.move_child(stock_strip, btn_idx)
 
-	# Cool hairline panel. Gold reserved for money HUD / Day Over pesos.
-	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.05, 0.07, 0.12, 0.97)
-	panel_style.border_color = Color(0.55, 0.68, 0.88, 0.85)
-	panel_style.set_border_width_all(2)
-	panel_style.set_corner_radius_all(RADIUS)
-	panel_style.set_content_margin_all(28)
+	# Kuya's notepad — CC0 paper texture, not cool-ink HUD chrome.
+	var panel_style := StyleBoxTexture.new()
+	panel_style.texture = NOTE_PAPER
+	panel_style.set_content_margin_all(36)
+	panel_style.content_margin_left = 44
+	panel_style.content_margin_right = 36
+	panel_style.content_margin_top = 40
+	panel_style.content_margin_bottom = 32
 	panel.add_theme_stylebox_override("panel", panel_style)
 
-	# Slight left bias vs dead center.
-	panel.offset_left = -420.0
-	panel.offset_right = 340.0
+	title_label.add_theme_color_override("font_color", INK)
+	title_label.add_theme_font_size_override("font_size", 36)
+	subtitle_label.add_theme_color_override("font_color", INK_MUTED)
+	subtitle_label.add_theme_font_size_override("font_size", 20)
+	if stock_strip:
+		stock_strip.add_theme_color_override("font_color", INK_MUTED)
+
+	# Slight left bias vs dead center — like a scrap on the counter.
+	panel.offset_left = -400.0
+	panel.offset_right = 360.0
+	panel.offset_top = -280.0
+	panel.offset_bottom = 300.0
 
 
 func _style_go_home_button() -> void:
@@ -146,14 +162,13 @@ func _style_go_home_button() -> void:
 	continue_button.add_theme_color_override("font_hover_color", Color(1.0, 0.94, 0.7))
 	continue_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	var normal := StyleBoxFlat.new()
-	normal.bg_color = Color(0.14, 0.28, 0.18, 0.98)
-	normal.border_color = Color(0.55, 0.95, 0.62, 0.95)
+	normal.bg_color = Color(0.22, 0.36, 0.24, 1.0)
+	normal.border_color = Color(0.35, 0.28, 0.2, 0.9)
 	normal.set_border_width_all(2)
 	normal.set_corner_radius_all(RADIUS)
 	normal.set_content_margin_all(12)
 	var hover := normal.duplicate() as StyleBoxFlat
-	hover.bg_color = normal.bg_color.lightened(0.16)
-	hover.border_color = normal.border_color.lightened(0.1)
+	hover.bg_color = normal.bg_color.lightened(0.12)
 	var pressed := normal.duplicate() as StyleBoxFlat
 	pressed.bg_color = normal.bg_color.darkened(0.1)
 	continue_button.add_theme_stylebox_override("normal", normal)
@@ -163,19 +178,19 @@ func _style_go_home_button() -> void:
 
 func _refresh_summary() -> void:
 	_ensure_graphic_layout()
-	title_label.text = "Day %d Over" % PlayerStatController.current_day_number()
-	subtitle_label.text = "Sarado na ang stall. Uwi na."
+	title_label.text = "Day %d — Notes" % PlayerStatController.current_day_number()
+	subtitle_label.text = "Tinatandaan ni Kuya. Sarado na ang stall."
 	money_label.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	money_label.add_theme_font_size_override("font_size", 48)
-	money_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.45))
+	money_label.add_theme_color_override("font_color", INK_GOLD)
 	if ScoreController.today_earned > 0:
-		earned_label.add_theme_color_override("font_color", Color(0.55, 0.95, 0.62))
+		earned_label.add_theme_color_override("font_color", INK_OK)
 		earned_label.text = "+%s sa stall ngayon" % PlayerStatController.format_pesos(
 			ScoreController.today_earned
 		)
 		earned_label.visible = true
 	else:
-		earned_label.add_theme_color_override("font_color", Color(0.72, 0.76, 0.86))
+		earned_label.add_theme_color_override("font_color", INK_MUTED)
 		earned_label.text = "Walang benta ngayon. Sayang."
 		earned_label.visible = true
 	_rebuild_stock_strip()
@@ -192,4 +207,4 @@ func _rebuild_stock_strip() -> void:
 	parts.append("Kikiam %d" % PlayerStats.kikiamStock)
 	if PlayerStats.palamigUP:
 		parts.append("Palamig %d" % PlayerStats.palamigStock)
-	stock_strip.text = " · ".join(parts)
+	stock_strip.text = "Natitira: " + " · ".join(parts)

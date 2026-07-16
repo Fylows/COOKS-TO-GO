@@ -155,6 +155,15 @@ func _test_game_day_loop() -> void:
 	await game.end_day()
 	paused = false
 	await create_timer(0.2).timeout
+	var leftover := 0
+	for slot in slots:
+		leftover += slot.get_child_count()
+	_assert(leftover == 0, "orders cleared after end_day")
+	await create_timer(0.8).timeout
+	leftover = 0
+	for slot in slots:
+		leftover += slot.get_child_count()
+	_assert(leftover == 0, "no late spawn after end_day")
 	var overlay: Node = game.get_node("CanvasLayer/DayOver")
 	_assert(overlay.visible, "day over overlay visible")
 	_clear_scenes()
@@ -170,6 +179,8 @@ func _test_day_over_to_eod() -> void:
 	# Quiet night so stock-carry assert is deterministic.
 	for key in _stats().post_day_events.keys():
 		_stats().post_day_events[key].base_chance = 0.0
+	# Weather App unlocks the morning forecast card (empty without it).
+	_stats().boughtSubscription = true
 	_stat_ctrl().endDay()
 	_assert(_stats().daysPassed == days_before + 1, "daysPassed incremented after endDay")
 	_assert(_stats().fishballStock == stock_before, "stock carries overnight")

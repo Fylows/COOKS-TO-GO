@@ -9,6 +9,7 @@ Street stall game. Chrome should feel like a night market phone, not a SaaS dash
 - **Cool ink** `Color(0.48–0.55, 0.62–0.68, 0.82–0.88)`: feed, gallery, Day Over shell, tooltips, stock strips.
 - **Blockers / fades:** tinted ink `Color(0.06–0.08, 0.04–0.05, 0.07–0.1)`, never pure black.
 - **Font:** `Shared/Font/04B_03__.TTF` (pixel). One face is fine; do not add a second display font for chrome.
+- **Pixel readability:** Never ship labels under 16px. Captions 16, body 20, titles 24+. Always pair small chrome with a dark outline (`PixelText` helper). 04B mush without outline is a bug.
 
 ## Motion
 
