@@ -140,13 +140,13 @@ func _test_daily_stall_stats() -> void:
 	_score().reset_run()
 	_score().begin_day()
 	_stats().boughtSauce = false
-	var first_sale: int = _score().record_street_food_order(1, 0, 0, 7)
-	var second_sale: int = _score().record_street_food_order(1, 0, 0, 7)
+	var first_sale: int = _score().record_street_food_order(1, 0, 0, 12)
+	var second_sale: int = _score().record_street_food_order(1, 0, 0, 12)
 	var stats: Dictionary = _score().get_current_day_stats()
-	_assert(first_sale + second_sale == 12, "no sauce applies 10 percent daily food revenue debuff")
-	_assert(stats["earned_for_today"] == 14, "gross food revenue is tracked before deductions")
-	_assert(stats["deductions"] == 2, "no sauce discount is tracked as deduction")
-	_assert(stats["total_earned_for_today"] == 12, "net daily food revenue is tracked")
+	_assert(first_sale + second_sale == 21, "no sauce applies 10 percent daily food revenue debuff")
+	_assert(stats["earned_for_today"] == 24, "gross food revenue is tracked before deductions")
+	_assert(stats["deductions"] == 3, "no sauce discount is tracked as deduction")
+	_assert(stats["total_earned_for_today"] == 21, "net daily food revenue is tracked")
 	_assert(stats["fishball_sold"] == 2, "fishball sold count tracks street food orders")
 	_assert(stats["total_food_served"] == 2, "total food served tracks street food")
 	_assert(stats["total_orders_served"] == 2, "street food orders count as served orders")
@@ -154,7 +154,7 @@ func _test_daily_stall_stats() -> void:
 	_score().reset_run()
 	_score().begin_day()
 	_stats().boughtSauce = true
-	_assert(_score().record_street_food_order(0, 1, 0, 20) == 20, "sauce removes food revenue debuff")
+	_assert(_score().record_street_food_order(0, 1, 0, 25) == 25, "sauce removes food revenue debuff")
 	stats = _score().get_current_day_stats()
 	_assert(stats["kwekwek_sold"] == 1, "kwekwek sold count tracks street food orders")
 	_assert(stats["deductions"] == 0, "sauce prevents no-sauce deductions")
@@ -167,9 +167,9 @@ func _test_daily_stall_stats() -> void:
 	stats = _score().get_current_day_stats()
 	_assert(stats["palamig_sold"] == 1, "palamig sold count tracks successful cups")
 	_assert(stats["total_food_served"] == 2, "total food served includes palamig")
-	_assert(stats["earned_for_today"] == 30, "gross daily earnings include palamig sales")
+	_assert(stats["earned_for_today"] == 35, "gross daily earnings include palamig sales")
 	_assert(stats["deductions"] == 6, "palamig waste is tracked as deduction")
-	_assert(stats["total_earned_for_today"] == 24, "palamig waste lowers net daily earnings")
+	_assert(stats["total_earned_for_today"] == 29, "palamig waste lowers net daily earnings")
 	_assert(stats["total_orders_served"] == 2, "served palamig orders increment served orders")
 	_assert(stats["cancelled_orders"] == 1, "cancelled orders are tracked separately")
 	_assert(stats["expired_orders"] == 1, "expired orders are tracked separately")
@@ -232,7 +232,7 @@ func _test_game_day_loop() -> void:
 		await oc.confirm_order(order)
 		await create_timer(0.5).timeout
 		_assert(
-			_stats().playerMoney - money_before == int(order.fishball_count) * 7,
+			_stats().playerMoney - money_before == int(order.fishball_count) * EconomyBalance.street_food_sell_price(FoodItem.FoodName.FISHBALL),
 			"fishball order pays per-item sale price"
 		)
 		var stats_after_confirm: Dictionary = _score().get_current_day_stats()

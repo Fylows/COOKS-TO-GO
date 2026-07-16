@@ -4,9 +4,9 @@ class_name EconomyBalance
 ## Shared economy constants and helpers.
 
 const COMFORT_MONEY := 1000.0
-const FISHBALL_SELL_PRICE := 7
-const KIKIAM_SELL_PRICE := 10
-const KWEKWEK_SELL_PRICE := 20
+const FISHBALL_SELL_PRICE := 12
+const KIKIAM_SELL_PRICE := 15
+const KWEKWEK_SELL_PRICE := 25
 const PALAMIG_SELL_PRICE := 10
 
 const NANAKAWAN_BASE := 100

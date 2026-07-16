@@ -21,9 +21,9 @@ enum CookState {
 }
 
 const FoodData := {
-	FoodName.FISHBALL: {"cook_time": 10.0, "burn_time": 20.0},
-	FoodName.KIKIAM: {"cook_time": 16.0, "burn_time": 25.0},
-	FoodName.KWEKWEK: {"cook_time": 10.0, "burn_time": 20.0},
+	FoodName.FISHBALL: {"cook_time": 6.0, "burn_time": 16.0},
+	FoodName.KIKIAM: {"cook_time": 12.0, "burn_time": 21.0},
+	FoodName.KWEKWEK: {"cook_time": 6.0, "burn_time": 16.0},
 }
 
 var food_name: FoodName
