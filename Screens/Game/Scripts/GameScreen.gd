@@ -6,6 +6,15 @@ const MoneyHud := preload("res://Screens/Shared/MoneyHud.gd")
 const StockHudVisual := preload("res://Screens/Shared/StockHudVisual.gd")
 const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
 const PALAMIG_LOCKED_TEX := preload("res://Screens/Assets/palamig_cooler_locked.png")
+
+const SAUCE_EMPTY_NO_PALAMIG = preload("res://Shared/Assets/sauceempty_nopalamig.PNG")
+const SAUCE_FULL_NO_PALAMIG = preload("res://Shared/Assets/saucefull_nopalamig.PNG")
+const BOTH_FULL = preload("res://Screens/Assets/bothfull.PNG")
+const BOTH_EMPTY = preload("res://Screens/Assets/bothempty.PNG")
+const SAUCE_EMPTY_PALAMIG_FULL = preload("res://Screens/Assets/palamigfull.PNG")
+const SAUCE_FULL_PALAMIG_EMPTY = preload("res://Screens/Assets/saucefull.PNG")
+
+
 const DAY_DURATION_SECONDS := 120.0
 ## Texture-space top-left of the locked cooler crop on cart_main.PNG.
 const PALAMIG_LOCKED_ORIGIN := Vector2(1190.0, 95.0)
@@ -18,7 +27,7 @@ const PALAMIG_LOCKED_ORIGIN := Vector2(1190.0, 95.0)
 @onready var pause_button: Button = $HUD/DayHud/PauseButton
 @onready var end_day_button: Button = $HUD/DayHud/EndDayButton
 @onready var money_popup_layer: Control = $HUD/MoneyPopupLayer
-
+@onready var cart :=  $CartMain 
 var palamig_layer: CanvasLayer
 var palamig_game: Control
 var pending_palamig_order: Order
@@ -52,7 +61,7 @@ func _ready() -> void:
 	order_controller.palamig_order_started.connect(_on_palamig_order_started)
 	order_controller.order_money_earned.connect(_on_order_money_earned)
 	_setup_palamig_game()
-	_setup_palamig_locked_affordance()
+	_setup_cart_state()
 	lore_feed = LoreFeedBar.ensure($HUD, "LoreFeed")
 	var lore_panel := lore_feed.get_parent().get_parent() as Control
 	LoreFeedBar.apply_bottom_layout(lore_panel)
@@ -327,6 +336,24 @@ func _process(delta: float) -> void:
 	if _day_seconds_left <= 0.0:
 		end_day()
 
+
+func _setup_cart_state():
+	var cart :Sprite2D = $CartMain
+	if cart == null:
+		return
+	print(PlayerStats.palamigUP)
+	if (!PlayerStats.boughtSauce and !PlayerStats.palamigUP):
+		cart.texture = SAUCE_EMPTY_NO_PALAMIG
+	elif (PlayerStats.boughtSauce and !PlayerStats.palamigUP):
+		cart.texture = SAUCE_FULL_NO_PALAMIG
+	elif (!PlayerStats.boughtSauce and PlayerStats.palamigUP and PlayerStats.palamigStock <= 0):
+		cart.texture = BOTH_EMPTY
+	elif (PlayerStats.boughtSauce and PlayerStats.palamigUP and PlayerStats.palamigStock > 0):
+		cart.texture = BOTH_FULL
+	elif (PlayerStats.boughtSauce and PlayerStats.palamigUP and PlayerStats.palamigStock <= 0):
+		cart.texture = SAUCE_FULL_PALAMIG_EMPTY
+	elif (!PlayerStats.boughtSauce and PlayerStats.palamigUP and PlayerStats.palamigStock > 0):
+		cart.texture = SAUCE_EMPTY_PALAMIG_FULL
 
 func _setup_palamig_locked_affordance() -> void:
 	var cart := $CartMain as Sprite2D
