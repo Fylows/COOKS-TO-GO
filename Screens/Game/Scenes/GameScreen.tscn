@@ -7,7 +7,7 @@
 [ext_resource type="Script" uid="uid://br8ap87vd11cs" path="res://Cart/Scripts/CookingController.gd" id="4_vmgo5"]
 [ext_resource type="PackedScene" uid="uid://crbte2p67k7gm" path="res://Cart/Food/FoodItemSprite.tscn" id="5_2t8hv"]
 [ext_resource type="PackedScene" uid="uid://cnt482x3sc0bc" path="res://Screens/Day Over/Scenes/day_over.tscn" id="5_co4do"]
-[ext_resource type="Script" path="res://Screens/Shared/AudioToggles.gd" id="6_audio"]
+[ext_resource type="Script" uid="uid://dm0mqwnoh5v3d" path="res://Screens/Shared/AudioToggles.gd" id="6_audio"]
 [ext_resource type="Texture2D" uid="uid://cyog5stu8nhnr" path="res://Shared/Assets/Fishball/Fishball_Raw.png" id="6_mctc2"]
 [ext_resource type="Script" uid="uid://djeq3a4ph822g" path="res://Cart/Scripts/FoodBtn.gd" id="7_ms0na"]
 [ext_resource type="Texture2D" uid="uid://c1odjv1kcef62" path="res://Shared/Assets/Kikiam/Kikiam_Raw.png" id="8_vbp14"]
@@ -15,6 +15,10 @@
 [ext_resource type="Texture2D" uid="uid://bhyb46itatfr5" path="res://Shared/Assets/Kwekwek/Kwekwek_Raw.png" id="10_d0sag"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stock_panel"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
 bg_color = Color(0.04, 0.06, 0.1, 0.9)
 border_width_left = 2
 border_width_top = 2
@@ -25,10 +29,6 @@ corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_fousb"]
 radius = 315.03198
@@ -49,10 +49,10 @@ offset_right = 480.0
 offset_bottom = 56.0
 theme_override_constants/separation = 16
 
-[node name="DayLabel" type="Label" parent="HUD/DayHud"]
+[node name="DayLabel" type="Label" parent="HUD/DayHud" unique_id=1102892658]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.95, 0.88, 0.55, 1)
+theme_override_font_sizes/font_size = 22
 text = "Day 1"
 
 [node name="TimerLabel" type="Label" parent="HUD/DayHud" unique_id=376505114]
@@ -68,40 +68,38 @@ text = "Pause"
 layout_mode = 2
 text = "End Day"
 
-[node name="RestartButton" type="Button" parent="HUD/DayHud"]
+[node name="RestartButton" type="Button" parent="HUD/DayHud" unique_id=1581664049]
 layout_mode = 2
 text = "Restart"
 
-[node name="StockHud" type="PanelContainer" parent="HUD"]
+[node name="StockHud" type="PanelContainer" parent="HUD" unique_id=893700496]
 offset_left = 24.0
 offset_top = 64.0
 offset_right = 560.0
 offset_bottom = 108.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_stock_panel")
 
-[node name="VBox" type="VBoxContainer" parent="HUD/StockHud"]
+[node name="VBox" type="VBoxContainer" parent="HUD/StockHud" unique_id=375510818]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="TitleLabel" type="Label" parent="HUD/StockHud/VBox"]
+[node name="TitleLabel" type="Label" parent="HUD/StockHud/VBox" unique_id=1019987869]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.82, 0.95, 1)
 theme_override_font_sizes/font_size = 13
 text = "Stock"
-horizontal_alignment = 0
 
-[node name="StockLabel" type="Label" parent="HUD/StockHud/VBox"]
+[node name="StockLabel" type="Label" parent="HUD/StockHud/VBox" unique_id=1298161426]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.94, 1, 1)
 theme_override_font_sizes/font_size = 16
 text = "Fishball 0"
 
-[node name="AudioToggles" type="HBoxContainer" parent="HUD"]
+[node name="AudioToggles" type="HBoxContainer" parent="HUD" unique_id=269103303]
 offset_left = 500.0
 offset_top = 16.0
 offset_right = 884.0
 offset_bottom = 56.0
-clip_contents = false
 script = ExtResource("6_audio")
 
 [node name="MoneyPopupLayer" type="Control" parent="HUD" unique_id=620846486]
@@ -195,6 +193,6 @@ layer = 999
 
 [node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_co4do")]
 
-[connection signal="pressed" from="HUD/DayHud/RestartButton" to="." method="_on_restart_pressed"]
-[connection signal="pressed" from="HUD/DayHud/EndDayButton" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="HUD/DayHud/PauseButton" to="." method="_on_pause_button_pressed"]
+[connection signal="pressed" from="HUD/DayHud/EndDayButton" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="HUD/DayHud/RestartButton" to="." method="_on_restart_pressed"]

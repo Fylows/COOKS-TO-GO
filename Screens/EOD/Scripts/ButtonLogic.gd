@@ -87,6 +87,7 @@ var _apps_checked: Dictionary = {}
 var _laid_out_wallet_h: float = -1.0
 
 func _ready() -> void:
+	$HomeBtn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	get_tree().paused = false
 	if not DayTransition.is_fade_in_pending():
 		DayTransition.release_input()
@@ -314,7 +315,6 @@ func showOpt(opt: String) -> void:
 	for key in categories.keys():
 		categories[key].visible = (key == opt)
 	_refresh_tab_header(opt)
-	_refresh_bed_button_caption()
 	_refresh_must_pay_strip()
 	if phone_screen_back:
 		phone_screen_back.visible = true
@@ -353,47 +353,51 @@ func _on_loan_app_pressed() -> void:
 
 # UPGRADES
 
-func buyUpgrade(upgrade_price : int, upgrade_name : String) -> void:
+func buyUpgrade(upgrade_price: int, upgrade_name: String) -> bool:
 	if not PlayerStats.paidTindahanApp:
 		SfxController.play_error()
-		return
+		return false
 	if PlayerStats.playerMoney < upgrade_price:
 		SfxController.play_error()
-		return
+		return false
 	PlayerStatController.subtractMoney(upgrade_price)
 	PlayerStats.set(upgrade_name, true)
 	update_resource_visibility()
 	_refresh_upgrade_buttons()
 	GameStateController.evaluate_wins()
+	return true
 
 func _on_palamig_btn_pressed() -> void:
 	if PlayerStats.get("palamigUP"):
 		return
-	buyUpgrade(_upgrade_cost("palamig"), "palamigUP")
-	var btn := _shop_btn($UpgradesGroup/VBoxContainer/PalamigUpgrd)
-	if btn:
-		btn.text = "bought"
+	if buyUpgrade(_upgrade_cost("palamig"), "palamigUP"):
+		var btn := _shop_btn($UpgradesGroup/VBoxContainer/PalamigUpgrd)
+		if btn:
+			btn.text = "bought"
+
 func _on_container_btn_pressed() -> void:
 	if PlayerStats.get("containerUP"):
 		return
-	buyUpgrade(_upgrade_cost("container"), "containerUP")
-	var btn := _shop_btn($UpgradesGroup/VBoxContainer/ContainerUpgrd)
-	if btn:
-		btn.text = "bought"
+	if buyUpgrade(_upgrade_cost("container"), "containerUP"):
+		var btn := _shop_btn($UpgradesGroup/VBoxContainer/ContainerUpgrd)
+		if btn:
+			btn.text = "bought"
+
 func _on_cooking_btn_pressed() -> void:
 	if PlayerStats.get("cookUP"):
 		return
-	buyUpgrade(_upgrade_cost("cook"), "cookUP")
-	var btn := _shop_btn($UpgradesGroup/VBoxContainer/CookingUpgrd)
-	if btn:
-		btn.text = "bought"
+	if buyUpgrade(_upgrade_cost("cook"), "cookUP"):
+		var btn := _shop_btn($UpgradesGroup/VBoxContainer/CookingUpgrd)
+		if btn:
+			btn.text = "bought"
+
 func _on_burn_btn_pressed() -> void:
 	if PlayerStats.get("burnUP"):
 		return
-	buyUpgrade(_upgrade_cost("burn"), "burnUP")
-	var btn := _shop_btn($UpgradesGroup/VBoxContainer/BurnUpgrd)
-	if btn:
-		btn.text = "bought"
+	if buyUpgrade(_upgrade_cost("burn"), "burnUP"):
+		var btn := _shop_btn($UpgradesGroup/VBoxContainer/BurnUpgrd)
+		if btn:
+			btn.text = "bought"
 func update_resource_visibility() -> void:
 	var palamig_row := $ResourceGroup/VBoxContainer/Palamig
 	var palamig_label: Label = _shop_label(palamig_row)
@@ -840,10 +844,9 @@ func go_home(current_group: CanvasGroup) -> void:
 	$MenuOptions.visible = true
 	$Stats.visible = false
 	if wallet_hud:
-		wallet_hud.visible = true
+		wallet_hud.visible = false   # <- hide on home page
 	_refresh_tab_header("")
 	_refresh_new_day_hint()
-	_refresh_bed_button_caption()
 	_refresh_app_badges()
 	_refresh_morning_briefing()
 	_refresh_must_pay_strip()
@@ -1044,7 +1047,6 @@ func _begin_stall_day() -> void:
 	if _starting_day:
 		return
 	_starting_day = true
-	$"../Canvas/Control/NextDayTooltip".hide()
 	if _first_night_active():
 		PlayerStats.first_night_done = true
 		_refresh_first_night_coach()
@@ -2023,8 +2025,6 @@ func _setup_bed_button_caption() -> void:
 	bed_action_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bed_action_caption.add_child(bed_action_label)
 	bed_action_caption.gui_input.connect(_on_bed_caption_gui_input)
-	$HomeBtn.add_sibling(bed_action_caption)
-	_refresh_bed_button_caption()
 
 
 func _on_bed_caption_hover_on() -> void:
@@ -2051,7 +2051,6 @@ func _on_bed_caption_hover_off() -> void:
 func _on_bed_caption_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_on_home_btn_pressed()
-
 
 func _layout_bed_button_caption() -> void:
 	if bed_action_caption == null:
@@ -2831,18 +2830,6 @@ func _refresh_stock_hud() -> void:
 	if stock_hud_vbox == null:
 		return
 	StockHudVisual.refresh_bagged(stock_hud_vbox)
-
-
-func _refresh_bed_button_caption() -> void:
-	if bed_action_label == null:
-		return
-	if page == home:
-		bed_action_label.text = "Go to bed"
-	else:
-		bed_action_label.text = "Phone home"
-	bed_action_caption.visible = true
-	call_deferred("_layout_bed_button_caption")
-
 
 func _setup_meta_labels() -> void:
 	pass
