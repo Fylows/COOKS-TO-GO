@@ -10,10 +10,12 @@ const INK := Color(0.18, 0.14, 0.12)
 const INK_MUTED := Color(0.38, 0.32, 0.28)
 const INK_GOLD := Color(0.55, 0.38, 0.08)
 const INK_OK := Color(0.2, 0.42, 0.22)
+const INK_BAD := Color(0.55, 0.22, 0.2)
 
 var _continuing: bool = false
 var lore_feed: Label
 var stock_strip: Label
+var orders_strip: Label
 
 @onready var title_label: Label = $PanelContainer/VBox/TitleLabel
 @onready var subtitle_label: Label = $PanelContainer/VBox/SubtitleLabel
@@ -129,6 +131,19 @@ func _ensure_graphic_layout() -> void:
 		vbox.add_child(stock_strip)
 		vbox.move_child(stock_strip, btn_idx)
 
+	orders_strip = vbox.get_node_or_null("OrdersStrip") as Label
+	if orders_strip == null:
+		orders_strip = Label.new()
+		orders_strip.name = "OrdersStrip"
+		orders_strip.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		orders_strip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		orders_strip.add_theme_font_size_override("font_size", 18)
+		orders_strip.add_theme_color_override("font_color", INK_MUTED)
+		# Sits right after stock_strip, before the Go Home button.
+		var btn_idx := continue_button.get_index()
+		vbox.add_child(orders_strip)
+		vbox.move_child(orders_strip, btn_idx)
+
 	# Kuya's notepad — CC0 paper texture, not cool-ink HUD chrome.
 	var panel_style := StyleBoxTexture.new()
 	panel_style.texture = NOTE_PAPER
@@ -145,6 +160,8 @@ func _ensure_graphic_layout() -> void:
 	subtitle_label.add_theme_font_size_override("font_size", 20)
 	if stock_strip:
 		stock_strip.add_theme_color_override("font_color", INK_MUTED)
+	if orders_strip:
+		orders_strip.add_theme_color_override("font_color", INK_MUTED)
 
 	# Slight left bias vs dead center — like a scrap on the counter.
 	panel.offset_left = -400.0
@@ -178,24 +195,46 @@ func _style_go_home_button() -> void:
 
 func _refresh_summary() -> void:
 	_ensure_graphic_layout()
+	var stats := ScoreController.get_current_day_stats()
+
 	title_label.text = "Day %d — Notes" % PlayerStatController.current_day_number()
 	subtitle_label.text = "Tinatandaan ni Kuya. Sarado na ang stall."
 	money_label.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	money_label.add_theme_font_size_override("font_size", 48)
 	money_label.add_theme_color_override("font_color", INK_GOLD)
-	if ScoreController.today_earned > 0:
-		earned_label.add_theme_color_override("font_color", INK_OK)
-		earned_label.text = "+%s sa stall ngayon" % PlayerStatController.format_pesos(
-			ScoreController.today_earned
-		)
-		earned_label.visible = true
-	else:
+
+	_rebuild_earned_breakdown(stats)
+	_rebuild_stock_strip()
+	_rebuild_orders_strip(stats)
+	continue_button.text = "Go Home"
+	LoreFeedBar.refresh(lore_feed)
+
+
+## Show earned, deductions (e.g. no-sauce penalty), and the net total together
+## so the penalty is legible rather than folded silently into one number.
+func _rebuild_earned_breakdown(stats: Dictionary) -> void:
+	var earned: int = stats.get("earned_for_today", 0)
+	var deductions: int = stats.get("deductions", 0)
+	var total: int = stats.get("total_earned_for_today", earned - deductions)
+
+	if earned <= 0 and deductions <= 0:
 		earned_label.add_theme_color_override("font_color", INK_MUTED)
 		earned_label.text = "Walang benta ngayon. Sayang."
 		earned_label.visible = true
-	_rebuild_stock_strip()
-	continue_button.text = "Go Home"
-	LoreFeedBar.refresh(lore_feed)
+		return
+
+	var lines: PackedStringArray = PackedStringArray()
+	lines.append("+%s sa stall" % PlayerStatController.format_pesos(earned))
+	if deductions > 0:
+		lines.append("-%s (walang sauce)" % PlayerStatController.format_pesos(deductions))
+	lines.append("= %s ngayong araw" % PlayerStatController.format_pesos(total))
+
+	earned_label.text = "\n".join(lines)
+	earned_label.add_theme_color_override(
+		"font_color",
+		INK_OK if total > 0 else INK_BAD
+	)
+	earned_label.visible = true
 
 
 func _rebuild_stock_strip() -> void:
@@ -208,3 +247,22 @@ func _rebuild_stock_strip() -> void:
 	if PlayerStats.palamigUP:
 		parts.append("Palamig %d" % PlayerStats.palamigStock)
 	stock_strip.text = "Natitira: " + " · ".join(parts)
+
+
+## cancelled_orders = player pressed Pass. expired_orders = timer ran out.
+## total_earnings is cumulative run-wide net stall earnings, not wallet cash.
+func _rebuild_orders_strip(stats: Dictionary) -> void:
+	if orders_strip == null:
+		return
+	var cancelled: int = stats.get("cancelled_orders", 0)
+	var expired: int = stats.get("expired_orders", 0)
+	var total_earnings: int = stats.get("total_earnings", 0)
+
+	var parts: PackedStringArray = PackedStringArray()
+	if cancelled > 0:
+		parts.append("Pinass: %d" % cancelled)
+	if expired > 0:
+		parts.append("Nauubusan ng oras: %d" % expired)
+	parts.append("Kabuuang kita: %s" % PlayerStatController.format_pesos(total_earnings))
+
+	orders_strip.text = " · ".join(parts)

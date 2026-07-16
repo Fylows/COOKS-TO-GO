@@ -192,6 +192,7 @@ deadZone = 125
 layer = 999
 
 [node name="DayOver" parent="CanvasLayer" unique_id=451264559 instance=ExtResource("5_co4do")]
+visible = true
 
 [connection signal="pressed" from="HUD/DayHud/PauseButton" to="." method="_on_pause_button_pressed"]
 [connection signal="pressed" from="HUD/DayHud/EndDayButton" to="." method="_on_button_pressed"]
