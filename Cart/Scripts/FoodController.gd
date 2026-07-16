@@ -5,7 +5,6 @@ const BURNT_MODULATE := Color(0.28, 0.18, 0.12, 1.0)
 
 # Update the cook_state of the food_item in FoodItem.gd depending on time_elapsed/delta
 static func update_cook_state(item: FoodItem, time_elapsed: float) -> void:
-	var prev := item.cook_state
 	item.curr_cooktime += time_elapsed
 
 	if item.curr_cooktime >= item.burn_time:
@@ -16,22 +15,6 @@ static func update_cook_state(item: FoodItem, time_elapsed: float) -> void:
 		item.cook_state = FoodItem.CookState.COOKING
 	else:
 		item.cook_state = FoodItem.CookState.RAW
-
-	if item.cook_state != prev:
-		_on_cook_state_changed(prev, item.cook_state)
-
-
-static func _on_cook_state_changed(prev: FoodItem.CookState, next: FoodItem.CookState) -> void:
-	match next:
-		FoodItem.CookState.COOKING:
-			if prev == FoodItem.CookState.RAW:
-				SfxController.play_cook_start()
-		FoodItem.CookState.COOKED:
-			if prev == FoodItem.CookState.COOKING:
-				SfxController.play_cooked()
-		FoodItem.CookState.BURNT:
-			if prev != FoodItem.CookState.BURNT:
-				SfxController.play_burn()
 
 
 # Update the sprite of the food_item depending on its cook_state

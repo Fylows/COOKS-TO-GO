@@ -27,6 +27,10 @@ func _ready() -> void:
 	_setup_oil_bubbles()
 
 
+func _exit_tree() -> void:
+	SfxController.stop_pan_sizzle()
+
+
 func _setup_oil_bubbles() -> void:
 	if pan_area == null:
 		return
@@ -51,6 +55,7 @@ func add_item_in_pan(item: FoodItem) -> bool:
 		return false
 	item.location = FoodItem.Location.PAN
 	pan_items.append(item)
+	_sync_pan_sizzle()
 	return true
 
 
@@ -59,7 +64,12 @@ func take_item_in_pan(item: FoodItem) -> bool:
 		pan_is_empty.emit()
 		return false
 	pan_items.erase(item)
+	_sync_pan_sizzle()
 	return true
+
+
+func _sync_pan_sizzle() -> void:
+	SfxController.set_pan_sizzle_active(pan_items.size() > 0)
 
 
 func spawn_food_item(food: FoodItem.FoodName) -> void:
@@ -70,8 +80,11 @@ func spawn_food_item(food: FoodItem.FoodName) -> void:
 func try_spawn_food_item(food: FoodItem.FoodName) -> bool:
 	var item = FoodItem.new(food)
 	item.location = FoodItem.Location.PAN
+	var had_pan_items := pan_items.size() > 0
 	if not add_item_in_pan(item):
 		return false
+	if had_pan_items:
+		SfxController.play_cook_start()
 	var visual = food_item_scene.instantiate()
 	item.visual = visual
 	visual.data = item
@@ -117,7 +130,7 @@ func on_food_clicked(food_sprite) -> void:
 			SfxController.play_store()
 		FoodItem.CookState.BURNT:
 			take_item_in_pan(item)
-			SfxController.play_trash()
+			SfxController.play_store()
 			food_sprite.queue_free()
 
 

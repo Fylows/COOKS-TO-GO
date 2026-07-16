@@ -6,7 +6,6 @@ const SOUNDS := {
 	"hover": preload("res://Audio/SFX/select_001.ogg"),
 	"confirm": preload("res://Audio/SFX/confirmation_001.ogg"),
 	"cancel": preload("res://Audio/SFX/back_001.ogg"),
-	"fry": preload("res://Audio/SFX/cook_sizzle.ogg"),
 	"trash": preload("res://Audio/SFX/scratch_001.ogg"),
 	"store": preload("res://Audio/SFX/dropLeather.ogg"),
 	"storage": preload("res://Audio/SFX/open_001.ogg"),
@@ -14,14 +13,14 @@ const SOUNDS := {
 	"end_day": preload("res://Audio/SFX/tick_001.ogg"),
 	"coin": preload("res://Audio/SFX/handleCoins.ogg"),
 	"error": preload("res://Audio/SFX/error_001.ogg"),
-	"cooked": preload("res://Audio/SFX/cooked_ready.ogg"),
-	"burn": preload("res://Audio/SFX/food_burn.ogg"),
-	"pan_drop": preload("res://Audio/SFX/pan_drop.ogg"),
+	"cook_start": preload("res://Audio/SFX/cook_sizzle_short.mp3"),
 }
 
 const BUS_NAME := "SFX"
+const PAN_SIZZLE_STREAM := preload("res://Audio/SFX/cook_sizzle.mp3")
 
 var _player: AudioStreamPlayer
+var _pan_sizzle_player: AudioStreamPlayer
 var _cook_start_cooldown_until_ms: int = 0
 
 
@@ -33,13 +32,30 @@ func _ready() -> void:
 func _ensure_player() -> void:
 	if _player:
 		return
-	if AudioServer.get_bus_index(BUS_NAME) < 0:
-		AudioServer.add_bus()
-		AudioServer.set_bus_name(AudioServer.bus_count - 1, BUS_NAME)
+	_ensure_sfx_bus()
 	_player = AudioStreamPlayer.new()
 	_player.bus = BUS_NAME
 	_player.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_player)
+
+
+func _ensure_sfx_bus() -> void:
+	if AudioServer.get_bus_index(BUS_NAME) < 0:
+		AudioServer.add_bus()
+		AudioServer.set_bus_name(AudioServer.bus_count - 1, BUS_NAME)
+
+
+func _ensure_pan_sizzle_player() -> void:
+	if _pan_sizzle_player:
+		return
+	_ensure_sfx_bus()
+	_pan_sizzle_player = AudioStreamPlayer.new()
+	var stream := PAN_SIZZLE_STREAM.duplicate() as AudioStreamMP3
+	stream.loop = true
+	_pan_sizzle_player.stream = stream
+	_pan_sizzle_player.bus = BUS_NAME
+	_pan_sizzle_player.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(_pan_sizzle_player)
 
 
 func play(key: String) -> void:
@@ -68,11 +84,22 @@ func play_cancel_order() -> void:
 	play("cancel")
 
 
-func play_fry() -> void:
-	play("fry")
+func set_pan_sizzle_active(active: bool) -> void:
+	_ensure_pan_sizzle_player()
+	if active:
+		if not _pan_sizzle_player.playing:
+			_pan_sizzle_player.play()
+		return
+	if _pan_sizzle_player.playing:
+		_pan_sizzle_player.stop()
 
 
-## Drop skewers in the pan — oil splash (throttled when mashing).
+func stop_pan_sizzle() -> void:
+	if _pan_sizzle_player and _pan_sizzle_player.playing:
+		_pan_sizzle_player.stop()
+
+
+## Short oil sizzle when adding food to an active pan (throttled when mashing).
 func play_cook_start() -> void:
 	if not AudioSettings.sfx_enabled:
 		return
@@ -80,17 +107,7 @@ func play_cook_start() -> void:
 	if now < _cook_start_cooldown_until_ms:
 		return
 	_cook_start_cooldown_until_ms = now + 90
-	_play_one_shot("pan_drop", -8.0)
-
-
-## Skewer finished cooking — soft ready chime.
-func play_cooked() -> void:
-	_play_one_shot("cooked", -4.0)
-
-
-## Skewer burnt — short crackle.
-func play_burn() -> void:
-	_play_one_shot("burn", -3.0)
+	_play_one_shot("cook_start", -8.0)
 
 
 func play_trash() -> void:
@@ -127,7 +144,6 @@ func play_morning_rush() -> void:
 	_play_one_shot("storage", -4.0)
 	_stagger_one_shot("coin", 0.06, -6.0)
 	_stagger_one_shot("confirm", 0.12, -8.0)
-	_stagger_one_shot("fry", 0.18, -10.0)
 
 
 func _play_one_shot(key: String, volume_db: float = 0.0) -> void:
