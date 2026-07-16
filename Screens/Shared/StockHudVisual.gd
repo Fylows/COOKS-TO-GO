@@ -173,10 +173,10 @@ static func _add_caption_chip(row: HBoxContainer, text: String) -> void:
 	var label := Label.new()
 	label.text = text
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 12)
 	label.add_theme_color_override("font_color", MUTED_COLOR)
+	PixelText.caption(label)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.custom_minimum_size = Vector2(44, ICON_PX)
+	label.custom_minimum_size = Vector2(56, ICON_PX)
 	row.add_child(label)
 
 
@@ -205,16 +205,16 @@ static func _add_chip(
 		var name_label := Label.new()
 		name_label.text = fallback_name
 		name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		name_label.add_theme_font_size_override("font_size", 12)
 		name_label.add_theme_color_override("font_color", MUTED_COLOR)
+		PixelText.caption(name_label)
 		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		chip.add_child(name_label)
 
 	var label := Label.new()
 	label.text = count_text
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 16)
 	label.add_theme_color_override("font_color", ZERO_COLOR if is_zero else COUNT_COLOR)
+	PixelText.body(label)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	chip.add_child(label)
 

@@ -40,24 +40,24 @@ static func ensure(parent: Node, node_name: String = "MoneyHud") -> Dictionary:
 	var balance_caption := Label.new()
 	balance_caption.text = "Wallet"
 	balance_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	balance_caption.add_theme_font_size_override("font_size", 12)
 	balance_caption.add_theme_color_override("font_color", Color(0.72, 0.78, 0.9))
+	PixelText.caption(balance_caption)
 	balance_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(balance_caption)
 
 	var balance_label := Label.new()
 	balance_label.name = "BalanceLabel"
 	balance_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	balance_label.add_theme_font_size_override("font_size", 28)
 	balance_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.45))
+	PixelText.apply(balance_label, PixelText.SIZE_HERO, PixelText.OUTLINE_BODY)
 	balance_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(balance_label)
 
 	var earned_label := Label.new()
 	earned_label.name = "EarnedLabel"
 	earned_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	earned_label.add_theme_font_size_override("font_size", 16)
 	earned_label.add_theme_color_override("font_color", Color(0.45, 0.92, 0.55))
+	PixelText.body(earned_label)
 	earned_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(earned_label)
 

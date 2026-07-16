@@ -1,5 +1,6 @@
 Music loops by Kenney (www.kenney.nl), CC0 1.0.
 Downloaded from Kenney's Sound Pack / Music Loops.
+See also root CREDITS.md.
 
 title.ogg     — Swinging Pants
 eod.ogg       — Night at the Beach

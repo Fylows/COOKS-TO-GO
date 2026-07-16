@@ -1,0 +1,5 @@
+day_over_note_paper.png
+Base: ambientCG Paper001 (https://ambientcg.com/view?id=Paper001)
+License: CC0 1.0
+Processed for COOKS-TO-GO Day Over "kuya notes" notepad (warm grade, fiber, ruled lines, margin).
+See also root CREDITS.md.

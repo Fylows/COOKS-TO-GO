@@ -48,8 +48,8 @@ static func ensure(parent: Node, node_name: String = "LoreFeed") -> Label:
 	var title := Label.new()
 	title.text = "Barangay"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	title.add_theme_font_size_override("font_size", 13)
 	title.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
+	PixelText.caption(title)
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(title)
 
@@ -115,7 +115,7 @@ static func apply_eod_side_layout(panel: Control) -> void:
 
 
 static func _style_feed(body: Label) -> void:
-	body.add_theme_font_size_override("font_size", 17)
+	PixelText.body(body)
 	body.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
 	body.add_theme_constant_override("line_spacing", 4)
 	body.clip_text = false

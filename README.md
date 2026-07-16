@@ -138,9 +138,10 @@ Unpaid rent three nights in a row → homelessness (higher sickness risk). Skipp
 - **Pause / Play** — freezes the timer and order countdowns.
 - **End Day** — end early and open the day-over screen.
 - **Order cards** — up to five at once; green/yellow/red bar is time left.
-  - **Serve** — sells if you have stock (₱5 per item for fishball/kwek-kwek/kikiam).
+  - **Serve** — sells if you have cooked tray stock (₱5 per item for fishball/kwek-kwek/kikiam).
   - **Pass** — dismiss the order.
   - **Palamig-only orders** — opens the pour minigame (₱30 per cup served).
+- **Pan** — drop skewers from the side buttons; cook / burn bars; oil-bubble VFX while frying; click cooked into the ready tray, burnt into the trash.
 - **Money popups** — `+/- ₱` floats below the card; no running total during play.
 - **Barangay Feed** — Taglish chismis strip that reacts to your run.
 
@@ -198,6 +199,7 @@ flowchart TB
 
 ```
 Audio/           BgmController, SfxController, music & SFX
+Cart/            Cooking, oil bubbles, food buttons
 Orders/          Order cards, spawning, Serve/Pass
 Palamig/         Pour minigame
 Player/          Stats, family state, loan, Sbatter, endings, lore
@@ -208,17 +210,32 @@ Screens/
   Day Over/      End-of-day summary
 tests/e2e_flow.gd Headless smoke test
 docs/pr-screenshots/  README captures
+CREDITS.md       Team + third-party attributions
 ```
 
-## Audio credits
+## Credits
 
-- Music: Kenney (CC0) — `Audio/Music/`
-- UI SFX: Kenney Interface Sounds (CC0) — `Audio/SFX/`
-- Palamig SFX: local wav assets under `Palamig/Assets/SFX/`
+Full attributions: [`CREDITS.md`](CREDITS.md). Sidecar notes sit next to the assets.
+
+**Team:** Jiro, Yel, Goonard (game) · Isha, Bam (sprites) · Jo, Carlos, Nat (story)
+
+**Third-party (short):**
+
+| What | Who | License |
+|------|-----|---------|
+| Music | Kenney | CC0 |
+| UI / stall SFX | Kenney Interface Sounds + RPG Audio | CC0 |
+| Cook / fry SFX | Mixkit | Mixkit free SFX (attribution optional) |
+| Oil bubble particles | Kenney Particle Pack | CC0 |
+| Cursors | Kenney Cursor Pack | CC0 |
+| Menu burger icon | Original (project) | CC0 |
+| Day Over paper | ambientCG Paper001 | CC0 |
+| Dialogue | Dialogic | MIT |
+
+In-game **Credits** on the title screen lists the same team + a short asset blurb.
 
 ## Known gaps (jam scope)
 
-- Frying, trash, and storage actions have SFX hooks but no stall gameplay.
 - Customer voice lines are not implemented.
 
 ## Endings
@@ -233,4 +250,4 @@ Pre-day weather (ulan / hot rush / ordinary) changes order spawn rate, patience,
 
 ## License
 
-Game jam project. Check asset folders for third-party art/audio terms.
+Game jam project. Third-party terms are in [`CREDITS.md`](CREDITS.md) and the `*_CREDITS.txt` files next to each asset pack. Engine and Dialogic are MIT.

@@ -23,6 +23,7 @@ var order_slots: Array[Control] = []
 var removing_order_ids: Dictionary = {}
 var _spawning: bool = false
 var _spawn_days: int = 0
+var _spawn_generation: int = 0
 var _orders_paused: bool = false
 
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
@@ -74,8 +75,11 @@ func get_order_lifetime_seconds(days_passed: int) -> float:
 	var lifetime: float = ORDER_START_LIFETIME_SECONDS - (decrease_steps * ORDER_LIFETIME_DECREASE)
 	return maxf(lifetime, ORDER_MIN_LIFETIME_SECONDS)
 		
-## Create orders based on unlock food items with scaling quantity based on days
-func create_order(days_passed: int) -> Order:
+## Create orders based on unlock food items with scaling quantity based on days.
+## `force` bypasses spawn/pause guards for tests/tools.
+func create_order(days_passed: int, force: bool = false) -> Order:
+	if not force and (not _spawning or _orders_paused):
+		return null
 	var order_slot: Control = get_first_empty_order_slot()
 	if order_slot == null:
 		push_warning("Cannot create order: all order slots are full.")
@@ -254,16 +258,35 @@ func get_spawn_interval_seconds(days_passed: int) -> float:
 
 func start_order_spawning(days_passed: int) -> void:
 	_spawn_days = days_passed
-	if _spawning:
-		return
+	# Bump generation so any prior async _spawn_loop exits even if _spawning was true.
+	_spawn_generation += 1
+	var generation := _spawn_generation
 	_spawning = true
-	_spawn_loop()
+	_spawn_loop(generation)
 
 
 func stop_order_spawning() -> void:
 	_spawning = false
+	_spawn_generation += 1
 
 
+## Tear down every live order card. Call from day-end — don't rely on Day Over covering them.
+func clear_orders() -> void:
+	stop_order_spawning()
+	setup_order_slots()
+	for slot: Control in order_slots:
+		var kids: Array[Node] = slot.get_children()
+		for child in kids:
+			if child is Order:
+				var order := child as Order
+				order.stop_countdown()
+				order.set_interactable(false)
+			slot.remove_child(child)
+			child.queue_free()
+	removing_order_ids.clear()
+
+
+## Prefer GameScreen.pause_day() / resume_day() — keep pause entry points centralized there.
 func set_orders_paused(paused: bool) -> void:
 	_orders_paused = paused
 	for slot: Control in order_slots:
@@ -272,18 +295,18 @@ func set_orders_paused(paused: bool) -> void:
 				child.set_countdown_paused(paused)
 
 
-func _spawn_loop() -> void:
-	while _spawning:
-		while _spawning and _orders_paused:
+func _spawn_loop(generation: int) -> void:
+	while _spawning and generation == _spawn_generation:
+		while _spawning and generation == _spawn_generation and _orders_paused:
 			await get_tree().create_timer(0.2).timeout
-		if not _spawning:
+		if not _spawning or generation != _spawn_generation:
 			break
 		if create_order(_spawn_days) == null:
 			await get_tree().create_timer(0.5).timeout
 			continue
 		var wait_seconds: float = get_spawn_interval_seconds(_spawn_days)
 		var waited := 0.0
-		while _spawning and waited < wait_seconds:
+		while _spawning and generation == _spawn_generation and waited < wait_seconds:
 			if _orders_paused:
 				await get_tree().create_timer(0.2).timeout
 				continue

@@ -108,8 +108,8 @@ func _caption_action_button(btn: TextureButton, caption: String) -> void:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.add_theme_font_size_override("font_size", 11)
 	label.add_theme_color_override("font_color", Color(0.08, 0.06, 0.04, 1))
+	PixelText.caption(label)
 	label.add_theme_color_override("font_outline_color", Color(1, 1, 1, 0.85))
 	label.add_theme_constant_override("outline_size", 3)
 	col.add_child(label)

@@ -4,6 +4,7 @@ const PALAMIG_SCENE := preload("res://Palamig/Scenes/palamig_minigame.tscn")
 const LoreFeedBar := preload("res://Screens/Shared/LoreFeedBar.gd")
 const MoneyHud := preload("res://Screens/Shared/MoneyHud.gd")
 const StockHudVisual := preload("res://Screens/Shared/StockHudVisual.gd")
+const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
 const PALAMIG_LOCKED_TEX := preload("res://Screens/Assets/palamig_cooler_locked.png")
 const DAY_DURATION_SECONDS := 120.0
 ## Texture-space top-left of the locked cooler crop on cart_main.PNG.
@@ -35,6 +36,9 @@ var money_hud_panel: PanelContainer
 var weather_banner: PanelContainer
 var weather_banner_label: Label
 var _weather_banner_tween: Tween
+var _cook_coach: PanelContainer
+var _cook_coach_label: Label
+var _cook_hint_active: bool = false
 
 
 func _ready() -> void:
@@ -60,6 +64,7 @@ func _ready() -> void:
 	start_day()
 	await _play_day_start_intro()
 	_flash_weather_banner()
+	_setup_cook_coach()
 
 
 func _layout_stall_hud(lore_panel: Control) -> void:
@@ -90,10 +95,10 @@ func _style_stall_chrome() -> void:
 func _style_day_bar() -> void:
 	var day_hud := $HUD/DayHud as HBoxContainer
 	day_hud.add_theme_constant_override("separation", 12)
-	day_label.add_theme_font_size_override("font_size", 20)
 	day_label.add_theme_color_override("font_color", Color(0.78, 0.86, 0.98))
-	day_timer_label.add_theme_font_size_override("font_size", 32)
+	PixelText.body(day_label)
 	day_timer_label.add_theme_color_override("font_color", Color(0.98, 0.96, 0.9))
+	PixelText.apply(day_timer_label, PixelText.SIZE_HERO, PixelText.OUTLINE_BODY)
 	for btn in [pause_button, end_day_button, $HUD/DayHud/RestartButton]:
 		if btn is Button:
 			_style_day_bar_button(btn as Button)
@@ -102,7 +107,7 @@ func _style_day_bar() -> void:
 func _style_day_bar_button(button: Button) -> void:
 	button.focus_mode = Control.FOCUS_NONE
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	button.add_theme_font_size_override("font_size", 16)
+	PixelText.button(button, 18)
 	button.add_theme_color_override("font_color", Color(0.92, 0.95, 1.0))
 	button.add_theme_color_override("font_hover_color", Color(1.0, 0.94, 0.72))
 	var normal := StyleBoxFlat.new()
@@ -131,14 +136,10 @@ func _style_stock_strip() -> void:
 	stock.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	stock.offset_left = 24.0
 	stock.offset_top = 62.0
-	stock.offset_right = 620.0
-	stock.offset_bottom = 180.0
+	stock.offset_right = 640.0
+	# Tall enough for Ready + Raw + Extra rows (was overlapping orders at 180).
+	stock.offset_bottom = 250.0
 	stock.z_index = 20
-	# Orders sit under the stock strip so they don't collide.
-	var orders := $HUD/OrderContainer as Control
-	if orders:
-		orders.offset_top = 188.0
-		orders.offset_bottom = 428.0
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.04, 0.06, 0.1, 0.9)
 	style.border_color = Color(0.48, 0.62, 0.82, 0.85)
@@ -152,8 +153,8 @@ func _style_stock_strip() -> void:
 	if title:
 		title.text = "Stock"
 		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		title.add_theme_font_size_override("font_size", 13)
 		title.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
+		PixelText.caption(title)
 	if stock_label:
 		stock_label.visible = false
 		stock_label.text = ""
@@ -161,6 +162,17 @@ func _style_stock_strip() -> void:
 	if vbox:
 		vbox.add_theme_constant_override("separation", 4)
 		StockHudVisual.ensure_layout(vbox)
+	_layout_orders_under_stock()
+
+
+func _layout_orders_under_stock() -> void:
+	var stock := $HUD/StockHud as Control
+	var orders := $HUD/OrderContainer as Control
+	if stock == null or orders == null:
+		return
+	var top := stock.offset_bottom + 12.0
+	orders.offset_top = top
+	orders.offset_bottom = top + 240.0
 
 
 func _play_day_start_intro() -> void:
@@ -206,6 +218,64 @@ func _play_day_start_intro() -> void:
 			node.modulate.a = 1.0
 	$CartMain.modulate.a = 1.0
 	$CartMain.scale = Vector2(1.2, 1.2)
+
+
+func _setup_cook_coach() -> void:
+	# Teach the side skewers once early — icons alone read as decoration.
+	if PlayerStatController.current_day_number() > 2:
+		return
+	if $HUD.get_node_or_null("CookCoach") != null:
+		return
+	_cook_coach = PanelContainer.new()
+	_cook_coach.name = "CookCoach"
+	_cook_coach.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	_cook_coach.offset_left = 24.0
+	_cook_coach.offset_right = 520.0
+	_cook_coach.offset_top = -120.0
+	_cook_coach.offset_bottom = -24.0
+	_cook_coach.z_index = 40
+	_cook_coach.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.08, 0.14, 1.0)
+	style.border_color = Color(1.0, 0.86, 0.42, 0.95)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(14)
+	_cook_coach.add_theme_stylebox_override("panel", style)
+	_cook_coach_label = Label.new()
+	_cook_coach_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_cook_coach_label.text = "Tap Fishball / Kwek-Kwek on the left to cook. Drop them in the pan."
+	_cook_coach_label.add_theme_color_override("font_color", Color(0.96, 0.97, 1.0))
+	PixelText.body(_cook_coach_label)
+	_cook_coach_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cook_coach.add_child(_cook_coach_label)
+	$HUD.add_child(_cook_coach)
+	_cook_hint_active = true
+	for btn in _side_food_buttons():
+		btn.start_cook_pulse()
+	UiMotion.pop_in(self, _cook_coach)
+
+
+func _side_food_buttons() -> Array:
+	var out: Array = []
+	var cart := $CartMain
+	if cart == null:
+		return out
+	for child in cart.get_children():
+		if child.has_method("start_cook_pulse") and child.visible:
+			out.append(child)
+	return out
+
+
+func on_side_food_cooked() -> void:
+	if not _cook_hint_active:
+		return
+	_cook_hint_active = false
+	for btn in _side_food_buttons():
+		btn.stop_cook_pulse()
+	if _cook_coach:
+		UiMotion.fade_out_then_hide(self, _cook_coach)
+
 
 func _exit_tree() -> void:
 	# Day Over arms a fade-in for EOD; don't wipe it when leaving the stall.
@@ -266,6 +336,7 @@ func start_day() -> void:
 	_update_stock_label()
 	pause_button.text = "Pause"
 	_set_pause_ui(false)
+	# Sole unpause entry for orders during an active day (paired with pause_day).
 	order_controller.set_orders_paused(false)
 	order_controller.start_order_spawning(PlayerStats.daysPassed)
 
@@ -274,7 +345,8 @@ func end_day() -> void:
 	if not _day_active:
 		return
 	_day_active = false
-	order_controller.stop_order_spawning()
+	# Stop spawns and remove live cards before Day Over covers the HUD.
+	order_controller.clear_orders()
 	order_controller.set_orders_paused(true)
 	_close_palamig_if_open()
 	SfxController.play_end_of_day()
@@ -459,14 +531,16 @@ func _update_day_label() -> void:
 func _setup_weather_banner() -> void:
 	weather_banner = PanelContainer.new()
 	weather_banner.name = "WeatherBanner"
+	# Center-top with fixed width — avoid scale/pivot shooting the panel off-screen.
 	weather_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	weather_banner.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	weather_banner.grow_vertical = Control.GROW_DIRECTION_END
-	weather_banner.custom_minimum_size = Vector2(720, 0)
-	weather_banner.offset_left = -360.0
-	weather_banner.offset_right = 360.0
+	weather_banner.custom_minimum_size = Vector2(640, 0)
+	weather_banner.offset_left = -320.0
+	weather_banner.offset_right = 320.0
 	weather_banner.offset_top = 56.0
 	weather_banner.offset_bottom = 56.0
+	weather_banner.clip_contents = true
 	weather_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	weather_banner.z_index = 30
 	var style := StyleBoxFlat.new()
@@ -498,10 +572,10 @@ func _setup_weather_banner() -> void:
 	weather_banner_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	weather_banner_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	weather_banner_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	weather_banner_label.add_theme_font_size_override("font_size", 24)
 	weather_banner_label.add_theme_color_override("font_color", Color(0.98, 0.97, 0.94))
+	PixelText.title(weather_banner_label)
 	if has_app:
-		weather_banner_label.text = PlayerStatController.stall_weather_line()
+		weather_banner_label.text = "Weather App\n%s" % PlayerStatController.stall_weather_line()
 	else:
 		weather_banner_label.text = PlayerStatController.weather_app_upsell_line()
 	weather_banner.add_child(weather_banner_label)
@@ -511,14 +585,15 @@ func _setup_weather_banner() -> void:
 
 
 func _setup_weather_chip() -> void:
-	# Top-right under wallet: forecast if owned, else buy prompt.
+	# Top-right under wallet: short forecast if owned, else buy prompt.
 	var chip := PanelContainer.new()
 	chip.name = "WeatherChip"
 	chip.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	chip.offset_left = -300.0
+	chip.offset_left = -280.0
 	chip.offset_top = 132.0
 	chip.offset_right = -24.0
-	chip.offset_bottom = 180.0
+	chip.offset_bottom = 188.0
+	chip.clip_contents = true
 	chip.z_index = 35
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.05, 0.07, 0.12, 0.94)
@@ -530,11 +605,12 @@ func _setup_weather_chip() -> void:
 	var label := Label.new()
 	label.name = "ChipLabel"
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.add_theme_font_size_override("font_size", 14)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.add_theme_color_override("font_color", Color(0.9, 0.94, 1.0))
+	PixelText.caption(label)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if PlayerStats.boughtSubscription:
-		label.text = "Weather · %s" % PlayerStatController.weather_title()
+		label.text = "Weather App · %s" % PlayerStatController.weather_title()
 		chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	else:
 		label.text = "Buy Weather App"
@@ -558,22 +634,21 @@ func _flash_weather_banner() -> void:
 		return
 	if _weather_banner_tween and _weather_banner_tween.is_valid():
 		_weather_banner_tween.kill()
-	weather_banner.reset_size()
-	var half_w := maxf(weather_banner.size.x, 720.0) * 0.5
-	weather_banner.offset_left = -half_w
-	weather_banner.offset_right = half_w
-	weather_banner.pivot_offset = weather_banner.size * 0.5
+	# Keep centered; fade only — scale+bad pivot was shoving this off the right edge.
+	weather_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	weather_banner.offset_left = -320.0
+	weather_banner.offset_right = 320.0
+	weather_banner.offset_top = 56.0
+	weather_banner.scale = Vector2.ONE
+	weather_banner.pivot_offset = Vector2.ZERO
 	weather_banner.modulate.a = 0.0
-	weather_banner.scale = Vector2(0.92, 0.92)
 	_weather_banner_tween = create_tween()
 	_weather_banner_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	_weather_banner_tween.set_parallel(true)
-	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 1.0, 0.25)
-	_weather_banner_tween.tween_property(weather_banner, "scale", Vector2.ONE, 0.28)\
+	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 1.0, 0.25)\
 		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	_weather_banner_tween.set_parallel(false)
 	_weather_banner_tween.tween_interval(3.5)
-	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 0.0, 0.4)
+	_weather_banner_tween.tween_property(weather_banner, "modulate:a", 0.0, 0.4)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 
 func hold_weather_banner() -> void:
@@ -581,6 +656,11 @@ func hold_weather_banner() -> void:
 		return
 	if _weather_banner_tween and _weather_banner_tween.is_valid():
 		_weather_banner_tween.kill()
+	weather_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	weather_banner.offset_left = -320.0
+	weather_banner.offset_right = 320.0
+	weather_banner.offset_top = 56.0
+	weather_banner.scale = Vector2.ONE
 	weather_banner.modulate.a = 1.0
 
 
@@ -591,6 +671,7 @@ func _update_stock_label() -> void:
 		StockHudVisual.refresh_stall(vbox, cooking)
 	elif stock_label:
 		stock_label.text = PlayerStatController.format_stall_stock(cooking)
+	_layout_orders_under_stock()
 
 
 func _setup_money_hud() -> void:

@@ -1,5 +1,6 @@
 Cursors from Kenney.nl "Cursor Pack" (CC0 1.0)
 https://opengameart.org/content/cursor-pack-1
+See also root CREDITS.md.
 
 Files used:
 - pointer_b.png -> cursor_arrow.png

@@ -1,0 +1,13 @@
+Oil / fry bubble textures from Kenney.nl "Particle Pack" (CC0 1.0)
+https://kenney.nl/assets/particle-pack
+https://opengameart.org/content/particle-pack-80-sprites
+See also root CREDITS.md.
+
+Files used (resized 512→128, converted to RGBA):
+- circle_05.png → oil_bubble_ring.png
+- circle_01.png → oil_bubble_soft.png
+- circle_02.png → oil_bubble_mid.png
+- smoke_03.png → oil_steam.png
+
+License: CC0 1.0 Universal (public domain)
+Credit to Kenney.nl appreciated but not required.

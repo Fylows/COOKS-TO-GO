@@ -51,7 +51,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="UI/Center"]
-custom_minimum_size = Vector2(720, 0)
+custom_minimum_size = Vector2(760, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("1_panel")
 
@@ -100,6 +100,14 @@ theme_override_colors/font_color = Color(0.92, 0.9, 0.84, 1)
 theme_override_font_sizes/font_size = 22
 text = "Jo, Carlos and Nat: story"
 horizontal_alignment = 1
+
+[node name="Assets" type="Label" parent="UI/Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.76, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "Assets — see CREDITS.md"
+horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="BackButton" type="Button" parent="UI/Center/Panel/Margin/VBox"]
 layout_mode = 2

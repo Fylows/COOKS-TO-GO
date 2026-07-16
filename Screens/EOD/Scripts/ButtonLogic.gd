@@ -31,7 +31,7 @@ const PHONE_FONT_BALANCE := 44
 const PHONE_FONT_WARNING := 20
 const PHONE_FONT_SHOP := 20
 const PHONE_FONT_PRICE := 18
-const PHONE_FONT_BTN := 17
+const PHONE_FONT_BTN := 18
 const PHONE_FONT_TAB := 22
 
 @export var parallax_strength: float = 1.5  # >1 = moves more than camera (feels closer)
@@ -39,6 +39,7 @@ const PHONE_FONT_TAB := 22
 
 var camera: Camera2D
 var base_position: Vector2
+var _app_grid_top: float = PHONE_TABS_Y
 
 @onready var upgrades : CanvasGroup = $UpgradesGroup
 @onready var resources : CanvasGroup = $ResourceGroup
@@ -67,9 +68,14 @@ var stock_hud: PanelContainer
 var stock_hud_label: Label
 var stock_hud_vbox: VBoxContainer
 var restart_button: Button
+var session_menu_root: Control
+var session_menu_panel: PanelContainer
+var session_menu_toggle: Button
+var _session_menu_open: bool = false
 var lore_feed: Label
-var briefing_panel: PanelContainer
-var briefing_label: Label
+var briefing_stack: VBoxContainer
+var _briefing_pending: PackedStringArray = PackedStringArray()
+var _briefing_fingerprint: String = ""
 var must_pay_strip: PanelContainer
 var must_pay_label: Label
 var tutorial_panel: PanelContainer
@@ -458,6 +464,14 @@ const RESOURCE_PRICE: Dictionary = {
 
 const STOCK_AMOUNT = 10
 
+const STOCK_FEEDBACK_NAMES := {
+	"fishballStock": "Fishball",
+	"kwekwekStock": "Kwek-Kwek",
+	"kikiamStock": "Kikiam",
+	"palamigStock": "Palamig",
+	"sauce": "Sauce",
+}
+
 
 func _resource_cost(key: String) -> int:
 	return PlayerStatController.resource_cost(RESOURCE_PRICE[key])
@@ -475,37 +489,91 @@ func _misc_cost(key: String) -> int:
 	return PlayerStatController.resource_cost(PlayerStats.miscPrice[key])
 
 
-func buyResource(price : int, stock_var: String) -> void:
+func buyResource(price: int, stock_var: String, near: Control = null) -> bool:
 	if not PlayerStats.paidTindahanApp:
-		return
+		SfxController.play_error()
+		return false
 	if PlayerStats.playerMoney < price:
-		return
+		SfxController.play_error()
+		return false
 	PlayerStatController.subtractMoney(price)
-	if (stock_var == "sauce"): 
+	if stock_var == "sauce":
 		PlayerStats.boughtSauce = true
 		_on_tutorial_stock_bought()
-		return
+		_flash_stock_purchase_feedback(near, "Sauce ok!")
+		SfxController.play_store()
+		return true
 	PlayerStats.set(stock_var, PlayerStats.get(stock_var) + STOCK_AMOUNT)
 	_on_tutorial_stock_bought()
+	var item_name: String = str(STOCK_FEEDBACK_NAMES.get(stock_var, "Stock"))
+	_flash_stock_purchase_feedback(near, "+%d %s" % [STOCK_AMOUNT, item_name])
+	SfxController.play_store()
+	return true
+
+
+func _flash_stock_purchase_feedback(near: Control, text: String) -> void:
+	var canvas: CanvasLayer = $"../Canvas"
+	if canvas == null:
+		return
+	var label := Label.new()
+	label.text = text
+	label.z_index = 100
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_color_override("font_color", Color(0.2, 0.72, 0.32))
+	label.add_theme_color_override("font_outline_color", Color(0.05, 0.08, 0.06, 0.95))
+	label.add_theme_constant_override("outline_size", 5)
+	label.add_theme_font_size_override("font_size", 28)
+	canvas.add_child(label)
+
+	var start := get_viewport().get_mouse_position() + Vector2(-40, -28)
+	if near != null and is_instance_valid(near):
+		var rect := near.get_global_rect()
+		start = rect.position + Vector2(rect.size.x * 0.5 - 60.0, -8.0)
+	label.global_position = start
+	label.modulate.a = 1.0
+	label.scale = Vector2(0.92, 0.92)
+	label.pivot_offset = Vector2(60, 16)
+
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "global_position:y", start.y - 56.0, 0.85)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "scale", Vector2.ONE, 0.12)\
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "modulate:a", 0.0, 0.85).set_delay(0.2)
+	tween.chain().tween_callback(label.queue_free)
 
 
 func _on_buy_fishball_pressed() -> void:
-	buyResource(_resource_cost("fishball"), "fishballStock")
+	buyResource(
+		_resource_cost("fishball"),
+		"fishballStock",
+		_shop_btn($ResourceGroup/VBoxContainer/Fishball),
+	)
 
 
 func _on_buy_kikiam_pressed() -> void:
 	if not PlayerStats.kikiamPurchasable:
 		return
-	buyResource(_resource_cost("kikiam"), "kikiamStock")
+	buyResource(
+		_resource_cost("kikiam"),
+		"kikiamStock",
+		_shop_btn($ResourceGroup/VBoxContainer/Kikiam),
+	)
 
 
 func _on_buy_sauce_pressed() -> void:
-	if (PlayerStats.boughtSauce):
+	if PlayerStats.boughtSauce:
 		return
-	buyResource(_resource_cost("sauce"), "sauce")
-	var sauce_btn := _shop_btn($ResourceGroup/VBoxContainer/Sauce)
-	if sauce_btn:
-		sauce_btn.text = "bought"
+	if buyResource(
+		_resource_cost("sauce"),
+		"sauce",
+		_shop_btn($ResourceGroup/VBoxContainer/Sauce),
+	):
+		var sauce_btn := _shop_btn($ResourceGroup/VBoxContainer/Sauce)
+		if sauce_btn:
+			sauce_btn.text = "bought"
+
 
 func _on_buy_palamig_pressed() -> void:
 	if not PlayerStats.palamigUP:
@@ -517,11 +585,20 @@ func _on_buy_palamig_pressed() -> void:
 	if PlayerStats.playerMoney < _resource_cost("palamig"):
 		SfxController.play_error()
 		return
-	buyResource(_resource_cost("palamig"), "palamigStock")
+	buyResource(
+		_resource_cost("palamig"),
+		"palamigStock",
+		_shop_btn($ResourceGroup/VBoxContainer/Palamig),
+	)
 	_refresh_resource_buy_buttons()
 
+
 func _on_buys_kwek_2_pressed() -> void:
-	buyResource(_resource_cost("kwek2"), "kwekwekStock")
+	buyResource(
+		_resource_cost("kwek2"),
+		"kwekwekStock",
+		_shop_btn($ResourceGroup/VBoxContainer/Kwek2),
+	)
 
 # TINDAHAN APP SUBSCRIPTION
 
@@ -812,7 +889,8 @@ func _missing_stall_stock_names() -> PackedStringArray:
 		missing.append("Fishball")
 	if PlayerStats.kwekwekStock <= 0:
 		missing.append("Kwek-Kwek")
-	if PlayerStats.daysPassed >= 2 and PlayerStats.kikiamStock <= 0:
+	# Unlock matches shop + orders (daysPassed >= 2 after Day 2 overnight).
+	if (PlayerStats.kikiamPurchasable or PlayerStats.daysPassed >= 2) and PlayerStats.kikiamStock <= 0:
 		missing.append("Kikiam")
 	if PlayerStats.palamigUP and PlayerStats.palamigStock <= 0:
 		missing.append("Palamig")
@@ -820,32 +898,146 @@ func _missing_stall_stock_names() -> PackedStringArray:
 
 
 func _confirm_start_without_stock(missing: PackedStringArray) -> void:
-	var dialog := AcceptDialog.new()
-	dialog.title = "Walang stock"
-	dialog.dialog_text = (
-		"Wala kang %s.\nSigurado ka bang magbubukas nang ganito?"
-		% " / ".join(missing)
-	)
-	dialog.ok_button_text = "Open stall"
-	dialog.add_cancel_button("Bumalik")
-	dialog.process_mode = Node.PROCESS_MODE_ALWAYS
 	var canvas: CanvasLayer = $"../Canvas"
-	canvas.add_child(dialog)
-	dialog.confirmed.connect(func() -> void:
-		dialog.queue_free()
-		_begin_stall_day()
-	)
-	dialog.canceled.connect(func() -> void:
-		dialog.queue_free()
+	if canvas.get_node_or_null("MissingStockConfirm") != null:
+		return
+
+	var root := Control.new()
+	root.name = "MissingStockConfirm"
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.process_mode = Node.PROCESS_MODE_ALWAYS
+	canvas.add_child(root)
+
+	var dim := ColorRect.new()
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0.06, 0.05, 0.08, 0.72)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.add_child(dim)
+
+	var panel := PanelContainer.new()
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	panel.custom_minimum_size = Vector2(440, 0)
+	panel.offset_left = -220.0
+	panel.offset_right = 220.0
+	panel.offset_top = 0.0
+	panel.offset_bottom = 0.0
+	# Shrink-wrap vertically around the list + buttons.
+	panel.reset_size()
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.1, 0.12, 0.18, 0.98)
+	panel_style.border_color = Color(0.55, 0.68, 0.88, 0.95)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(4)
+	panel_style.set_content_margin_all(20)
+	panel.add_theme_stylebox_override("panel", panel_style)
+	root.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 14)
+	panel.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "Walang stock"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_color", Color(0.98, 0.94, 0.82))
+	PixelText.title(title)
+	vbox.add_child(title)
+
+	var intro := Label.new()
+	intro.text = "Wala ka pa nito:"
+	intro.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	intro.add_theme_color_override("font_color", Color(0.82, 0.88, 0.98))
+	PixelText.body(intro)
+	vbox.add_child(intro)
+
+	var list := VBoxContainer.new()
+	list.add_theme_constant_override("separation", 6)
+	vbox.add_child(list)
+	for name in missing:
+		var row := Label.new()
+		row.text = "•  %s" % name
+		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		row.add_theme_color_override("font_color", Color(1.0, 0.78, 0.62))
+		PixelText.body(row)
+		list.add_child(row)
+
+	var ask := Label.new()
+	ask.text = "Sigurado ka bang magbubukas nang ganito?"
+	ask.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ask.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	ask.add_theme_color_override("font_color", Color(0.88, 0.9, 0.96))
+	PixelText.caption(ask)
+	vbox.add_child(ask)
+
+	var buttons := HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons.add_theme_constant_override("separation", 16)
+	vbox.add_child(buttons)
+
+	var back_btn := Button.new()
+	back_btn.text = "← Bumalik"
+	back_btn.custom_minimum_size = Vector2(150, 40)
+	back_btn.focus_mode = Control.FOCUS_NONE
+	_style_confirm_button(back_btn, false)
+	buttons.add_child(back_btn)
+
+	var open_btn := Button.new()
+	open_btn.text = "Open stall"
+	open_btn.custom_minimum_size = Vector2(150, 40)
+	open_btn.focus_mode = Control.FOCUS_NONE
+	_style_confirm_button(open_btn, true)
+	buttons.add_child(open_btn)
+
+	var close_confirm := func() -> void:
+		if is_instance_valid(root):
+			root.queue_free()
+
+	back_btn.pressed.connect(func() -> void:
 		SfxController.play_click()
+		close_confirm.call()
 		showOpt("resources")
 	)
-	dialog.close_requested.connect(func() -> void:
-		if is_instance_valid(dialog):
-			dialog.queue_free()
+	open_btn.pressed.connect(func() -> void:
+		SfxController.play_click()
+		close_confirm.call()
+		_begin_stall_day()
 	)
-	dialog.popup_centered()
+	dim.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			SfxController.play_click()
+			close_confirm.call()
+			showOpt("resources")
+	)
 	SfxController.play_hover()
+
+
+func _style_confirm_button(button: Button, primary: bool) -> void:
+	PixelText.button(button, 18)
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var normal := StyleBoxFlat.new()
+	if primary:
+		normal.bg_color = Color(0.18, 0.42, 0.32, 1.0)
+		normal.border_color = Color(0.55, 0.9, 0.65, 1.0)
+		button.add_theme_color_override("font_color", Color(0.95, 1.0, 0.95))
+	else:
+		normal.bg_color = Color(0.14, 0.16, 0.22, 1.0)
+		normal.border_color = Color(0.48, 0.58, 0.72, 0.95)
+		button.add_theme_color_override("font_color", Color(0.9, 0.93, 1.0))
+	normal.set_border_width_all(2)
+	normal.set_corner_radius_all(4)
+	normal.set_content_margin_all(10)
+	normal.content_margin_left = 16
+	normal.content_margin_right = 16
+	var hover := normal.duplicate() as StyleBoxFlat
+	hover.bg_color = normal.bg_color.lightened(0.12)
+	var pressed := normal.duplicate() as StyleBoxFlat
+	pressed.bg_color = normal.bg_color.darkened(0.1)
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
 
 
 func _begin_stall_day() -> void:
@@ -971,8 +1163,31 @@ func _ensure_split_menu_buttons() -> void:
 		var btn := grid.get_node_or_null(order[i]) as Node
 		if btn:
 			grid.move_child(btn, i)
+	_center_app_grid_last_row(grid)
 
 	_ensure_extras_shop_title()
+
+
+func _center_app_grid_last_row(grid: GridContainer) -> void:
+	# 7 apps → last row has Extras alone. Pad so it sits in the middle column.
+	if grid.get_node_or_null("GridPadL") != null:
+		return
+	var extras := grid.get_node_or_null("Extras") as Control
+	if extras == null:
+		return
+	var pad_l := Control.new()
+	pad_l.name = "GridPadL"
+	pad_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pad_l.custom_minimum_size = Vector2(420, 420)
+	var pad_r := Control.new()
+	pad_r.name = "GridPadR"
+	pad_r.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pad_r.custom_minimum_size = Vector2(420, 420)
+	var idx := extras.get_index()
+	grid.add_child(pad_l)
+	grid.move_child(pad_l, idx)
+	grid.add_child(pad_r)
+	grid.move_child(pad_r, extras.get_index() + 1)
 
 
 func _add_menu_app_button(grid: GridContainer, btn_name: String, texture_path: String, handler: Callable) -> void:
@@ -1102,6 +1317,9 @@ func _layout_phone_chrome() -> void:
 		phone_screen_back.size = Vector2(SCREEN_BACK_WIDTH, screen_bottom - screen_top)
 		phone_screen_back.visible = page != home
 	_apply_shop_layout(shop_top)
+	if page == home:
+		_position_phone_tabs()
+		call_deferred("_layout_new_day_hint")
 
 
 func _apply_shop_layout(shop_top: float) -> void:
@@ -1237,8 +1455,8 @@ func _setup_tab_header() -> void:
 
 	back_button = Button.new()
 	back_button.name = "BackButton"
-	back_button.text = "Back"
-	back_button.custom_minimum_size = Vector2(68, 32)
+	back_button.text = "← Back"
+	back_button.custom_minimum_size = Vector2(88, 32)
 	back_button.focus_mode = Control.FOCUS_NONE
 	_style_shop_button(back_button)
 	back_button.pressed.connect(_on_back_pressed)
@@ -1464,7 +1682,7 @@ func _show_app_icon_tooltip(btn: TextureButton, title: String) -> void:
 		var label := Label.new()
 		label.name = "Text"
 		label.add_theme_color_override("font_color", Color(0.98, 0.96, 0.9))
-		label.add_theme_font_size_override("font_size", 14)
+		label.add_theme_font_size_override("font_size", 16)
 		_app_icon_tooltip.add_child(label)
 		$"../Canvas/Control".add_child(_app_icon_tooltip)
 	var text_label: Label = _app_icon_tooltip.get_node("Text")
@@ -1643,18 +1861,55 @@ func _position_phone_tabs() -> void:
 	var tabs := get_node_or_null("MenuOptions") as Control
 	if tabs == null:
 		return
-	# Icons are 420px; scale so ~3-col grid fills the phone glass.
-	tabs.scale = Vector2(0.148, 0.148)
-	tabs.offset_left = -232.0
-	tabs.offset_top = PHONE_TABS_Y - 36.0
-	tabs.offset_right = 1300.0
-	tabs.offset_bottom = PHONE_TABS_Y + 520.0
 	if tabs is GridContainer:
-		# Local px before scale — keep readable gaps under labels.
-		(tabs as GridContainer).add_theme_constant_override("h_separation", 96)
-		(tabs as GridContainer).add_theme_constant_override("v_separation", 148)
+		(tabs as GridContainer).columns = 3
+		_center_app_grid_last_row(tabs as GridContainer)
+
+	# Icon art is ~420px; labels hang below. Scale the whole grid to the glass.
+	const ICON_PX := 420.0
+	const LABEL_PX := 128.0
+	const COLS := 3
+	const ROWS := 3
+	var h_sep := 36.0
+	var v_sep := 28.0
+
+	var glass_pad := 14.0
+	var glass_left := SCREEN_BACK_LEFT + glass_pad
+	var glass_w := SCREEN_BACK_WIDTH - glass_pad * 2.0
+	var top := WALLET_Y + _measure_wallet_height() + 10.0
+	if wallet_hud != null and wallet_hud.visible:
+		top = wallet_hud.position.y + maxf(wallet_hud.size.y, 120.0) + 10.0
+	# Keep clear of the Go to bed pill (~y 142).
+	var bottom := 64.0
+	var glass_h := maxf(bottom - top, 220.0)
+
+	var cell_w := ICON_PX
+	var cell_h := ICON_PX + LABEL_PX
+	var local_w := COLS * cell_w + (COLS - 1) * h_sep
+	var local_h := ROWS * cell_h + (ROWS - 1) * v_sep
+	var s := minf(glass_w / local_w, glass_h / local_h)
+	s = clampf(s, 0.155, 0.32)
+
+	var used_w := local_w * s
+	var used_h := local_h * s
+	var origin_x := glass_left + (glass_w - used_w) * 0.5
+	var origin_y := top + (glass_h - used_h) * 0.5
+
+	tabs.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	tabs.scale = Vector2(s, s)
+	tabs.offset_left = origin_x
+	tabs.offset_top = origin_y
+	tabs.offset_right = origin_x + local_w
+	tabs.offset_bottom = origin_y + local_h
+	tabs.z_index = 30
+
+	if tabs is GridContainer:
+		(tabs as GridContainer).add_theme_constant_override("h_separation", int(h_sep))
+		(tabs as GridContainer).add_theme_constant_override("v_separation", int(v_sep))
 	elif tabs is HBoxContainer:
-		(tabs as HBoxContainer).add_theme_constant_override("separation", 80)
+		(tabs as HBoxContainer).add_theme_constant_override("separation", int(h_sep))
+
+	_app_grid_top = origin_y
 
 
 func _on_back_pressed() -> void:
@@ -1702,8 +1957,9 @@ func _setup_new_day_hint() -> void:
 	new_day_hint_pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	new_day_hint_pill.z_index = 45
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.42, 0.07, 0.09, 0.94)
-	style.border_color = Color(1.0, 0.38, 0.32, 1.0)
+	# Fully opaque — urgent blockers must read on the phone glass, no wash-through.
+	style.bg_color = Color(0.48, 0.08, 0.1, 1.0)
+	style.border_color = Color(1.0, 0.42, 0.34, 1.0)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(4)
 	style.set_content_margin_all(12)
@@ -1716,8 +1972,8 @@ func _setup_new_day_hint() -> void:
 	new_day_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	new_day_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	new_day_hint.custom_minimum_size = Vector2(280, 0)
-	new_day_hint.add_theme_color_override("font_color", Color(1.0, 0.94, 0.9))
-	new_day_hint.add_theme_font_size_override("font_size", PHONE_FONT_WARNING)
+	new_day_hint.add_theme_color_override("font_color", Color(1.0, 0.96, 0.92))
+	PixelText.body(new_day_hint)
 	new_day_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	new_day_hint_pill.add_child(new_day_hint)
 	$HomeBtn.add_sibling(new_day_hint_pill)
@@ -1841,8 +2097,8 @@ func _layout_new_day_hint() -> void:
 	var top := -430.0
 	if wallet_hud != null and wallet_hud.visible:
 		top = wallet_hud.position.y + wallet_hud.size.y + 10.0
-	# Stay clear of the app grid (~PHONE_TABS_Y) and far above Go to bed (~y 142).
-	top = minf(top, PHONE_TABS_Y - hint_sz.y - 16.0)
+	# Stay clear of the app grid and far above Go to bed (~y 142).
+	top = minf(top, _app_grid_top - hint_sz.y - 8.0)
 	top = clampf(top, SCREEN_BACK_TOP + 24.0, -200.0)
 	new_day_hint_pill.position = Vector2(phone_x - hint_sz.x * 0.5, top)
 
@@ -1887,7 +2143,7 @@ func _setup_stock_hud() -> void:
 	title.name = "TitleLabel"
 	title.text = "Stock"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	title.add_theme_font_size_override("font_size", 14)
+	title.add_theme_font_size_override("font_size", 16)
 	title.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	stock_hud_vbox.add_child(title)
@@ -1916,7 +2172,7 @@ func _restyle_eod_stock_hud(panel: PanelContainer) -> void:
 	if title:
 		title.text = "Stock"
 		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		title.add_theme_font_size_override("font_size", 14)
+		title.add_theme_font_size_override("font_size", 16)
 		title.add_theme_color_override("font_color", Color(0.72, 0.82, 0.95))
 	panel.offset_right = maxf(panel.offset_right, panel.offset_left + 400.0)
 
@@ -1931,73 +2187,188 @@ func _setup_lore_feed() -> void:
 
 func _setup_morning_briefing() -> void:
 	var canvas_layer: CanvasLayer = $"../Canvas"
-	var existing := canvas_layer.get_node_or_null("MorningBriefing") as PanelContainer
+	var existing := canvas_layer.get_node_or_null("MorningBriefingStack") as VBoxContainer
 	if existing:
-		briefing_panel = existing
-		briefing_label = briefing_panel.get_node_or_null("BriefingLabel") as Label
+		briefing_stack = existing
 		_refresh_morning_briefing()
 		return
 
-	briefing_panel = PanelContainer.new()
-	briefing_panel.name = "MorningBriefing"
-	briefing_panel.anchor_left = 0.5
-	briefing_panel.anchor_right = 0.5
-	briefing_panel.anchor_top = 1.0
-	briefing_panel.anchor_bottom = 1.0
-	briefing_panel.offset_left = -260.0
-	briefing_panel.offset_right = 260.0
-	briefing_panel.offset_top = -72.0
-	briefing_panel.offset_bottom = -16.0
-	briefing_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	briefing_panel.z_index = 30
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.08, 0.14, 0.92)
-	style.border_color = Color(0.48, 0.62, 0.82, 0.9)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(4)
-	style.set_content_margin_all(10)
-	briefing_panel.add_theme_stylebox_override("panel", style)
+	# Drop legacy single-banner briefing if present from an older run.
+	var legacy := canvas_layer.get_node_or_null("MorningBriefing")
+	if legacy:
+		legacy.queue_free()
 
-	briefing_label = Label.new()
-	briefing_label.name = "BriefingLabel"
-	briefing_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	briefing_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	briefing_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	briefing_label.add_theme_font_size_override("font_size", 15)
-	briefing_label.add_theme_color_override("font_color", Color(0.92, 0.95, 1.0))
-	briefing_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	briefing_panel.add_child(briefing_label)
-	canvas_layer.add_child(briefing_panel)
+	briefing_stack = VBoxContainer.new()
+	briefing_stack.name = "MorningBriefingStack"
+	briefing_stack.anchor_left = 0.5
+	briefing_stack.anchor_right = 0.5
+	briefing_stack.anchor_top = 1.0
+	briefing_stack.anchor_bottom = 1.0
+	briefing_stack.offset_left = -280.0
+	briefing_stack.offset_right = 280.0
+	briefing_stack.offset_top = -220.0
+	briefing_stack.offset_bottom = -16.0
+	briefing_stack.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	briefing_stack.alignment = BoxContainer.ALIGNMENT_END
+	briefing_stack.add_theme_constant_override("separation", 10)
+	briefing_stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	briefing_stack.z_index = 30
+	canvas_layer.add_child(briefing_stack)
 	_refresh_morning_briefing()
 
 
 func _refresh_morning_briefing() -> void:
-	if briefing_panel == null or briefing_label == null:
+	if briefing_stack == null:
 		return
 	if _first_night_active():
-		UiMotion.fade_out_then_hide(self, briefing_panel)
+		_clear_briefing_cards()
+		briefing_stack.visible = false
 		return
 	var lines := PlayerStatController.morning_briefing_lines()
-	if lines.is_empty():
-		UiMotion.fade_out_then_hide(self, briefing_panel)
-		return
-	briefing_label.text = " · ".join(lines)
-	var style := briefing_panel.get_theme_stylebox("panel") as StyleBoxFlat
-	if style:
-		var blob := briefing_label.text.to_lower()
-		if "nanakaw" in blob or "lagnat" in blob or "−" in briefing_label.text:
-			style.border_color = Color(0.92, 0.35, 0.32, 0.95)
-		elif "+" in briefing_label.text or "naiwan" in blob:
-			style.border_color = Color(0.35, 0.85, 0.5, 0.95)
-		else:
-			style.border_color = Color(0.48, 0.62, 0.82, 0.9)
-	var was_up := briefing_panel.visible and briefing_panel.modulate.a > 0.85
-	if was_up:
-		briefing_panel.visible = true
-		briefing_panel.modulate.a = 1.0
-	else:
-		UiMotion.pop_in(self, briefing_panel)
+	var fp := "|".join(lines)
+	if fp != _briefing_fingerprint:
+		_briefing_fingerprint = fp
+		_briefing_pending = lines.duplicate()
+	_rebuild_briefing_cards()
 	_refresh_weather_chip()
+
+
+func _clear_briefing_cards() -> void:
+	if briefing_stack == null:
+		return
+	while briefing_stack.get_child_count() > 0:
+		var child := briefing_stack.get_child(0)
+		briefing_stack.remove_child(child)
+		child.queue_free()
+
+
+func _rebuild_briefing_cards() -> void:
+	_clear_briefing_cards()
+	if _briefing_pending.is_empty():
+		briefing_stack.visible = false
+		return
+	briefing_stack.visible = true
+	briefing_stack.modulate = Color.WHITE
+	# Newest / last night first at the bottom (stack grows upward).
+	for i in _briefing_pending.size():
+		var line := _briefing_pending[i]
+		briefing_stack.add_child(_make_briefing_card(line, i))
+	# Fit stack height to cards; keep bottom edge above Go to bed clearance.
+	briefing_stack.reset_size()
+	var h := maxf(briefing_stack.get_combined_minimum_size().y, 48.0)
+	briefing_stack.offset_top = -(h + 16.0)
+	briefing_stack.offset_bottom = -16.0
+
+
+func _make_briefing_card(line: String, index: int) -> PanelContainer:
+	var card := PanelContainer.new()
+	card.name = "BriefingCard_%d" % index
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var from_weather := _is_weather_briefing_line(line)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.06, 0.08, 0.14, 1.0)
+	style.border_color = _briefing_border_for(line)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(12)
+	style.content_margin_left = 14
+	style.content_margin_right = 10
+	card.add_theme_stylebox_override("panel", style)
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(row)
+
+	var text_col := VBoxContainer.new()
+	text_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_col.add_theme_constant_override("separation", 4)
+	text_col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(text_col)
+
+	if from_weather:
+		var source := Label.new()
+		source.text = "Weather App"
+		source.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		source.add_theme_color_override("font_color", Color(0.55, 0.78, 1.0))
+		PixelText.caption(source)
+		source.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		text_col.add_child(source)
+
+	var body := Label.new()
+	body.text = line
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	body.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	body.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
+	PixelText.body(body)
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_col.add_child(body)
+
+	var dismiss := Button.new()
+	dismiss.text = "OK"
+	dismiss.focus_mode = Control.FOCUS_NONE
+	dismiss.custom_minimum_size = Vector2(64, 36)
+	dismiss.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_style_briefing_dismiss(dismiss)
+	row.add_child(dismiss)
+
+	var ack := func() -> void:
+		_dismiss_briefing_line(line)
+	dismiss.pressed.connect(ack)
+	card.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			ack.call()
+	)
+	return card
+
+
+func _is_weather_briefing_line(line: String) -> bool:
+	if line.is_empty():
+		return false
+	if line == PlayerStatController.morning_forecast:
+		return true
+	return line == PlayerStatController.morning_forecast_line()
+
+
+func _briefing_border_for(line: String) -> Color:
+	if _is_weather_briefing_line(line):
+		return Color(0.45, 0.72, 1.0, 1.0)
+	var blob := line.to_lower()
+	if "nanakaw" in blob or "lagnat" in blob or "−" in line or "nawala" in blob:
+		return Color(0.92, 0.35, 0.32, 1.0)
+	if "+" in line or "naiwan" in blob:
+		return Color(0.35, 0.85, 0.5, 1.0)
+	return Color(0.48, 0.62, 0.82, 1.0)
+
+
+func _style_briefing_dismiss(button: Button) -> void:
+	PixelText.button(button, 16)
+	button.add_theme_color_override("font_color", Color(0.92, 0.95, 1.0))
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = Color(0.14, 0.18, 0.28, 1.0)
+	normal.border_color = Color(0.55, 0.68, 0.88, 0.95)
+	normal.set_border_width_all(2)
+	normal.set_corner_radius_all(4)
+	normal.set_content_margin_all(6)
+	normal.content_margin_left = 12
+	normal.content_margin_right = 12
+	var hover := normal.duplicate() as StyleBoxFlat
+	hover.bg_color = normal.bg_color.lightened(0.14)
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", hover)
+
+
+func _dismiss_briefing_line(line: String) -> void:
+	SfxController.play_click()
+	var idx := _briefing_pending.find(line)
+	if idx >= 0:
+		_briefing_pending.remove_at(idx)
+	_rebuild_briefing_cards()
 
 
 func _setup_weather_chip() -> void:
@@ -2025,7 +2396,7 @@ func _setup_weather_chip() -> void:
 	var label := Label.new()
 	label.name = "ChipLabel"
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.add_theme_font_size_override("font_size", 15)
+	label.add_theme_font_size_override("font_size", 18)
 	label.add_theme_color_override("font_color", Color(0.92, 0.95, 1.0))
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	chip.add_child(label)
@@ -2044,7 +2415,10 @@ func _refresh_weather_chip() -> void:
 		return
 	if PlayerStats.boughtSubscription:
 		var forecast := PlayerStatController.morning_forecast_line()
-		label.text = forecast if not forecast.is_empty() else ("Weather · %s" % PlayerStatController.weather_title())
+		if not forecast.is_empty():
+			label.text = "Weather App\n%s" % forecast
+		else:
+			label.text = "Weather App · %s" % PlayerStatController.weather_title()
 		chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		chip.mouse_default_cursor_shape = Control.CURSOR_ARROW
 	else:
@@ -2071,6 +2445,7 @@ func _setup_must_pay_strip() -> void:
 	if existing:
 		must_pay_strip = existing
 		must_pay_label = must_pay_strip.get_node_or_null("MustPayLabel") as Label
+		_style_must_pay_strip()
 		_refresh_must_pay_strip()
 		return
 
@@ -2088,23 +2463,34 @@ func _setup_must_pay_strip() -> void:
 	must_pay_strip.custom_minimum_size = Vector2(0, 0)
 	must_pay_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	must_pay_strip.z_index = 42
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.18, 0.05, 0.06, 0.94)
-	style.border_color = Color(0.92, 0.32, 0.3, 0.95)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(4)
+	_style_must_pay_strip()
 
 	must_pay_label = Label.new()
 	must_pay_label.name = "MustPayLabel"
 	must_pay_label.autowrap_mode = TextServer.AUTOWRAP_OFF
 	must_pay_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	must_pay_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	must_pay_label.add_theme_font_size_override("font_size", 16)
-	must_pay_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.88))
+	must_pay_label.add_theme_color_override("font_color", Color(1.0, 0.94, 0.9))
+	PixelText.body(must_pay_label)
 	must_pay_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	must_pay_strip.add_child(must_pay_label)
 	canvas_layer.add_child(must_pay_strip)
 	_refresh_must_pay_strip()
+
+
+func _style_must_pay_strip() -> void:
+	if must_pay_strip == null:
+		return
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.22, 0.06, 0.08, 1.0)
+	style.border_color = Color(0.95, 0.38, 0.34, 1.0)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(10)
+	must_pay_strip.add_theme_stylebox_override("panel", style)
+	if must_pay_label:
+		must_pay_label.add_theme_color_override("font_color", Color(1.0, 0.94, 0.9))
+		PixelText.body(must_pay_label)
 
 
 func _must_pay_lines() -> PackedStringArray:
@@ -2139,12 +2525,11 @@ func _refresh_must_pay_strip() -> void:
 	var half := maxf(must_pay_strip.size.x, 280.0) * 0.5
 	must_pay_strip.offset_left = -half
 	must_pay_strip.offset_right = half
-	var was_up := must_pay_strip.visible and must_pay_strip.modulate.a > 0.85
-	if was_up:
-		must_pay_strip.visible = true
-		must_pay_strip.modulate.a = 1.0
-	else:
-		UiMotion.pop_in(self, must_pay_strip)
+	# Urgent chrome: solid, no fade restart (refresh loops were leaving this ghosted).
+	UiMotion.kill(must_pay_strip.get_meta(&"_ui_motion_tween") if must_pay_strip.has_meta(&"_ui_motion_tween") else null)
+	must_pay_strip.visible = true
+	must_pay_strip.modulate = Color.WHITE
+	must_pay_strip.scale = Vector2.ONE
 
 
 func _first_night_active() -> bool:
@@ -2295,25 +2680,85 @@ func _setup_restart_hud() -> void:
 		restart_row.visible = false
 
 	var canvas_layer: CanvasLayer = $"../Canvas"
-	if canvas_layer.get_node_or_null("RestartHud"):
-		restart_button = canvas_layer.get_node("RestartHud") as Button
-		return
+	# Replace legacy always-visible Main Menu / Start over buttons.
+	for legacy_name in ["RestartHud", "MainMenuHud", "SessionMenu"]:
+		var legacy := canvas_layer.get_node_or_null(legacy_name)
+		if legacy:
+			legacy.queue_free()
+
+	session_menu_root = Control.new()
+	session_menu_root.name = "SessionMenu"
+	session_menu_root.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	session_menu_root.offset_left = -280.0
+	session_menu_root.offset_top = -200.0
+	session_menu_root.offset_right = -16.0
+	session_menu_root.offset_bottom = -16.0
+	session_menu_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	session_menu_root.process_mode = Node.PROCESS_MODE_ALWAYS
+	session_menu_root.z_index = 50
+	canvas_layer.add_child(session_menu_root)
+
+	var col := VBoxContainer.new()
+	col.name = "Column"
+	col.set_anchors_preset(Control.PRESET_FULL_RECT)
+	col.alignment = BoxContainer.ALIGNMENT_END
+	col.add_theme_constant_override("separation", 8)
+	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	session_menu_root.add_child(col)
+
+	session_menu_panel = PanelContainer.new()
+	session_menu_panel.name = "MenuPanel"
+	session_menu_panel.visible = false
+	session_menu_panel.size_flags_horizontal = Control.SIZE_SHRINK_END
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.06, 0.08, 0.14, 1.0)
+	panel_style.border_color = Color(0.48, 0.62, 0.82, 0.95)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(4)
+	panel_style.set_content_margin_all(10)
+	session_menu_panel.add_theme_stylebox_override("panel", panel_style)
+	col.add_child(session_menu_panel)
+
+	var menu_rows := VBoxContainer.new()
+	menu_rows.add_theme_constant_override("separation", 8)
+	session_menu_panel.add_child(menu_rows)
+
+	var menu_button := Button.new()
+	menu_button.name = "MainMenuHud"
+	menu_button.text = "Main Menu"
+	menu_button.focus_mode = Control.FOCUS_NONE
+	menu_button.custom_minimum_size = Vector2(200, 40)
+	menu_button.process_mode = Node.PROCESS_MODE_ALWAYS
+	PixelText.button(menu_button, 18)
+	menu_button.add_theme_color_override("font_color", Color(0.94, 0.96, 1.0))
+	menu_button.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.55))
+	var menu_style := StyleBoxFlat.new()
+	menu_style.bg_color = Color(0.08, 0.12, 0.24, 1.0)
+	menu_style.border_color = Color(0.5, 0.7, 1.0, 0.95)
+	menu_style.set_border_width_all(2)
+	menu_style.set_corner_radius_all(4)
+	menu_style.set_content_margin_all(10)
+	menu_style.content_margin_left = 16
+	menu_style.content_margin_right = 16
+	_apply_flat_button_styles(menu_button, menu_style)
+	menu_button.pressed.connect(func() -> void:
+		_set_session_menu_open(false)
+		_on_main_menu_pressed()
+	)
+	menu_button.mouse_entered.connect(_on_ui_hover)
+	menu_rows.add_child(menu_button)
 
 	restart_button = Button.new()
 	restart_button.name = "RestartHud"
-	restart_button.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	restart_button.offset_left = -248.0
-	restart_button.offset_top = -72.0
-	restart_button.offset_right = -24.0
-	restart_button.offset_bottom = -24.0
 	restart_button.text = "Start over"
 	restart_button.focus_mode = Control.FOCUS_NONE
+	restart_button.custom_minimum_size = Vector2(200, 40)
 	restart_button.process_mode = Node.PROCESS_MODE_ALWAYS
-	restart_button.add_theme_font_size_override("font_size", 18)
+	PixelText.button(restart_button, 18)
 	restart_button.add_theme_color_override("font_color", Color(0.94, 0.96, 1.0))
 	restart_button.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.55))
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.28, 0.08, 0.1, 0.94)
+	style.bg_color = Color(0.28, 0.08, 0.1, 1.0)
 	style.border_color = Color(1.0, 0.45, 0.4, 0.95)
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(4)
@@ -2321,36 +2766,61 @@ func _setup_restart_hud() -> void:
 	style.content_margin_left = 16
 	style.content_margin_right = 16
 	_apply_flat_button_styles(restart_button, style)
-	restart_button.pressed.connect(_on_restart_pressed)
+	restart_button.pressed.connect(func() -> void:
+		_set_session_menu_open(false)
+		_on_restart_pressed()
+	)
 	restart_button.mouse_entered.connect(_on_ui_hover)
-	canvas_layer.add_child(restart_button)
+	menu_rows.add_child(restart_button)
 
-	# Main Menu sits above "Start over": returns to title without wiping the run.
-	var menu_button := Button.new()
-	menu_button.name = "MainMenuHud"
-	menu_button.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	menu_button.offset_left = -248.0
-	menu_button.offset_top = -128.0
-	menu_button.offset_right = -24.0
-	menu_button.offset_bottom = -80.0
-	menu_button.text = "Main Menu"
-	menu_button.focus_mode = Control.FOCUS_NONE
-	menu_button.process_mode = Node.PROCESS_MODE_ALWAYS
-	menu_button.add_theme_font_size_override("font_size", 18)
-	menu_button.add_theme_color_override("font_color", Color(0.94, 0.96, 1.0))
-	menu_button.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.55))
-	var menu_style := StyleBoxFlat.new()
-	menu_style.bg_color = Color(0.08, 0.12, 0.24, 0.94)
-	menu_style.border_color = Color(0.5, 0.7, 1.0, 0.9)
-	menu_style.set_border_width_all(2)
-	menu_style.set_corner_radius_all(4)
-	menu_style.set_content_margin_all(10)
-	menu_style.content_margin_left = 16
-	menu_style.content_margin_right = 16
-	_apply_flat_button_styles(menu_button, menu_style)
-	menu_button.pressed.connect(_on_main_menu_pressed)
-	menu_button.mouse_entered.connect(_on_ui_hover)
-	canvas_layer.add_child(menu_button)
+	var toggle_row := HBoxContainer.new()
+	toggle_row.alignment = BoxContainer.ALIGNMENT_END
+	toggle_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(toggle_row)
+
+	session_menu_toggle = Button.new()
+	session_menu_toggle.name = "SessionMenuToggle"
+	session_menu_toggle.focus_mode = Control.FOCUS_NONE
+	session_menu_toggle.custom_minimum_size = Vector2(52, 52)
+	session_menu_toggle.process_mode = Node.PROCESS_MODE_ALWAYS
+	session_menu_toggle.tooltip_text = "Menu"
+	session_menu_toggle.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var toggle_style := StyleBoxFlat.new()
+	toggle_style.bg_color = Color(0.08, 0.1, 0.16, 1.0)
+	toggle_style.border_color = Color(0.55, 0.68, 0.88, 0.95)
+	toggle_style.set_border_width_all(2)
+	toggle_style.set_corner_radius_all(4)
+	toggle_style.set_content_margin_all(10)
+	_apply_flat_button_styles(session_menu_toggle, toggle_style)
+	var icon_path := "res://Assets/UI/menu_burger.png"
+	if ResourceLoader.exists(icon_path):
+		session_menu_toggle.icon = load(icon_path) as Texture2D
+		session_menu_toggle.expand_icon = true
+		session_menu_toggle.text = ""
+	else:
+		session_menu_toggle.text = "≡"
+		PixelText.button(session_menu_toggle, 28)
+	session_menu_toggle.pressed.connect(_toggle_session_menu)
+	session_menu_toggle.mouse_entered.connect(_on_ui_hover)
+	toggle_row.add_child(session_menu_toggle)
+	_session_menu_open = false
+
+
+func _toggle_session_menu() -> void:
+	SfxController.play_click()
+	_set_session_menu_open(not _session_menu_open)
+
+
+func _set_session_menu_open(open: bool) -> void:
+	_session_menu_open = open
+	if session_menu_panel == null:
+		return
+	if open:
+		session_menu_panel.visible = true
+		session_menu_panel.modulate.a = 1.0
+		UiMotion.pop_in(self, session_menu_panel)
+	else:
+		UiMotion.fade_out_then_hide(self, session_menu_panel)
 
 
 func _refresh_stock_hud() -> void:
@@ -2389,12 +2859,11 @@ func _refresh_new_day_hint() -> void:
 	if reason.is_empty() or page != home:
 		UiMotion.fade_out_then_hide(self, new_day_hint_pill)
 		return
-	var was_up := new_day_hint_pill.visible and new_day_hint_pill.modulate.a > 0.85
-	if was_up:
-		new_day_hint_pill.visible = true
-		new_day_hint_pill.modulate.a = 1.0
-	else:
-		UiMotion.pop_in(self, new_day_hint_pill)
+	# Urgent blockers stay fully opaque — never re-pop_in from a=0 on every refresh.
+	UiMotion.kill(new_day_hint_pill.get_meta(&"_ui_motion_tween") if new_day_hint_pill.has_meta(&"_ui_motion_tween") else null)
+	new_day_hint_pill.visible = true
+	new_day_hint_pill.modulate = Color.WHITE
+	new_day_hint_pill.scale = Vector2.ONE
 	call_deferred("_layout_new_day_hint")
 
 
@@ -2402,7 +2871,9 @@ func _flash_new_day_hint() -> void:
 	if new_day_hint_pill == null:
 		return
 	_refresh_new_day_hint()
-	new_day_hint_pill.modulate = Color(1.5, 1.2, 1.2)
+	if not new_day_hint_pill.visible:
+		return
+	new_day_hint_pill.modulate = Color(1.35, 1.15, 1.12, 1.0)
 	var tween := create_tween()
 	tween.tween_property(new_day_hint_pill, "modulate", Color.WHITE, 0.35)
 
