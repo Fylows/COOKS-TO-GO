@@ -4,6 +4,7 @@ https://opengameart.org/content/cursor-pack-1
 Files used:
 - pointer_b.png -> cursor_arrow.png
 - hand_point.png -> cursor_hand.png
+- hand_closed.png -> cursor_grab.png
 - line_vertical.png -> cursor_ibeam.png
 
 License: CC0 1.0 Universal (public domain)

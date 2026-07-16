@@ -1,6 +1,7 @@
 extends Node
 
 const TITLE_SCENE := "res://Screens/Main Menu/Title_Screen/title_screen.tscn"
+const EOD_SCENE := "res://Screens/EOD/Scenes/Room.tscn"
 const Economy := preload("res://Player/EconomyBalance.gd")
 
 var last_night_report: PackedStringArray = []
@@ -8,6 +9,8 @@ var morning_forecast: String = ""
 var _night_stolen: int = 0
 var _night_gained: int = 0
 var _night_stock_stolen: int = 0
+## True after Main Menu without wiping — title can Resume into EOD.
+var run_suspended: bool = false
 
 
 static func format_pesos(amount: int) -> String:
@@ -27,15 +30,64 @@ static func format_upgrade(owned: bool) -> String:
 
 
 static func format_stock_summary() -> String:
-	var lines: PackedStringArray = [
-		"Fishball: %d" % PlayerStats.fishballStock,
-		"Kwek-Kwek: %d" % PlayerStats.kwekwekStock,
-		"Kikiam: %d" % PlayerStats.kikiamStock,
-		"Sauce: %s" % format_stocked(PlayerStats.boughtSauce),
-	]
+	return format_stock_strip()
+
+
+## Stall HUD: ready (sellable) vs raw (still bagged / uncooked).
+static func format_stock_strip() -> String:
+	var tree := Engine.get_main_loop() as SceneTree
+	var cooking: CookingController = null
+	if tree:
+		cooking = tree.get_first_node_in_group("cooking_controller") as CookingController
+	return format_stall_stock(cooking)
+
+
+static func format_stall_stock(cooking: CookingController) -> String:
+	var ready_fb := cooking.get_cooked_count(FoodItem.FoodName.FISHBALL) if cooking else 0
+	var ready_kw := cooking.get_cooked_count(FoodItem.FoodName.KWEKWEK) if cooking else 0
+	var ready_ki := cooking.get_cooked_count(FoodItem.FoodName.KIKIAM) if cooking else 0
+	var ready_parts: PackedStringArray = PackedStringArray([
+		"Fishball %d" % ready_fb,
+		"Kwek %d" % ready_kw,
+		"Kikiam %d" % ready_ki,
+	])
+	var raw_parts: PackedStringArray = PackedStringArray([
+		"Fishball %d" % PlayerStats.fishballStock,
+		"Kwek %d" % PlayerStats.kwekwekStock,
+		"Kikiam %d" % PlayerStats.kikiamStock,
+	])
+	if PlayerStats.betamaxStock > 0 or (cooking and cooking.get_cooked_count(FoodItem.FoodName.BETAMAX) > 0):
+		ready_parts.append("Betamax %d" % (cooking.get_cooked_count(FoodItem.FoodName.BETAMAX) if cooking else 0))
+		raw_parts.append("Betamax %d" % PlayerStats.betamaxStock)
+	var lines: PackedStringArray = PackedStringArray([
+		"Ready  %s" % " · ".join(ready_parts),
+		"Raw  %s" % " · ".join(raw_parts),
+	])
+	if PlayerStats.boughtSauce:
+		lines.append("Sauce ok")
+	else:
+		lines.append("No sauce")
 	if PlayerStats.palamigUP:
-		lines.append("Palamig: %d" % PlayerStats.palamigStock)
+		lines.append("Palamig %d" % PlayerStats.palamigStock)
 	return "\n".join(lines)
+
+
+## EOD / Day Over: bagged stock only (no tray yet).
+static func format_bagged_stock_strip() -> String:
+	var parts: PackedStringArray = PackedStringArray([
+		"Fishball %d" % PlayerStats.fishballStock,
+		"Kwek %d" % PlayerStats.kwekwekStock,
+		"Kikiam %d" % PlayerStats.kikiamStock,
+	])
+	if PlayerStats.betamaxStock > 0:
+		parts.append("Betamax %d" % PlayerStats.betamaxStock)
+	if PlayerStats.boughtSauce:
+		parts.append("Sauce ok")
+	else:
+		parts.append("No sauce")
+	if PlayerStats.palamigUP:
+		parts.append("Palamig %d" % PlayerStats.palamigStock)
+	return " · ".join(parts)
 
 
 static func poverty_stress() -> float:
@@ -125,7 +177,10 @@ func weather_title() -> String:
 
 
 ## Overnight phone copy: one lore line for tomorrow's open.
+## Locked without Weather App (boughtSubscription).
 func morning_forecast_line() -> String:
+	if not PlayerStats.boughtSubscription:
+		return ""
 	match weather_key():
 		"willRain":
 			return "Bukas uulan. Konti lang ang lalabas, slow day sa cart."
@@ -137,8 +192,10 @@ func morning_forecast_line() -> String:
 			return ""
 
 
-## Stall-day flash: you are already under that weather.
+## Stall-day flash: only if Weather App owned.
 func stall_weather_line() -> String:
+	if not PlayerStats.boughtSubscription:
+		return ""
 	match weather_key():
 		"willRain":
 			return "Umuulan. Customers papasok nang mabagal."
@@ -148,6 +205,11 @@ func stall_weather_line() -> String:
 			return "Okay ang panahon. Magbenta ka nang todo."
 		_:
 			return ""
+
+
+func weather_app_upsell_line() -> String:
+	var price: int = int(PlayerStats.upgradePrices.get("weather", 50))
+	return "No Weather App. Open Weather (₱%d)." % price
 
 
 func weather_effect_blurb() -> String:
@@ -282,9 +344,56 @@ func resetStats() -> void:
 	PlayerStats.paidTindahanApp = false
 
 
+func mark_run_suspended() -> void:
+	run_suspended = true
+
+
+func can_resume_run() -> bool:
+	return run_suspended and not GameStateController.is_game_over
+
+
+func resume_run() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file(EOD_SCENE)
+
+
+func prompt_restart_game(host: Node) -> void:
+	if host == null or not is_instance_valid(host):
+		return
+	if host.get_node_or_null("RestartConfirmDialog") != null:
+		return
+	var dialog := AcceptDialog.new()
+	dialog.name = "RestartConfirmDialog"
+	dialog.title = "Start over"
+	dialog.dialog_text = (
+		"Sigurado ka ba?\nMawawala ang current run mo: progress, pera, stock, lahat."
+	)
+	dialog.ok_button_text = "Start over"
+	dialog.add_cancel_button("Bumalik")
+	dialog.process_mode = Node.PROCESS_MODE_ALWAYS
+	host.add_child(dialog)
+	dialog.confirmed.connect(func() -> void:
+		if is_instance_valid(dialog):
+			dialog.queue_free()
+		restart_game()
+	)
+	dialog.canceled.connect(func() -> void:
+		SfxController.play_click()
+		if is_instance_valid(dialog):
+			dialog.queue_free()
+	)
+	dialog.close_requested.connect(func() -> void:
+		if is_instance_valid(dialog):
+			dialog.queue_free()
+	)
+	dialog.popup_centered()
+	SfxController.play_hover()
+
+
 func restart_game() -> void:
 	last_night_report.clear()
 	morning_forecast = ""
+	run_suspended = false
 	ScoreController.on_run_end()
 	PlayerStats.reset_new_game()
 	FamilyStateController.reset_for_new_game()

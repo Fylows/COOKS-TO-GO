@@ -181,7 +181,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.02, 0.03, 0.06, 0.45)
+color = Color(0.06, 0.05, 0.1, 0.48)
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=161043407]
 modulate = Color(1, 1, 1, 0)
@@ -222,7 +222,7 @@ visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.78, 0.9, 1)
 theme_override_font_sizes/font_size = 14
-text = "WALLET"
+text = "Wallet"
 horizontal_alignment = 1
 
 [node name="MoneyLabel" type="Label" parent="PanelContainer/VBox"]
@@ -244,7 +244,7 @@ visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.78, 0.28, 1)
 theme_override_font_sizes/font_size = 16
-text = "STOCK LEFT"
+text = "Stock left"
 horizontal_alignment = 1
 
 [node name="StockLabel" type="Label" parent="PanelContainer/VBox"]

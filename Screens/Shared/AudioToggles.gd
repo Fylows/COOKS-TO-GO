@@ -37,7 +37,7 @@ func _make_button_style(on: bool) -> StyleBoxFlat:
 		style.bg_color = Color(0.08, 0.1, 0.16, 0.95)
 		style.border_color = Color(0.78, 0.82, 0.92, 0.7)
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
+	style.set_corner_radius_all(4)
 	style.set_content_margin_all(10)
 	style.content_margin_left = 16
 	style.content_margin_right = 16
@@ -68,9 +68,9 @@ func _add_toggle(label: String, pressed: bool, setter: Callable) -> void:
 	var button := Button.new()
 	button.focus_mode = Control.FOCUS_NONE
 	button.mouse_filter = Control.MOUSE_FILTER_STOP
-	button.custom_minimum_size = Vector2(176, 44)
+	button.custom_minimum_size = Vector2(148 if label == "SFX" else 168, 40)
 	button.clip_text = false
-	button.add_theme_font_size_override("font_size", 20)
+	button.add_theme_font_size_override("font_size", 18)
 	button.set_meta("enabled", pressed)
 	_refresh_button(button, label, pressed)
 	button.pressed.connect(func() -> void:

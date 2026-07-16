@@ -32,7 +32,7 @@ func uses_name_wager() -> bool:
 func wager_label() -> String:
 	var pct := get_win_chance_percent()
 	if uses_name_wager():
-		return "Your name · %d%%" % pct
+		return "Name · %d%%" % pct
 	return "%s · %d%%" % [PlayerStatController.format_pesos(bet_cost()), pct]
 
 

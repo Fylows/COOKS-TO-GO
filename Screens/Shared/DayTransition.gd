@@ -16,7 +16,7 @@ func _build_ui() -> void:
 	_overlay = ColorRect.new()
 	_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_overlay.color = Color(0.02, 0.03, 0.08, 0.0)
+	_overlay.color = Color(0.06, 0.05, 0.1, 0.0)
 	add_child(_overlay)
 
 	_caption = Label.new()
