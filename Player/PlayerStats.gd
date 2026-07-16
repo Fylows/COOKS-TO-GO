@@ -19,7 +19,7 @@ var fishballStock : int = START_FISHBALL
 var kwekwekStock : int = START_KWEKWEK
 var kikiamStock : int = 0
 var betamaxStock: int = 0
-var boughtSauce : bool = true
+var boughtSauce : bool = false
 var palamigStock : int = 0
 
 var kikiamPurchasable : bool = daysPassed >= 2
@@ -141,7 +141,7 @@ func reset_new_game() -> void:
 	kwekwekStock = START_KWEKWEK
 	kikiamStock = 0
 	betamaxStock = 0
-	boughtSauce = true
+	boughtSauce = false
 	palamigStock = 0
 	kikiamPurchasable = false
 	palamigUP = false

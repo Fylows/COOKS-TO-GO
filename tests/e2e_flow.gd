@@ -54,7 +54,9 @@ func _score() -> Node:
 func _run() -> void:
 	_log("=== COOKS-TO-GO E2E ===")
 	await _test_autoloads()
+	await _test_order_quantities()
 	await _test_eod_buying()
+	await _test_daily_stall_stats()
 	await _test_game_day_loop()
 	await _test_day_over_to_eod()
 	await _test_family_gate()
@@ -102,6 +104,15 @@ func _reset_player_state() -> void:
 	_family().is_family_sick = false
 	_family().on_rent_paid()
 	_game_state().reset_for_new_game()
+	_score().reset_run()
+
+
+func _test_order_quantities() -> void:
+	_step += 1
+	_log("Step %d: order quantities" % _step)
+	var order_controller := OrderController.new()
+	_assert(order_controller.get_order_quantity("palamig", 50) == 1, "palamig orders stay at one cup")
+	order_controller.free()
 
 
 func _test_eod_buying() -> void:
@@ -113,6 +124,67 @@ func _test_eod_buying() -> void:
 	_assert(_stats().fishballStock == 20, "fishball stock stacks on buy")
 	_assert(_stats().playerMoney == before - 50, "money after fishball buy")
 	_assert(_family().can_start_day(), "can start day after bills paid")
+
+
+func _test_daily_stall_stats() -> void:
+	_step += 1
+	_log("Step %d: daily stall stats" % _step)
+	var old_days: int = _stats().daysPassed
+	var old_sauce: bool = _stats().boughtSauce
+
+	_stats().daysPassed = 20
+	_assert(_stat_ctrl().resource_cost(50) == 50, "resource prices do not inflate")
+	_assert(_stat_ctrl().essential_cost("rent") == _stats().essentialPrice.rent, "bill prices do not inflate")
+
+	_score().reset_run()
+	_score().begin_day()
+	_stats().boughtSauce = false
+	var first_sale: int = _score().record_street_food_order(1, 0, 0, 7)
+	var second_sale: int = _score().record_street_food_order(1, 0, 0, 7)
+	var stats: Dictionary = _score().get_current_day_stats()
+	_assert(first_sale + second_sale == 12, "no sauce applies 10 percent daily food revenue debuff")
+	_assert(stats["earned_for_today"] == 14, "gross food revenue is tracked before deductions")
+	_assert(stats["deductions"] == 2, "no sauce discount is tracked as deduction")
+	_assert(stats["total_earned_for_today"] == 12, "net daily food revenue is tracked")
+	_assert(stats["fishball_sold"] == 2, "fishball sold count tracks street food orders")
+	_assert(stats["total_food_served"] == 2, "total food served tracks street food")
+	_assert(stats["total_orders_served"] == 2, "street food orders count as served orders")
+
+	_score().reset_run()
+	_score().begin_day()
+	_stats().boughtSauce = true
+	_assert(_score().record_street_food_order(0, 1, 0, 20) == 20, "sauce removes food revenue debuff")
+	stats = _score().get_current_day_stats()
+	_assert(stats["kwekwek_sold"] == 1, "kwekwek sold count tracks street food orders")
+	_assert(stats["deductions"] == 0, "sauce prevents no-sauce deductions")
+
+	_score().record_palamig_sale(10)
+	_score().record_stall_deduction(6)
+	_score().record_palamig_order_served()
+	_score().record_order_cancelled()
+	_score().record_order_expired()
+	stats = _score().get_current_day_stats()
+	_assert(stats["palamig_sold"] == 1, "palamig sold count tracks successful cups")
+	_assert(stats["total_food_served"] == 2, "total food served includes palamig")
+	_assert(stats["earned_for_today"] == 30, "gross daily earnings include palamig sales")
+	_assert(stats["deductions"] == 6, "palamig waste is tracked as deduction")
+	_assert(stats["total_earned_for_today"] == 24, "palamig waste lowers net daily earnings")
+	_assert(stats["total_orders_served"] == 2, "served palamig orders increment served orders")
+	_assert(stats["cancelled_orders"] == 1, "cancelled orders are tracked separately")
+	_assert(stats["expired_orders"] == 1, "expired orders are tracked separately")
+
+	var total_before_new_day: int = _score().get_run_total_earnings()
+	_score().on_day_end()
+	var last_stats: Dictionary = _score().get_last_day_stats()
+	_assert(last_stats["total_earned_for_today"] == 24, "day-end snapshots last day stats")
+	_score().begin_day()
+	stats = _score().get_current_day_stats()
+	_assert(stats["total_food_served"] == 0, "begin_day resets daily stats")
+	_assert(stats["total_earnings"] == total_before_new_day, "begin_day preserves run total earnings")
+
+	_stats().daysPassed = old_days
+	_stats().boughtSauce = old_sauce
+	_score().reset_run()
 
 
 func _test_game_day_loop() -> void:
@@ -142,6 +214,15 @@ func _test_game_day_loop() -> void:
 		if slot.get_child_count() > 0:
 			order = slot.get_child(0)
 			break
+	if order != null:
+		var stats_before_failed: Dictionary = _score().get_current_day_stats()
+		await oc.confirm_order(order)
+		await create_timer(0.2).timeout
+		var stats_after_failed: Dictionary = _score().get_current_day_stats()
+		_assert(
+			stats_after_failed["total_food_served"] == stats_before_failed["total_food_served"],
+			"failed order confirm records no served food"
+		)
 	if order != null and order.get("fishball_count") > 0:
 		var cooking: Node = game.get_node_or_null("CartMain")
 		if cooking and cooking.get("cooked_stock") != null:
@@ -149,7 +230,15 @@ func _test_game_day_loop() -> void:
 		var money_before: int = _stats().playerMoney
 		await oc.confirm_order(order)
 		await create_timer(0.5).timeout
-		_assert(_stats().playerMoney > money_before, "money increased after order confirm")
+		_assert(
+			_stats().playerMoney - money_before == int(order.fishball_count) * 7,
+			"fishball order pays per-item sale price"
+		)
+		var stats_after_confirm: Dictionary = _score().get_current_day_stats()
+		_assert(
+			stats_after_confirm["fishball_sold"] >= int(order.fishball_count),
+			"successful order confirm records fishball sold"
+		)
 	game.call("pause_day")
 	game.call("resume_day")
 	await game.end_day()

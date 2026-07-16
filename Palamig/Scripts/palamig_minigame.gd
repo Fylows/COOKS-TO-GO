@@ -1,5 +1,7 @@
 extends Control
 
+const Economy := preload("res://Player/EconomyBalance.gd")
+
 signal palamig_served(price: int)
 signal money_lost(amount: int)
 signal palamig_wasted(cups: int)
@@ -11,7 +13,7 @@ enum Step { POUR, EMPTY }
 @export var target_variation: float = 8.0
 @export var fill_tolerance: float = 12.0
 @export var pour_rate: float = 75.0
-@export var sale_price: int = 30
+@export var sale_price: int = Economy.PALAMIG_SELL_PRICE
 @export var waste_cost: int = 6
 @export var jug_cups: int = 10
 @export var dispenser_max_cups: int = 20
@@ -238,6 +240,7 @@ func _stop_pour() -> void:
 	var spilled := cup_fill >= 100.0
 	if not spilled and absf(cup_fill - target_fill) <= fill_tolerance:
 		total_money_earned += sale_price
+		ScoreController.record_palamig_sale(sale_price)
 		if stat_controller:
 			stat_controller.addMoney(sale_price)
 		palamig_served.emit(sale_price)
@@ -257,6 +260,7 @@ func _stop_pour() -> void:
 			feedback_label.text = "Cup served! +%s" % PlayerStatController.format_pesos(sale_price)
 	else:
 		total_money_lost += waste_cost
+		ScoreController.record_stall_deduction(waste_cost)
 		if stat_controller:
 			stat_controller.subtractMoney(waste_cost)
 		money_lost.emit(waste_cost)
