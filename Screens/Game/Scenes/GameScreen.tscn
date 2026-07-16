@@ -1,17 +1,20 @@
 [gd_scene format=3 uid="uid://dhw4oitpble61"]
 
 [ext_resource type="Script" uid="uid://d25bth6dg3orq" path="res://Screens/Game/Scripts/GameScreen.gd" id="1_iwem0"]
+[ext_resource type="Texture2D" uid="uid://ndxpg48l6bj6" path="res://bg.PNG" id="2_im1l0"]
 [ext_resource type="PackedScene" uid="uid://iq1mcvj1proc" path="res://Orders/Scenes/OrderContainer.tscn" id="2_vmgo5"]
-[ext_resource type="Texture2D" uid="uid://dmscxvdcf2qke" path="res://Screens/Assets/cart_main.PNG" id="3_2t8hv"]
 [ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="4_kkmty"]
+[ext_resource type="Texture2D" uid="uid://cqrep64wdhmdh" path="res://Shared/Assets/sauceempty_nopalamig.PNG" id="4_vbp14"]
 [ext_resource type="Script" uid="uid://br8ap87vd11cs" path="res://Cart/Scripts/CookingController.gd" id="4_vmgo5"]
 [ext_resource type="PackedScene" uid="uid://crbte2p67k7gm" path="res://Cart/Food/FoodItemSprite.tscn" id="5_2t8hv"]
 [ext_resource type="PackedScene" uid="uid://cnt482x3sc0bc" path="res://Screens/Day Over/Scenes/day_over.tscn" id="5_co4do"]
 [ext_resource type="Script" uid="uid://dm0mqwnoh5v3d" path="res://Screens/Shared/AudioToggles.gd" id="6_audio"]
 [ext_resource type="Texture2D" uid="uid://cyog5stu8nhnr" path="res://Shared/Assets/Fishball/Fishball_Raw.png" id="6_mctc2"]
 [ext_resource type="Script" uid="uid://djeq3a4ph822g" path="res://Cart/Scripts/FoodBtn.gd" id="7_ms0na"]
+[ext_resource type="Texture2D" uid="uid://c1vejgjl4jl2e" path="res://Screens/Shared/pan.PNG" id="7_vbp14"]
 [ext_resource type="Texture2D" uid="uid://c1odjv1kcef62" path="res://Shared/Assets/Kikiam/Kikiam_Raw.png" id="8_vbp14"]
 [ext_resource type="Texture2D" uid="uid://bhyb46itatfr5" path="res://Shared/Assets/Kwekwek/Kwekwek_Raw.png" id="10_d0sag"]
+[ext_resource type="Texture2D" uid="uid://c5p2j6uf7o8gp" path="res://Screens/Shared/tray.PNG" id="11_golv2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stock_panel"]
 content_margin_left = 12.0
@@ -34,6 +37,11 @@ size = Vector2(362.5, 214.99997)
 
 [node name="GameScreen2" type="Node2D" unique_id=333561420]
 script = ExtResource("1_iwem0")
+
+[node name="background" type="Sprite2D" parent="." unique_id=191611498]
+position = Vector2(966, 351)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_im1l0")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=520455930]
 layer = 10
@@ -110,13 +118,22 @@ offset_left = 576.0
 offset_right = 1540.0
 
 [node name="CartMain" type="Sprite2D" parent="." unique_id=481923727 node_paths=PackedStringArray("pan_area", "container_area")]
-position = Vector2(960, 540)
+position = Vector2(966.00006, 540)
 scale = Vector2(1.2, 1.2)
-texture = ExtResource("3_2t8hv")
+texture = ExtResource("4_vbp14")
 script = ExtResource("4_vmgo5")
 food_item_scene = ExtResource("5_2t8hv")
 pan_area = NodePath("PanArea")
 container_area = NodePath("ContainerArea")
+
+[node name="pan" type="Sprite2D" parent="CartMain" unique_id=603825319]
+position = Vector2(-1.9073486e-06, 70.83333)
+scale = Vector2(1.1, 1.1)
+texture = ExtResource("7_vbp14")
+
+[node name="Tray" type="Sprite2D" parent="CartMain" unique_id=1652501932]
+position = Vector2(48.333332, 0)
+texture = ExtResource("11_golv2")
 
 [node name="PanArea" type="Area2D" parent="CartMain" unique_id=2108540401]
 position = Vector2(-150, 278.3333)
