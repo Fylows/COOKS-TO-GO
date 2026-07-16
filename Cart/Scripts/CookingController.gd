@@ -168,15 +168,26 @@ func _get_polygon_center(polygon: PackedVector2Array) -> Vector2:
 
 
 func get_random_container_position() -> Vector2:
-	var shape := container_area.get_node("CollisionShape2D").shape as RectangleShape2D
-	var size := shape.size
-	var half_width := size.x / 2.0
-	var half_height := size.y / 2.0
+	if container_area == null:
+		push_error("CookingController.container_area is not assigned.")
+		return global_position
+
+	var collision := container_area.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if collision == null:
+		push_error("ContainerArea needs a CollisionShape2D child named CollisionShape2D.")
+		return container_area.global_position
+
+	var shape := collision.shape as RectangleShape2D
+	if shape == null:
+		push_error("ContainerArea CollisionShape2D needs a RectangleShape2D.")
+		return collision.global_position
+
+	var half_size := shape.size * 0.5
 	var offset := Vector2(
-		randf_range(-half_width, half_width),
-		randf_range(-half_height, half_height)
+		randf_range(-half_size.x, half_size.x),
+		randf_range(-half_size.y, half_size.y)
 	)
-	return container_area.global_position + offset
+	return collision.to_global(offset)
 
 
 func on_food_clicked(food_sprite) -> void:

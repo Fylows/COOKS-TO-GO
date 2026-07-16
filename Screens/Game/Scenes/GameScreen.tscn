@@ -33,7 +33,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_axv6w"]
-size = Vector2(259.16663, 137.5001)
+size = Vector2(169.16693, 49.16687)
 
 [node name="GameScreen2" type="Node2D" unique_id=333561420]
 script = ExtResource("1_iwem0")
@@ -148,7 +148,7 @@ polygon = PackedVector2Array(221.2179, -10.5448, 174.6488, 70.50037, 77.19873, 7
 position = Vector2(502.5, 322.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CartMain/ContainerArea" unique_id=1176843116]
-position = Vector2(-52.916748, -10.416809)
+position = Vector2(-97.91687, -54.583435)
 shape = SubResource("RectangleShape2D_axv6w")
 
 [node name="Fishball Button" type="TextureButton" parent="CartMain" unique_id=19515280 node_paths=PackedStringArray("cooking_controller")]
