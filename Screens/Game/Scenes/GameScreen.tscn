@@ -13,8 +13,8 @@
 [ext_resource type="Texture2D" uid="uid://cq7oarqcw1u1b" path="res://Shared/Assets/Trays/fishball_tray.PNG" id="7_vbp14"]
 [ext_resource type="Texture2D" uid="uid://bye10yuedmoc" path="res://Shared/Assets/Trays/tray.PNG" id="8_vbp14"]
 [ext_resource type="Texture2D" uid="uid://d1o3i2p8xxseh" path="res://Shared/Assets/Trays/kikiam_tray.PNG" id="9_d0sag"]
-[ext_resource type="Texture2D" uid="uid://bm3wm8bnhofcn" path="res://Shared/Assets/Betamax/Betamax_Raw.png" id="9_im1l0"]
-[ext_resource type="Texture2D" uid="uid://l5orlyqny07x" path="res://Shared/Assets/Trays/kwekkwek_tray.PNG" id="11_208d4"]
+[ext_resource type="Texture2D" uid="uid://c1vejgjl4jl2e" path="res://Screens/Shared/pan.PNG" id="10_pan"]
+[ext_resource type="Texture2D" uid="uid://l5orlyqny07x" path="res://Shared/Assets/Trays/kwekwek_tray.PNG" id="11_208d4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stock_panel"]
 content_margin_left = 12.0
@@ -33,7 +33,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_axv6w"]
-size = Vector2(362.5, 214.99997)
+size = Vector2(259.16663, 137.5001)
 
 [node name="GameScreen2" type="Node2D" unique_id=333561420]
 script = ExtResource("1_iwem0")
@@ -129,11 +129,12 @@ container_area = NodePath("ContainerArea")
 [node name="pan" type="Sprite2D" parent="CartMain" unique_id=603825319]
 position = Vector2(-1.9073486e-06, 70.83333)
 scale = Vector2(1.1, 1.1)
-texture = ExtResource("7_vbp14")
+texture = ExtResource("10_pan")
 
 [node name="Tray" type="Sprite2D" parent="CartMain" unique_id=1652501932]
-position = Vector2(48.333332, 0)
-texture = ExtResource("11_golv2")
+position = Vector2(473.74997, 348.74997)
+scale = Vector2(0.25705636, 0.30721614)
+texture = ExtResource("8_vbp14")
 
 [node name="PanArea" type="Area2D" parent="CartMain" unique_id=2108540401]
 position = Vector2(-150, 278.3333)
@@ -147,7 +148,7 @@ polygon = PackedVector2Array(221.2179, -10.5448, 174.6488, 70.50037, 77.19873, 7
 position = Vector2(502.5, 322.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CartMain/ContainerArea" unique_id=1176843116]
-position = Vector2(-1.25, 28.33319)
+position = Vector2(-52.916748, -10.416809)
 shape = SubResource("RectangleShape2D_axv6w")
 
 [node name="Fishball Button" type="TextureButton" parent="CartMain" unique_id=19515280 node_paths=PackedStringArray("cooking_controller")]
@@ -174,19 +175,6 @@ script = ExtResource("7_ms0na")
 food_type = 1
 cooking_controller = NodePath("..")
 stock_variable_name = "kikiamStock"
-
-[node name="Betamax Button" type="TextureButton" parent="CartMain" unique_id=768008471 node_paths=PackedStringArray("cooking_controller")]
-visible = false
-offset_left = -794.1666
-offset_top = 184.16664
-offset_right = 229.83337
-offset_bottom = 1208.1666
-scale = Vector2(0.14476849, 0.1730817)
-texture_normal = ExtResource("9_im1l0")
-script = ExtResource("7_ms0na")
-food_type = 2
-cooking_controller = NodePath("..")
-stock_variable_name = "betamaxStock"
 
 [node name="Kwekwek Button" type="TextureButton" parent="CartMain" unique_id=539684730 node_paths=PackedStringArray("cooking_controller")]
 offset_left = -788.3333

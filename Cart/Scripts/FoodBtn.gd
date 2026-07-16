@@ -4,7 +4,6 @@ class_name FoodBtn
 @export var food_type: FoodItem.FoodName
 @export var cooking_controller: CookingController
 @export var stock_variable_name: String
-@export var disabled_texture: Texture2D
 
 ## On-screen icon size after parent CartMain scale. Full 1024px textures overlapped.
 const HIT := 180.0
@@ -15,14 +14,11 @@ const DISPLAY_NAME := {
 	FoodItem.FoodName.KWEKWEK: "Kwek-Kwek",
 }
 
-var _normal_texture: Texture2D
 var _base_modulate := Color.WHITE
 var _pulse_tween: Tween
 
 
 func _ready() -> void:
-	_normal_texture = texture_normal
-	
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
@@ -84,13 +80,7 @@ func _ensure_cook_label() -> void:
 
 func _process(_delta: float) -> void:
 	var stock = PlayerStats.get(stock_variable_name)
-
-	if stock == null or stock <= 0:
-		texture_normal = disabled_texture
-		disabled = true
-	else:
-		texture_normal = _normal_texture
-		disabled = false
+	disabled = stock == null or stock <= 0
 
 
 func start_cook_pulse() -> void:
