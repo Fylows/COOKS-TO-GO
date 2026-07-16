@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1uiqf6s3cfxb"
-path="res://.godot/imported/Betamax_CookingAnim.png-c9b6f38887790c5ebae24c25ce53baa1.ctex"
+uid="uid://qev8dgoaume1"
+path="res://.godot/imported/saucefull_nopalamig.PNG-30d959989ccb8ee8a25a4ccb9aa33bc1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Betamax/Betamax_CookingAnim.png"
-dest_files=["res://.godot/imported/Betamax_CookingAnim.png-c9b6f38887790c5ebae24c25ce53baa1.ctex"]
+source_file="res://Shared/Assets/saucefull_nopalamig.PNG"
+dest_files=["res://.godot/imported/saucefull_nopalamig.PNG-30d959989ccb8ee8a25a4ccb9aa33bc1.ctex"]
 
 [params]
 

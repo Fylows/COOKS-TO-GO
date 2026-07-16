@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://2jtahbk4eev5"
-path="res://.godot/imported/Betamax_Cooked.png-13fa4a7ca9f0d108400b896d60a47230.ctex"
+uid="uid://c468yydp23k07"
+path="res://.godot/imported/palamig_full.PNG-99a2515bcca1ac915fb2b2ecca1f3d3b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Betamax/Betamax_Cooked.png"
-dest_files=["res://.godot/imported/Betamax_Cooked.png-13fa4a7ca9f0d108400b896d60a47230.ctex"]
+source_file="res://Screens/Shared/palamig_full.PNG"
+dest_files=["res://.godot/imported/palamig_full.PNG-99a2515bcca1ac915fb2b2ecca1f3d3b.ctex"]
 
 [params]
 

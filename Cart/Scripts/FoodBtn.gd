@@ -12,7 +12,6 @@ const HIT := 180.0
 const DISPLAY_NAME := {
 	FoodItem.FoodName.FISHBALL: "Fishball",
 	FoodItem.FoodName.KIKIAM: "Kikiam",
-	FoodItem.FoodName.BETAMAX: "Betamax",
 	FoodItem.FoodName.KWEKWEK: "Kwek-Kwek",
 }
 

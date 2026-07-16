@@ -1,6 +1,8 @@
 class_name FoodController
 
-const BURNT_MODULATE := Color(0.28, 0.18, 0.12, 1.0)
+const OIL_COOKING_MODULATE := Color(0.82, 0.74, 0.56, 1.0)
+const OIL_COOKED_MODULATE := Color(0.78, 0.68, 0.50, 1.0)
+const OIL_BURNT_MODULATE := Color(0.22, 0.16, 0.10, 1.0)
 
 
 # Update the cook_state of the food_item in FoodItem.gd depending on time_elapsed/delta
@@ -27,7 +29,7 @@ static func update_visual(item: FoodItem, sprite: Sprite2D, anim_sprite: Animate
 		sprite.visible = false
 		anim_sprite.visible = true
 		sprite.modulate = Color.WHITE
-		anim_sprite.modulate = Color.WHITE
+		anim_sprite.modulate = OIL_COOKING_MODULATE if item.location == FoodItem.Location.PAN else Color.WHITE
 		# Check res://Cart/Food/FoodItemSprite.tscn then FoodItemAnimSprite for the split of each frame
 		var anim_name = "%s_cooking" % food_name_str
 
@@ -47,12 +49,15 @@ static func update_visual(item: FoodItem, sprite: Sprite2D, anim_sprite: Animate
 	var food_name_cap = FoodItem.FoodName.keys()[item.food_name].capitalize()
 	var cook_state_str = FoodItem.CookState.keys()[item.cook_state].capitalize()
 	var path = "res://Shared/Assets/%s/%s_%s.png" % [food_name_cap, food_name_cap, cook_state_str]
+	var is_in_pan := item.location == FoodItem.Location.PAN
 	# No dedicated burnt art — reuse cooked and darken.
 	if item.cook_state == FoodItem.CookState.BURNT:
 		var cooked_path = "res://Shared/Assets/%s/%s_Cooked.png" % [food_name_cap, food_name_cap]
 		if ResourceLoader.exists(cooked_path):
 			path = cooked_path
-		sprite.modulate = BURNT_MODULATE
+		sprite.modulate = OIL_BURNT_MODULATE if is_in_pan else Color.WHITE
+	elif item.cook_state == FoodItem.CookState.COOKED and is_in_pan:
+		sprite.modulate = OIL_COOKED_MODULATE
 	else:
 		sprite.modulate = Color.WHITE
 

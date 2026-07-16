@@ -216,7 +216,7 @@ func _apply_overlay_theme(victory: bool) -> void:
 		panel_style.border_color = Color(0.45, 0.08, 0.1, 1)
 		_title.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
 		_ending_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
-		_primary_button.text = "Start New Game"
+		_primary_button.text = "Start over"
 		_secondary_button.visible = false
 
 
@@ -313,7 +313,7 @@ func _build_overlay() -> void:
 	vbox.add_child(_stats_label)
 
 	_primary_button = Button.new()
-	_primary_button.text = "Start New Game"
+	_primary_button.text = "Start over"
 	_primary_button.custom_minimum_size = Vector2(0, 48)
 	_primary_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_primary_button.add_theme_font_size_override("font_size", 20)
@@ -359,7 +359,7 @@ func _on_primary_pressed() -> void:
 	if is_victory_toast:
 		dismiss_victory()
 		return
-	PlayerStatController.prompt_restart_game(self)
+	PlayerStatController.restart_game()
 
 
 func _on_secondary_pressed() -> void:

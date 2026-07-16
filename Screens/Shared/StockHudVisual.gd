@@ -14,8 +14,6 @@ const PATH_KWEK_RAW := "res://Shared/Assets/Kwekwek/Kwekwek_Raw.png"
 const PATH_KWEK_COOKED := "res://Shared/Assets/Kwekwek/Kwekwek_Cooked.png"
 const PATH_KIKIAM_RAW := "res://Shared/Assets/Kikiam/Kikiam_Raw.png"
 const PATH_KIKIAM_COOKED := "res://Shared/Assets/Kikiam/Kikiam_Cooked.png"
-const PATH_BETAMAX_RAW := "res://Shared/Assets/Betamax/Betamax_Raw.png"
-const PATH_BETAMAX_COOKED := "res://Shared/Assets/Betamax/Betamax_Cooked.png"
 const PATH_PALAMIG := "res://Shared/Assets/Palamig/cup_full.PNG"
 const PATH_SAUCE := "res://Shared/Assets/sauce_icon.png"
 
@@ -67,19 +65,16 @@ static func _stock_fingerprint(cooking: CookingController) -> String:
 	var ready_fb := cooking.get_cooked_count(FoodItem.FoodName.FISHBALL) if cooking else 0
 	var ready_kw := cooking.get_cooked_count(FoodItem.FoodName.KWEKWEK) if cooking else 0
 	var ready_ki := cooking.get_cooked_count(FoodItem.FoodName.KIKIAM) if cooking else 0
-	var ready_bx := cooking.get_cooked_count(FoodItem.FoodName.BETAMAX) if cooking else 0
-	return "%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%s" % [
+	return "%d:%d:%d:%d:%d:%d:%d:%d:%d:%s" % [
 		PlayerStats.fishballStock,
 		PlayerStats.kwekwekStock,
 		PlayerStats.kikiamStock,
-		PlayerStats.betamaxStock,
 		PlayerStats.palamigStock,
 		int(PlayerStats.boughtSauce),
 		int(PlayerStats.palamigUP),
 		ready_fb,
 		ready_kw,
 		ready_ki,
-		ready_bx,
 		"stall" if cooking else "bagged",
 	]
 
@@ -102,8 +97,6 @@ static func refresh_bagged(vbox: VBoxContainer) -> void:
 	_add_chip(bagged, _tex(PATH_FISHBALL_RAW), "FB", str(PlayerStats.fishballStock), PlayerStats.fishballStock <= 0)
 	_add_chip(bagged, _tex(PATH_KWEK_RAW), "KW", str(PlayerStats.kwekwekStock), PlayerStats.kwekwekStock <= 0)
 	_add_chip(bagged, _tex(PATH_KIKIAM_RAW), "KI", str(PlayerStats.kikiamStock), PlayerStats.kikiamStock <= 0)
-	if PlayerStats.betamaxStock > 0:
-		_add_chip(bagged, _tex(PATH_BETAMAX_RAW), "BX", str(PlayerStats.betamaxStock), false)
 	_fill_extras(bagged)
 	bagged.visible = true
 	extra.visible = false
@@ -128,22 +121,17 @@ static func refresh_stall(vbox: VBoxContainer, cooking: CookingController) -> vo
 	var ready_fb := cooking.get_cooked_count(FoodItem.FoodName.FISHBALL) if cooking else 0
 	var ready_kw := cooking.get_cooked_count(FoodItem.FoodName.KWEKWEK) if cooking else 0
 	var ready_ki := cooking.get_cooked_count(FoodItem.FoodName.KIKIAM) if cooking else 0
-	var ready_bx := cooking.get_cooked_count(FoodItem.FoodName.BETAMAX) if cooking else 0
 
 	_add_caption_chip(ready, "Ready")
 	_add_chip(ready, _tex(PATH_FISHBALL_COOKED), "FB", str(ready_fb), ready_fb <= 0)
 	_add_chip(ready, _tex(PATH_KWEK_COOKED), "KW", str(ready_kw), ready_kw <= 0)
 	_add_chip(ready, _tex(PATH_KIKIAM_COOKED), "KI", str(ready_ki), ready_ki <= 0)
-	if ready_bx > 0 or PlayerStats.betamaxStock > 0:
-		_add_chip(ready, _tex(PATH_BETAMAX_COOKED), "BX", str(ready_bx), ready_bx <= 0)
 	ready.visible = true
 
 	_add_caption_chip(raw, "Raw")
 	_add_chip(raw, _tex(PATH_FISHBALL_RAW), "FB", str(PlayerStats.fishballStock), PlayerStats.fishballStock <= 0)
 	_add_chip(raw, _tex(PATH_KWEK_RAW), "KW", str(PlayerStats.kwekwekStock), PlayerStats.kwekwekStock <= 0)
 	_add_chip(raw, _tex(PATH_KIKIAM_RAW), "KI", str(PlayerStats.kikiamStock), PlayerStats.kikiamStock <= 0)
-	if PlayerStats.betamaxStock > 0 or ready_bx > 0:
-		_add_chip(raw, _tex(PATH_BETAMAX_RAW), "BX", str(PlayerStats.betamaxStock), PlayerStats.betamaxStock <= 0)
 	raw.visible = true
 
 	_fill_extras(extra)

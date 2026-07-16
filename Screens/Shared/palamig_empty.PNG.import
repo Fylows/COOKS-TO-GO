@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c8h85ad3bya84"
-path="res://.godot/imported/Betamax_RawAnim.png-ab42b3fa57e31bd2df62039c845857b4.ctex"
+uid="uid://bfu8uagkitr1n"
+path="res://.godot/imported/palamig_empty.PNG-873feac9f965bee4c019320868a6e637.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Betamax/Betamax_RawAnim.png"
-dest_files=["res://.godot/imported/Betamax_RawAnim.png-ab42b3fa57e31bd2df62039c845857b4.ctex"]
+source_file="res://Screens/Shared/palamig_empty.PNG"
+dest_files=["res://.godot/imported/palamig_empty.PNG-873feac9f965bee4c019320868a6e637.ctex"]
 
 [params]
 

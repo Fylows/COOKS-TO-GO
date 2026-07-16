@@ -1,9 +1,10 @@
 [gd_scene format=3 uid="uid://dhw4oitpble61"]
 
 [ext_resource type="Script" uid="uid://d25bth6dg3orq" path="res://Screens/Game/Scripts/GameScreen.gd" id="1_iwem0"]
+[ext_resource type="Texture2D" uid="uid://ndxpg48l6bj6" path="res://bg.PNG" id="2_im1l0"]
 [ext_resource type="PackedScene" uid="uid://iq1mcvj1proc" path="res://Orders/Scenes/OrderContainer.tscn" id="2_vmgo5"]
-[ext_resource type="Texture2D" uid="uid://dmscxvdcf2qke" path="res://Screens/Assets/cart_main.PNG" id="3_2t8hv"]
 [ext_resource type="Script" uid="uid://c723lttww2v05" path="res://Screens/EOD/Scripts/cameraMovement.gd" id="4_kkmty"]
+[ext_resource type="Texture2D" uid="uid://cqrep64wdhmdh" path="res://Shared/Assets/sauceempty_nopalamig.PNG" id="4_vbp14"]
 [ext_resource type="Script" uid="uid://br8ap87vd11cs" path="res://Cart/Scripts/CookingController.gd" id="4_vmgo5"]
 [ext_resource type="PackedScene" uid="uid://crbte2p67k7gm" path="res://Cart/Food/FoodItemSprite.tscn" id="5_2t8hv"]
 [ext_resource type="PackedScene" uid="uid://cnt482x3sc0bc" path="res://Screens/Day Over/Scenes/day_over.tscn" id="5_co4do"]
@@ -31,14 +32,16 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_fousb"]
-radius = 315.03198
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_axv6w"]
 size = Vector2(362.5, 214.99997)
 
 [node name="GameScreen2" type="Node2D" unique_id=333561420]
 script = ExtResource("1_iwem0")
+
+[node name="background" type="Sprite2D" parent="." unique_id=191611498]
+position = Vector2(966, 351)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_im1l0")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=520455930]
 layer = 10
@@ -115,21 +118,30 @@ offset_left = 576.0
 offset_right = 1540.0
 
 [node name="CartMain" type="Sprite2D" parent="." unique_id=481923727 node_paths=PackedStringArray("pan_area", "container_area")]
-position = Vector2(960, 540)
+position = Vector2(966.00006, 540)
 scale = Vector2(1.2, 1.2)
-texture = ExtResource("3_2t8hv")
+texture = ExtResource("4_vbp14")
 script = ExtResource("4_vmgo5")
 food_item_scene = ExtResource("5_2t8hv")
 pan_area = NodePath("PanArea")
 container_area = NodePath("ContainerArea")
 
+[node name="pan" type="Sprite2D" parent="CartMain" unique_id=603825319]
+position = Vector2(-1.9073486e-06, 70.83333)
+scale = Vector2(1.1, 1.1)
+texture = ExtResource("7_vbp14")
+
+[node name="Tray" type="Sprite2D" parent="CartMain" unique_id=1652501932]
+position = Vector2(48.333332, 0)
+texture = ExtResource("11_golv2")
+
 [node name="PanArea" type="Area2D" parent="CartMain" unique_id=2108540401]
 position = Vector2(-150, 278.3333)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CartMain/PanArea" unique_id=413010593]
-position = Vector2(39.166668, 89.166664)
-scale = Vector2(0.9929829, 0.8595677)
-shape = SubResource("CircleShape2D_fousb")
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="CartMain/PanArea" unique_id=413010593]
+position = Vector2(56.235676, 45.415066)
+scale = Vector2(0.96630657, 0.75061035)
+polygon = PackedVector2Array(221.2179, -10.5448, 174.6488, 70.50037, 77.19873, 76.05139, -162.54572, 62.72888, -240.1608, 32.753296, -243.61038, -69.3858, -216.87628, -157.09222, -82.343445, -223.70465, 70.29962, -218.15363, 196.20856, -128.2268)
 
 [node name="ContainerArea" type="Area2D" parent="CartMain" unique_id=1949242202]
 position = Vector2(502.5, 322.5)
@@ -185,13 +197,14 @@ scale = Vector2(0.14817233, 0.17635499)
 texture_normal = ExtResource("11_208d4")
 texture_disabled = ExtResource("8_vbp14")
 script = ExtResource("7_ms0na")
-food_type = 3
+food_type = 2
 cooking_controller = NodePath("..")
 stock_variable_name = "kwekwekStock"
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1981916952]
 position = Vector2(966, 539)
 script = ExtResource("4_kkmty")
+max_offset = 150.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1490396313]
 layer = 999

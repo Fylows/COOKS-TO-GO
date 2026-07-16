@@ -61,6 +61,7 @@ func _run() -> void:
 	await _test_day_over_to_eod()
 	await _test_family_gate()
 	await _test_events_and_wins()
+	await _test_game_over_start_over_returns_to_title()
 	_finish()
 
 
@@ -327,6 +328,33 @@ func _test_events_and_wins() -> void:
 	_assert(_game_state().is_victory_toast, "good ending toast shown")
 	_assert(_score().has_unlocked_ending("isang_linggo"), "good ending unlocked")
 	_game_state().dismiss_victory()
+
+
+func _test_game_over_start_over_returns_to_title() -> void:
+	_step += 1
+	_log("Step %d: game-over start over" % _step)
+	_reset_player_state()
+	await _clear_scenes()
+	var game_state := _game_state()
+	game_state.is_game_over = true
+	game_state.is_victory_toast = false
+	game_state.ending_id = "barangay_notice"
+	game_state.reason = "Test game over"
+	game_state.cause_detail = "Test detail"
+	game_state._apply_overlay_theme(false)
+	game_state._present_overlay()
+	await process_frame
+	game_state._on_primary_pressed()
+	await process_frame
+	await process_frame
+	_assert(current_scene != null, "scene changed after game-over start over")
+	_assert(
+		current_scene != null and current_scene.scene_file_path == _stat_ctrl().TITLE_SCENE,
+		"game-over start over returns to title"
+	)
+	_assert(not game_state.is_game_over, "game-over state clears after start over")
+	_assert(game_state.get_node_or_null("RestartConfirmDialog") == null, "game-over start over skips restart dialog")
+	await _clear_scenes()
 
 
 func _clear_scenes() -> void:
