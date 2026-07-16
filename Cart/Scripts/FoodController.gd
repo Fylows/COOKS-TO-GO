@@ -50,8 +50,9 @@ static func update_visual(item: FoodItem, sprite: Sprite2D, anim_sprite: Animate
 
 		# Checks if the animation playing is not the same animation
 		# Prevents the same animation from playing
-		if anim_sprite.animation != anim_name:
+		if anim_sprite.animation != anim_name or not anim_sprite.is_playing():
 			anim_sprite.play(anim_name)
+			
 		return
 
 	# Static sprite (raw, cooked, burnt)

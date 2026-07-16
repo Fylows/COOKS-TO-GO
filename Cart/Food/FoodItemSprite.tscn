@@ -181,8 +181,8 @@ script = ExtResource("2_b2rbm")
 position = Vector2(155, 156)
 scale = Vector2(0.3, 0.3)
 sprite_frames = SubResource("SpriteFrames_n2fls")
-animation = &"kwekwek_cooking"
-frame_progress = 0.2040116
+animation = &"fishball_cooking"
+frame_progress = 0.31135198
 speed_scale = 0.75
 
 [node name="FoodItemSprite" type="Sprite2D" parent="." unique_id=1390722012]
