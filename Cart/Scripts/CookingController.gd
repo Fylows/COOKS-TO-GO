@@ -12,7 +12,6 @@ signal cooked_stock_changed
 var cooked_stock := {
 	FoodItem.FoodName.FISHBALL: 0,
 	FoodItem.FoodName.KIKIAM: 0,
-	FoodItem.FoodName.BETAMAX: 0,
 	FoodItem.FoodName.KWEKWEK: 0,
 }
 
@@ -78,6 +77,12 @@ func spawn_food_item(food: FoodItem.FoodName) -> void:
 
 ## Returns false if pan is full (caller should refund stock).
 func try_spawn_food_item(food: FoodItem.FoodName) -> bool:
+	if food_item_scene == null:
+		push_error("CookingController.food_item_scene is not assigned or failed to load.")
+		return false
+	if not FoodItem.FoodData.has(food):
+		push_error("Unknown food type: %s" % food)
+		return false
 	var item = FoodItem.new(food)
 	item.location = FoodItem.Location.PAN
 	var had_pan_items := pan_items.size() > 0
