@@ -2093,7 +2093,7 @@ func _layout_new_day_hint() -> void:
 	# Upper phone glass, under the wallet strip and above the app grid.
 	# Do not anchor to Go to bed; that always collides with the bed pill.
 	var phone_x := -27.0
-	var top := -430.0
+	var top := -200.0
 	if wallet_hud != null and wallet_hud.visible:
 		top = wallet_hud.position.y + wallet_hud.size.y + 10.0
 	# Stay clear of the app grid and far above Go to bed (~y 142).
@@ -2611,7 +2611,7 @@ func _setup_first_night_coach() -> void:
 	tutorial_label.name = "CoachLabel"
 	tutorial_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tutorial_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	tutorial_label.add_theme_font_size_override("font_size", 16)
+	tutorial_label.add_theme_font_size_override("font_size", 30)
 	tutorial_label.add_theme_color_override("font_color", Color(0.94, 0.97, 1.0))
 	tutorial_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tutorial_panel.add_child(tutorial_label)
