@@ -10,10 +10,10 @@ config_version=5
 
 [application]
 
-config/name="game jam jebal"
+config/name="Cooks to Go!"
 run/main_scene="uid://drwk50tl8svlb"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://wccjkg3pcllr"
 
 [autoload]
 

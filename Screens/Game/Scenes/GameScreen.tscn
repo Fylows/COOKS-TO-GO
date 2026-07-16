@@ -168,7 +168,7 @@ cooking_controller = NodePath("..")
 stock_variable_name = "kwekwekStock"
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1981916952]
-position = Vector2(948, 540)
+position = Vector2(966, 539)
 script = ExtResource("4_kkmty")
 max_offset = 150.0
 

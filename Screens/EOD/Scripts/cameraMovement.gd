@@ -1,10 +1,10 @@
 extends Camera2D
 
 # Mouse-follow settings
-@export var deadZone: int = 10
+@export var deadZone: int = 140
 @export var mouse_influence: float = 0.5   # how strongly camera follows past the deadzone
 @export var mouse_smoothing: float = 4.0   # higher = snappier, lower = more floaty
-@export var max_offset: float = 100.0  # tune this so it never exceeds your safe margin
+@export var max_offset: float = 50.0  # tune this so it never exceeds your safe margin
 
 # Idle wobble settings
 @export var wobble_amount: float = 3.0

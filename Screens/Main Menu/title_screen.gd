@@ -7,6 +7,7 @@ const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
 @onready var hint_label: Label = $UiLayer/CenterRoot/Column/NamePanel/VBox/HintLabel
 @onready var high_score_label: Label = $UiLayer/CenterRoot/Column/HighScoreLabel
 @onready var restart_button: Button = $UiLayer/CenterRoot/Column/RestartButton
+@onready var camera := $Camera2D
 
 var resume_button: Button
 var endings_button: Button
@@ -17,20 +18,15 @@ var endings_collection_label: Label
 var endings_headline_label: Label
 var endings_sub_label: Label
 
-
 func _ready() -> void:
-	DayTransition.release_input()
 	BgmController.play_track("title")
-	PlayerStats.ensure_player_name()
-	name_field.text = PlayerStats.player_name
-	name_field.grab_focus()
-	name_field.select_all()
-	_setup_resume_button()
-	_setup_endings_progress_panel()
-	_setup_endings_button()
-	_setup_endings_gallery()
-	_refresh_title_state()
-	_play_title_intro()
+	DayTransition.release_input()
+	
+	$UiLayer/CenterRoot.visible = false
+	$UiLayer/PanelContainer.visible = true
+	camera.position.x = 657.0
+	camera.position.y = 384.0
+	camera.zoom = Vector2.ONE * 1.5
 
 
 func _play_title_intro() -> void:
@@ -516,13 +512,26 @@ func _on_endings_mouse_entered() -> void:
 
 func _on_start_pressed(_text: String = "") -> void:
 	SfxController.play_click()
-	var typed := name_field.text.strip_edges()
-	if not typed.is_empty():
-		PlayerStats.player_name = typed
-	if PlayerStatController.can_resume_run():
-		PlayerStatController.resume_run()
-		return
-	get_tree().change_scene_to_file(PlayerStatController.EOD_SCENE)
+	#var typed := name_field.text.strip_edges()
+	#if not typed.is_empty():
+		#PlayerStats.player_name = typed
+	#if PlayerStatController.can_resume_run():
+		#PlayerStatController.resume_run()
+		#return
+	#get_tree().change_scene_to_file(PlayerStatController.EOD_SCENE)
+	PlayerStats.ensure_player_name()
+	name_field.text = PlayerStats.player_name
+	name_field.grab_focus()
+	name_field.select_all()
+	_setup_resume_button()
+	_setup_endings_progress_panel()
+	_setup_endings_button()
+	_setup_endings_gallery()
+	_refresh_title_state()
+	_play_title_intro()
+	$UiLayer/CenterRoot.visible = true
+	$UiLayer/PanelContainer.visible = false
+	camera.transition_to(960.0, 1382, 1)  # zoom in on a point
 
 
 func _on_resume_pressed() -> void:
@@ -566,3 +575,14 @@ func _on_credit_mouse_entered() -> void:
 
 func _on_restart_mouse_entered() -> void:
 	SfxController.play_hover()
+
+
+func _on_name_field_text_submitted(new_text: String) -> void:
+	SfxController.play_click()
+	var typed := name_field.text.strip_edges()
+	if not typed.is_empty():
+		PlayerStats.player_name = typed
+	if PlayerStatController.can_resume_run():
+		PlayerStatController.resume_run()
+		return
+	get_tree().change_scene_to_file(PlayerStatController.EOD_SCENE)
