@@ -56,9 +56,6 @@ static func format_stall_stock(cooking: CookingController) -> String:
 		"Kwek %d" % PlayerStats.kwekwekStock,
 		"Kikiam %d" % PlayerStats.kikiamStock,
 	])
-	if PlayerStats.betamaxStock > 0 or (cooking and cooking.get_cooked_count(FoodItem.FoodName.BETAMAX) > 0):
-		ready_parts.append("Betamax %d" % (cooking.get_cooked_count(FoodItem.FoodName.BETAMAX) if cooking else 0))
-		raw_parts.append("Betamax %d" % PlayerStats.betamaxStock)
 	var lines: PackedStringArray = PackedStringArray([
 		"Ready  %s" % " · ".join(ready_parts),
 		"Raw  %s" % " · ".join(raw_parts),
@@ -79,8 +76,6 @@ static func format_bagged_stock_strip() -> String:
 		"Kwek %d" % PlayerStats.kwekwekStock,
 		"Kikiam %d" % PlayerStats.kikiamStock,
 	])
-	if PlayerStats.betamaxStock > 0:
-		parts.append("Betamax %d" % PlayerStats.betamaxStock)
 	if PlayerStats.boughtSauce:
 		parts.append("Sauce ok")
 	else:

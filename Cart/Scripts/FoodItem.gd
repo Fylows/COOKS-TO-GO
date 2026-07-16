@@ -3,7 +3,6 @@ class_name FoodItem
 enum FoodName {
 	FISHBALL,
 	KIKIAM,
-	BETAMAX,
 	KWEKWEK,
 }
 
@@ -24,7 +23,6 @@ enum CookState {
 const FoodData := {
 	FoodName.FISHBALL: {"cook_time": 10.0, "burn_time": 20.0},
 	FoodName.KIKIAM: {"cook_time": 16.0, "burn_time": 25.0},
-	FoodName.BETAMAX: {"cook_time": 7.0, "burn_time": 15.0},
 	FoodName.KWEKWEK: {"cook_time": 10.0, "burn_time": 20.0},
 }
 

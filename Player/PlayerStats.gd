@@ -18,7 +18,6 @@ const START_KWEKWEK := 10
 var fishballStock : int = START_FISHBALL
 var kwekwekStock : int = START_KWEKWEK
 var kikiamStock : int = 0
-var betamaxStock: int = 0
 var boughtSauce : bool = false
 var palamigStock : int = 0
 
@@ -140,7 +139,6 @@ func reset_new_game() -> void:
 	fishballStock = START_FISHBALL
 	kwekwekStock = START_KWEKWEK
 	kikiamStock = 0
-	betamaxStock = 0
 	boughtSauce = false
 	palamigStock = 0
 	kikiamPurchasable = false

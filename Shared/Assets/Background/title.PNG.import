@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bm3wm8bnhofcn"
-path="res://.godot/imported/Betamax_Raw.png-4b8b715af0fa17eb9ed9a7f9ad8c959e.ctex"
+uid="uid://2adxymcxiytx"
+path="res://.godot/imported/title.PNG-b9f09338534fd1d10b8986334a2c6723.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Betamax/Betamax_Raw.png"
-dest_files=["res://.godot/imported/Betamax_Raw.png-4b8b715af0fa17eb9ed9a7f9ad8c959e.ctex"]
+source_file="res://Shared/Assets/Background/title.PNG"
+dest_files=["res://.godot/imported/title.PNG-b9f09338534fd1d10b8986334a2c6723.ctex"]
 
 [params]
 

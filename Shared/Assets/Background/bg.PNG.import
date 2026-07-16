@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://2jtahbk4eev5"
-path="res://.godot/imported/Betamax_Cooked.png-13fa4a7ca9f0d108400b896d60a47230.ctex"
+uid="uid://cils78fel21lh"
+path="res://.godot/imported/bg.PNG-9b68f5b728f4902aa816e6f54c2c9e1f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Shared/Assets/Betamax/Betamax_Cooked.png"
-dest_files=["res://.godot/imported/Betamax_Cooked.png-13fa4a7ca9f0d108400b896d60a47230.ctex"]
+source_file="res://Shared/Assets/Background/bg.PNG"
+dest_files=["res://.godot/imported/bg.PNG-9b68f5b728f4902aa816e6f54c2c9e1f.ctex"]
 
 [params]
 
