@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ndxpg48l6bj6"
-path="res://.godot/imported/bg.PNG-d50adc752e4cc209430df4352c986c61.ctex"
+uid="uid://cq7oarqcw1u1b"
+path="res://.godot/imported/fishball_tray.PNG-3452e594e8362fa195f562cc188f00e6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://bg.PNG"
-dest_files=["res://.godot/imported/bg.PNG-d50adc752e4cc209430df4352c986c61.ctex"]
+source_file="res://Shared/Assets/Trays/fishball_tray.PNG"
+dest_files=["res://.godot/imported/fishball_tray.PNG-3452e594e8362fa195f562cc188f00e6.ctex"]
 
 [params]
 
