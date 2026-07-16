@@ -54,6 +54,7 @@ func _score() -> Node:
 func _run() -> void:
 	_log("=== COOKS-TO-GO E2E ===")
 	await _test_autoloads()
+	await _test_order_quantities()
 	await _test_eod_buying()
 	await _test_game_day_loop()
 	await _test_day_over_to_eod()
@@ -102,6 +103,14 @@ func _reset_player_state() -> void:
 	_family().is_family_sick = false
 	_family().on_rent_paid()
 	_game_state().reset_for_new_game()
+
+
+func _test_order_quantities() -> void:
+	_step += 1
+	_log("Step %d: order quantities" % _step)
+	var order_controller := OrderController.new()
+	_assert(order_controller.get_order_quantity("palamig", 50) == 1, "palamig orders stay at one cup")
+	order_controller.free()
 
 
 func _test_eod_buying() -> void:

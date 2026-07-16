@@ -8,6 +8,7 @@ const ORDER_SCENE: PackedScene = preload("res://Orders/Scenes/Order.tscn")
 
 const FOOD_QUANTITY_LIST: Array[int] = [1,3,5,7,10]
 const FOOD_PROGRESSION_DAYS_DIVISOR: int = 5
+const PALAMIG_ORDER_QUANTITY: int = 1
 const SELL_PRICE_PER_ITEM: int = 5
 const ORDER_SLOT_COUNT: int = 5
 const ORDER_SLOT_SIZE: Vector2 = Vector2(180, 240)
@@ -70,6 +71,12 @@ func get_random_food_quantity(days_passed: int) -> int:
 	return sliced.pick_random()
 
 
+func get_order_quantity(food: String, days_passed: int) -> int:
+	if food == "palamig":
+		return PALAMIG_ORDER_QUANTITY
+	return get_random_food_quantity(days_passed)
+
+
 func get_order_lifetime_seconds(days_passed: int) -> float:
 	var decrease_steps: int = floori(float(maxi(days_passed, 0)) / ORDER_LIFETIME_DECREASE_INTERVAL)
 	var lifetime: float = ORDER_START_LIFETIME_SECONDS - (decrease_steps * ORDER_LIFETIME_DECREASE)
@@ -109,7 +116,7 @@ func create_order(days_passed: int, force: bool = false) -> Order:
 
 	# Keep previous implementation for prasing selected_fooditem for scalability
 	for food: String in selected_food:
-		var quantity: int = get_random_food_quantity(days_passed)
+		var quantity: int = get_order_quantity(food, days_passed)
 
 		match food:
 			"fishball":
