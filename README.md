@@ -172,17 +172,17 @@ Graphic wallet + stock chips. **Go Home** advances the calendar, collects loan p
 ```mermaid
 flowchart TB
   subgraph screens [Screens]
-    Title2[Main Menu]
-    EOD2[EOD phone]
-    Game[Game stall]
-    DayOver2[Day Over]
+	Title2[Main Menu]
+	EOD2[EOD phone]
+	Game[Game stall]
+	DayOver2[Day Over]
   end
   subgraph systems [Autoloads / systems]
-    Stats[PlayerStats]
-    Family[FamilyState]
-    Loan[Loan / Sbatter]
-    Audio[Bgm / Sfx]
-    Orders[OrderController]
+	Stats[PlayerStats]
+	Family[FamilyState]
+	Loan[Loan / Sbatter]
+	Audio[Bgm / Sfx]
+	Orders[OrderController]
   end
   Title2 --> EOD2
   EOD2 --> Game

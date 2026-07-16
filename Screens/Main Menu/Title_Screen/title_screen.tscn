@@ -11,9 +11,13 @@
 [ext_resource type="Texture2D" uid="uid://dg22txshbim16" path="res://Screens/Main Menu/Buttons/credits.png" id="9_gj5p0"]
 [ext_resource type="Texture2D" uid="uid://d4mqh0qh1xw86" path="res://Screens/Main Menu/Buttons/credits_pressed.png" id="10_e8jtp"]
 [ext_resource type="Texture2D" uid="uid://cioe5yp524fot" path="res://Screens/Main Menu/Buttons/credits_highlight.png" id="11_mw5eg"]
-[ext_resource type="Script" path="res://Screens/Shared/AudioToggles.gd" id="12_audio"]
+[ext_resource type="Script" uid="uid://dm0mqwnoh5v3d" path="res://Screens/Shared/AudioToggles.gd" id="12_audio"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_name_panel"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 18.0
 bg_color = Color(0.04, 0.05, 0.09, 0.96)
 border_width_left = 3
 border_width_top = 3
@@ -24,12 +28,12 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-content_margin_left = 24.0
-content_margin_top = 18.0
-content_margin_right = 24.0
-content_margin_bottom = 18.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_name_field"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
 bg_color = Color(0.08, 0.09, 0.14, 1)
 border_width_left = 2
 border_width_top = 2
@@ -40,21 +44,18 @@ corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
 
 [node name="title_screen" type="Node2D" unique_id=485187835]
 script = ExtResource("1_pjs3m")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1973120040]
+visible = false
 position = Vector2(960, 540)
 texture = ExtResource("2_7ynfn")
 
-[node name="UiLayer" type="CanvasLayer" parent="."]
+[node name="UiLayer" type="CanvasLayer" parent="." unique_id=192243568]
 
-[node name="MenuButtons" type="Control" parent="UiLayer"]
+[node name="MenuButtons" type="Control" parent="UiLayer" unique_id=1765995462]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -99,37 +100,37 @@ texture_hover = ExtResource("8_2in6p")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="CenterRoot" type="CenterContainer" parent="UiLayer"]
+[node name="CenterRoot" type="CenterContainer" parent="UiLayer" unique_id=1028256010]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -40.0
 grow_horizontal = 2
 grow_vertical = 2
-offset_top = -40.0
 mouse_filter = 2
 
-[node name="Column" type="VBoxContainer" parent="UiLayer/CenterRoot"]
-layout_mode = 2
-theme_override_constants/separation = 14
+[node name="Column" type="VBoxContainer" parent="UiLayer/CenterRoot" unique_id=269658468]
 custom_minimum_size = Vector2(720, 0)
+layout_mode = 2
 mouse_filter = 2
+theme_override_constants/separation = 14
 
-[node name="NamePanel" type="PanelContainer" parent="UiLayer/CenterRoot/Column"]
+[node name="NamePanel" type="PanelContainer" parent="UiLayer/CenterRoot/Column" unique_id=103695716]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_name_panel")
 
-[node name="VBox" type="VBoxContainer" parent="UiLayer/CenterRoot/Column/NamePanel"]
+[node name="VBox" type="VBoxContainer" parent="UiLayer/CenterRoot/Column/NamePanel" unique_id=2034021497]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="UiLayer/CenterRoot/Column/NamePanel/VBox"]
+[node name="TitleLabel" type="Label" parent="UiLayer/CenterRoot/Column/NamePanel/VBox" unique_id=1021967056]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
 theme_override_font_sizes/font_size = 30
 text = "Choose your name"
 horizontal_alignment = 1
 
-[node name="NameField" type="LineEdit" parent="UiLayer/CenterRoot/Column/NamePanel/VBox"]
+[node name="NameField" type="LineEdit" parent="UiLayer/CenterRoot/Column/NamePanel/VBox" unique_id=18081525]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -139,11 +140,11 @@ theme_override_colors/selection_color = Color(0.28, 0.38, 0.58, 0.75)
 theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxFlat_name_field")
 theme_override_styles/focus = SubResource("StyleBoxFlat_name_field")
-alignment = 1
 placeholder_text = "Type your vendor name..."
+alignment = 1
 max_length = 24
 
-[node name="HintLabel" type="Label" parent="UiLayer/CenterRoot/Column/NamePanel/VBox"]
+[node name="HintLabel" type="Label" parent="UiLayer/CenterRoot/Column/NamePanel/VBox" unique_id=1608236655]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 20
@@ -151,23 +152,25 @@ text = "Vendor name for your stall."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="RestartButton" type="Button" parent="UiLayer/CenterRoot/Column"]
+[node name="RestartButton" type="Button" parent="UiLayer/CenterRoot/Column" unique_id=1509879011]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
 theme_override_colors/font_hover_color = Color(1, 0.9, 0.55, 1)
 theme_override_font_sizes/font_size = 22
 text = "New Game"
-visible = false
 
-[node name="AudioToggles" type="HBoxContainer" parent="UiLayer/CenterRoot/Column"]
+[node name="AudioToggles" type="HBoxContainer" parent="UiLayer/CenterRoot/Column" unique_id=1401018124]
 layout_mode = 2
 size_flags_horizontal = 4
-alignment = 1
 mouse_filter = 0
+alignment = 1
 script = ExtResource("12_audio")
 
-[node name="HighScoreLabel" type="Label" parent="UiLayer/CenterRoot/Column"]
+[node name="HighScoreLabel" type="Label" parent="UiLayer/CenterRoot/Column" unique_id=1357712951]
+visible = false
+custom_minimum_size = Vector2(720, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
@@ -176,11 +179,8 @@ theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_font_sizes/font_size = 22
 text = "Day 0 · 0 Pesos earned · 0 Pesos peak"
-visible = false
 horizontal_alignment = 1
 autowrap_mode = 2
-custom_minimum_size = Vector2(720, 0)
-mouse_filter = 2
 
 [node name="click" type="AudioStreamPlayer2D" parent="." unique_id=1804569512]
 
@@ -190,10 +190,10 @@ mouse_filter = 2
 
 [connection signal="mouse_entered" from="UiLayer/MenuButtons/Start" to="." method="_on_start_mouse_entered"]
 [connection signal="pressed" from="UiLayer/MenuButtons/Start" to="." method="_on_start_pressed"]
-[connection signal="text_submitted" from="UiLayer/CenterRoot/Column/NamePanel/VBox/NameField" to="." method="_on_start_pressed"]
 [connection signal="mouse_entered" from="UiLayer/MenuButtons/Credit" to="." method="_on_credit_mouse_entered"]
 [connection signal="pressed" from="UiLayer/MenuButtons/Credit" to="." method="_on_credit_pressed"]
 [connection signal="mouse_entered" from="UiLayer/MenuButtons/Quit" to="." method="_on_quit_mouse_entered"]
 [connection signal="pressed" from="UiLayer/MenuButtons/Quit" to="." method="_on_quit_pressed"]
+[connection signal="text_submitted" from="UiLayer/CenterRoot/Column/NamePanel/VBox/NameField" to="." method="_on_start_pressed"]
 [connection signal="mouse_entered" from="UiLayer/CenterRoot/Column/RestartButton" to="." method="_on_restart_mouse_entered"]
 [connection signal="pressed" from="UiLayer/CenterRoot/Column/RestartButton" to="." method="_on_restart_pressed"]

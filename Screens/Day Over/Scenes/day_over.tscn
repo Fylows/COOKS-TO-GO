@@ -8,6 +8,10 @@ shader = ExtResource("2_ohwt8")
 shader_parameter/lod = 0.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
 bg_color = Color(0.04, 0.07, 0.14, 0.96)
 border_width_left = 3
 border_width_top = 3
@@ -18,12 +22,12 @@ corner_radius_top_left = 14
 corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
-content_margin_left = 28.0
-content_margin_top = 24.0
-content_margin_right = 28.0
-content_margin_bottom = 24.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_continue"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
 bg_color = Color(0.12, 0.2, 0.34, 1)
 border_width_left = 2
 border_width_top = 2
@@ -34,10 +38,6 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-content_margin_left = 20.0
-content_margin_top = 12.0
-content_margin_right = 20.0
-content_margin_bottom = 12.0
 
 [sub_resource type="Animation" id="Animation_ohwt8"]
 length = 0.001
@@ -199,25 +199,25 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="VBox" type="VBoxContainer" parent="PanelContainer"]
+[node name="VBox" type="VBoxContainer" parent="PanelContainer" unique_id=611883843]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="TitleLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="TitleLabel" type="Label" parent="PanelContainer/VBox" unique_id=1397203683]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
 theme_override_font_sizes/font_size = 40
 text = "Day 1 Over"
 horizontal_alignment = 1
 
-[node name="SubtitleLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="SubtitleLabel" type="Label" parent="PanelContainer/VBox" unique_id=2041047990]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.86, 0.94, 1)
 theme_override_font_sizes/font_size = 18
 text = "Sarado na ang stall. Uwi na."
 horizontal_alignment = 1
 
-[node name="WalletCaption" type="Label" parent="PanelContainer/VBox"]
+[node name="WalletCaption" type="Label" parent="PanelContainer/VBox" unique_id=414542598]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.78, 0.9, 1)
@@ -225,21 +225,21 @@ theme_override_font_sizes/font_size = 14
 text = "Wallet"
 horizontal_alignment = 1
 
-[node name="MoneyLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="MoneyLabel" type="Label" parent="PanelContainer/VBox" unique_id=1158139187]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.45, 1)
 theme_override_font_sizes/font_size = 48
 text = "₱0"
 horizontal_alignment = 1
 
-[node name="EarnedLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="EarnedLabel" type="Label" parent="PanelContainer/VBox" unique_id=1057498884]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.45, 0.92, 0.55, 1)
 theme_override_font_sizes/font_size = 20
 text = "+₱0 sa stall ngayon"
 horizontal_alignment = 1
 
-[node name="StockCaption" type="Label" parent="PanelContainer/VBox"]
+[node name="StockCaption" type="Label" parent="PanelContainer/VBox" unique_id=632231431]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.78, 0.28, 1)
@@ -247,7 +247,7 @@ theme_override_font_sizes/font_size = 16
 text = "Stock left"
 horizontal_alignment = 1
 
-[node name="StockLabel" type="Label" parent="PanelContainer/VBox"]
+[node name="StockLabel" type="Label" parent="PanelContainer/VBox" unique_id=967017906]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.96, 1, 1)
@@ -263,14 +263,14 @@ size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
 theme_override_colors/font_hover_color = Color(1, 0.9, 0.55, 1)
 theme_override_font_sizes/font_size = 24
-theme_override_styles/hover = SubResource("StyleBoxFlat_continue")
 theme_override_styles/normal = SubResource("StyleBoxFlat_continue")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_continue")
+theme_override_styles/hover = SubResource("StyleBoxFlat_continue")
 text = "Go Home"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1494214977]
 libraries/ = SubResource("AnimationLibrary_pdmli")
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
-[connection signal="pressed" from="PanelContainer/VBox/Button" to="." method="_on_button_pressed"]
 [connection signal="mouse_entered" from="PanelContainer/VBox/Button" to="." method="_on_continue_mouse_entered"]
+[connection signal="pressed" from="PanelContainer/VBox/Button" to="." method="_on_button_pressed"]

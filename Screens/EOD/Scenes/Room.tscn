@@ -10,14 +10,14 @@
 [ext_resource type="Texture2D" uid="uid://hmoqd7lqy3fb" path="res://Screens/EOD/Assets/family_icon.PNG" id="8_lik14"]
 [ext_resource type="Texture2D" uid="uid://bjk2wxupn347o" path="res://Screens/EOD/Assets/gamble_icon.PNG" id="9_psjel"]
 [ext_resource type="Script" uid="uid://boy81dltvf84d" path="res://Screens/EOD/Scripts/home_tooltip.gd" id="10_psjel"]
-[ext_resource type="Script" uid="uid://dxyeski8jb75u" path="res://Screens/EOD/Scripts/next_day_tooltip.gd" id="11_q8wqv"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_psjel"]
+bg_color = Color(0.10233272, 0.27845728, 0.45458186, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0, 0, 0, 1)
+border_color = Color(1, 1, 1, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
@@ -61,26 +61,26 @@ offset_top = -295.0
 offset_right = 115.0
 offset_bottom = -124.0
 
-[node name="AppSubscription" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer"]
+[node name="AppSubscription" type="HBoxContainer" parent="Node2D/ResourceGroup/VBoxContainer" unique_id=933323347]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+[node name="Label" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription" unique_id=1352098516]
 layout_mode = 2
 text = "Tindahan App"
 
-[node name="Spacer" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+[node name="Spacer" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription" unique_id=1189056930]
 layout_mode = 2
 text = "        "
 
-[node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+[node name="Price" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription" unique_id=265441550]
 layout_mode = 2
 text = "₱30/day"
 
-[node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+[node name="Spacer2" type="Label" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription" unique_id=1000782782]
 layout_mode = 2
 text = "      "
 
-[node name="appSubBtn" type="Button" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription"]
+[node name="appSubBtn" type="Button" parent="Node2D/ResourceGroup/VBoxContainer/AppSubscription" unique_id=494191828]
 layout_mode = 2
 text = "Subscribe"
 
@@ -331,11 +331,11 @@ offset_top = -28.0
 offset_right = 154.0
 offset_bottom = 212.0
 
-[node name="FamilyStatus" type="Label" parent="Node2D/FamilyGroup/VBoxContainer"]
+[node name="FamilyStatus" type="Label" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=1632864537]
 layout_mode = 2
 autowrap_mode = 3
 
-[node name="TonightBills" type="Label" parent="Node2D/FamilyGroup/VBoxContainer"]
+[node name="TonightBills" type="Label" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=1277849610]
 layout_mode = 2
 
 [node name="Electricity" type="HBoxContainer" parent="Node2D/FamilyGroup/VBoxContainer" unique_id=547100195]
@@ -464,122 +464,122 @@ offset_bottom = 235.56705
 scale = Vector2(-7.678791, -16.375587)
 color = Color(0.92156863, 0.5411765, 0.25882354, 1)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/MiscGroup"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Node2D/MiscGroup" unique_id=2085771301]
 offset_left = -272.0
 offset_top = -295.0
 offset_right = -52.0
 offset_bottom = -80.0
 theme_override_constants/separation = 6
 
-[node name="RunLog" type="Label" parent="Node2D/MiscGroup/VBoxContainer"]
+[node name="RunLog" type="Label" parent="Node2D/MiscGroup/VBoxContainer" unique_id=1451337571]
 layout_mode = 2
 autowrap_mode = 3
 
-[node name="Anting2" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+[node name="Anting2" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=348164681]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=2046840971]
 layout_mode = 2
 text = "Anting Anting"
 
-[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=242578686]
 layout_mode = 2
 text = "                              "
 
-[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=2059751652]
 layout_mode = 2
 text = "₱250"
 
-[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=921909989]
 layout_mode = 2
 text = "                       "
 
-[node name="antingBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Anting2"]
+[node name="antingBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Anting2" unique_id=1403094790]
 layout_mode = 2
 text = "Buy"
 
-[node name="Weather" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+[node name="Weather" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=2033125707]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=335228549]
 layout_mode = 2
 text = "Weather App"
 
-[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=71282931]
 layout_mode = 2
 text = "       "
 
-[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1585017270]
 layout_mode = 2
 text = "₱50/day"
 
-[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1565684299]
 layout_mode = 2
 text = "                       "
 
-[node name="weatherBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Weather"]
+[node name="weatherBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Weather" unique_id=1081309487]
 layout_mode = 2
 text = "Buy"
 
-[node name="JuanAngat" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+[node name="JuanAngat" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=451007096]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat" unique_id=880094055]
 layout_mode = 2
 text = "JuanAngat Loan+"
 
-[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat" unique_id=1031842835]
 layout_mode = 2
 text = "              "
 
-[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat" unique_id=2022792882]
 layout_mode = 2
 text = "+300, owe 400"
 
-[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat" unique_id=819095988]
 layout_mode = 2
 text = "                       "
 
-[node name="loanBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat"]
+[node name="loanBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/JuanAngat" unique_id=1480018792]
 layout_mode = 2
 text = "Borrow"
 
-[node name="Gamble" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+[node name="Gamble" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=1854170005]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=689710504]
 layout_mode = 2
 text = "Sbatter"
 
-[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+[node name="Spacer" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1349573411]
 layout_mode = 2
 text = "                                    "
 
-[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+[node name="Price" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=765638592]
 layout_mode = 2
 text = "Your name"
 
-[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+[node name="Spacer2" type="Label" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=1254605287]
 layout_mode = 2
 text = "                       "
 
-[node name="gambleBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Gamble"]
+[node name="gambleBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/Gamble" unique_id=286570785]
 layout_mode = 2
 text = "Bet"
 
-[node name="SbatterResult" type="Label" parent="Node2D/MiscGroup/VBoxContainer"]
+[node name="SbatterResult" type="Label" parent="Node2D/MiscGroup/VBoxContainer" unique_id=1626410422]
 layout_mode = 2
 autowrap_mode = 3
 
-[node name="RestartRow" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer"]
+[node name="RestartRow" type="HBoxContainer" parent="Node2D/MiscGroup/VBoxContainer" unique_id=222979997]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/RestartRow"]
+[node name="Label" type="Label" parent="Node2D/MiscGroup/VBoxContainer/RestartRow" unique_id=780974978]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Start over"
 
-[node name="restartBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/RestartRow"]
+[node name="restartBtn" type="Button" parent="Node2D/MiscGroup/VBoxContainer/RestartRow" unique_id=1555741516]
 layout_mode = 2
 text = "Restart"
 
@@ -605,15 +605,15 @@ offset_bottom = 150.0
 metadata/_edit_use_anchors_ = true
 
 [node name="HomeBtn" type="Button" parent="Node2D" unique_id=441180160]
-offset_left = -59.0
-offset_top = 176.0
-offset_right = -51.0
-offset_bottom = 184.0
+offset_left = -73.0
+offset_top = 178.0
+offset_right = -65.0
+offset_bottom = 186.0
 scale = Vector2(8, 8)
 flat = true
-text = ""
 
 [node name="MenuOptions" type="HBoxContainer" parent="Node2D" unique_id=1794590763]
+visible = false
 offset_left = -265.0
 offset_top = -295.0
 offset_right = 1640.0
@@ -646,7 +646,6 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="HomeTooltip" type="PanelContainer" parent="Canvas/Control" unique_id=570871015]
-visible = false
 layout_mode = 0
 offset_right = 86.0
 offset_bottom = 42.0
@@ -664,26 +663,8 @@ bbcode_enabled = true
 text = "Phone home"
 fit_content = true
 autowrap_mode = 0
-
-[node name="NextDayTooltip" type="PanelContainer" parent="Canvas/Control" unique_id=2076380064]
-visible = false
-layout_mode = 0
-offset_right = 86.0
-offset_bottom = 42.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_psjel")
-script = ExtResource("11_q8wqv")
-
-[node name="RichTextLabel" type="RichTextLabel" parent="Canvas/Control/NextDayTooltip" unique_id=749787643]
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-bbcode_enabled = true
-text = "Go to bed"
-fit_content = true
-autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/AppSubscription/appSubBtn" to="Node2D" method="_on_app_sub_btn_pressed"]
 [connection signal="pressed" from="Node2D/ResourceGroup/VBoxContainer/Fishball/buyFishball" to="Node2D" method="_on_buy_fishball_pressed"]
@@ -706,7 +687,9 @@ autowrap_mode = 0
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/Gamble/gambleBtn" to="Node2D" method="_on_sbatter_btn_pressed"]
 [connection signal="pressed" from="Node2D/MiscGroup/VBoxContainer/RestartRow/restartBtn" to="Node2D" method="_on_restart_pressed"]
 [connection signal="mouse_entered" from="Node2D/HomeBtn" to="Node2D" method="_on_home_btn_mouse_entered"]
+[connection signal="mouse_entered" from="Node2D/HomeBtn" to="Canvas/Control/HomeTooltip" method="_on_home_btn_mouse_entered"]
 [connection signal="mouse_exited" from="Node2D/HomeBtn" to="Node2D" method="_on_home_btn_mouse_exited"]
+[connection signal="mouse_exited" from="Node2D/HomeBtn" to="Canvas/Control/HomeTooltip" method="_on_home_btn_mouse_exited"]
 [connection signal="pressed" from="Node2D/HomeBtn" to="Node2D" method="_on_home_btn_pressed"]
 [connection signal="pressed" from="Node2D/MenuOptions/Resources" to="Node2D" method="_on_resources_pressed"]
 [connection signal="pressed" from="Node2D/MenuOptions/Upgrades" to="Node2D" method="_on_upgrades_pressed"]
