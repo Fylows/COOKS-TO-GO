@@ -26,12 +26,6 @@ static func _on_cook_state_changed(prev: FoodItem.CookState, next: FoodItem.Cook
 		FoodItem.CookState.COOKING:
 			if prev == FoodItem.CookState.RAW:
 				SfxController.play_cook_start()
-		FoodItem.CookState.COOKED:
-			if prev == FoodItem.CookState.COOKING:
-				SfxController.play_cooked()
-		FoodItem.CookState.BURNT:
-			if prev != FoodItem.CookState.BURNT:
-				SfxController.play_burn()
 
 
 # Update the sprite of the food_item depending on its cook_state

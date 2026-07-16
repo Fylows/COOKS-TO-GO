@@ -127,7 +127,7 @@ func on_food_clicked(food_sprite) -> void:
 			SfxController.play_store()
 		FoodItem.CookState.BURNT:
 			take_item_in_pan(item)
-			SfxController.play_trash()
+			SfxController.play_store()
 			food_sprite.queue_free()
 
 

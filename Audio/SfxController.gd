@@ -13,8 +13,6 @@ const SOUNDS := {
 	"end_day": preload("res://Audio/SFX/tick_001.ogg"),
 	"coin": preload("res://Audio/SFX/handleCoins.ogg"),
 	"error": preload("res://Audio/SFX/error_001.ogg"),
-	"cooked": preload("res://Audio/SFX/cooked_ready.ogg"),
-	"burn": preload("res://Audio/SFX/food_burn.ogg"),
 	"pan_drop": preload("res://Audio/SFX/pan_drop.ogg"),
 }
 
@@ -110,16 +108,6 @@ func play_cook_start() -> void:
 		return
 	_cook_start_cooldown_until_ms = now + 90
 	_play_one_shot("pan_drop", -8.0)
-
-
-## Skewer finished cooking — soft ready chime.
-func play_cooked() -> void:
-	_play_one_shot("cooked", -4.0)
-
-
-## Skewer burnt — short crackle.
-func play_burn() -> void:
-	_play_one_shot("burn", -3.0)
 
 
 func play_trash() -> void:
