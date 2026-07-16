@@ -22,7 +22,7 @@ func get_win_chance_percent() -> int:
 
 
 func bet_cost() -> int:
-	return Economy.inflated_cost(REPEAT_BET_COST_BASE, PlayerStats.daysPassed)
+	return Economy.resource_cost(REPEAT_BET_COST_BASE)
 
 
 func uses_name_wager() -> bool:

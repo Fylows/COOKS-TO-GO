@@ -16,23 +16,13 @@ const EXTRA_MONEY_PER_DAY := 4
 const EXTRA_MONEY_CAP := 95
 
 
-static func inflated_cost(base: int, days_passed: int) -> int:
-	if base <= 0:
-		return 0
-	return base
-
-
-static func essential_cost(key: String, days_passed: int = -1) -> int:
-	if days_passed < 0:
-		days_passed = PlayerStats.daysPassed
+static func essential_cost(key: String) -> int:
 	var base: int = PlayerStats.essentialPrice.get(key, 0)
-	return inflated_cost(base, days_passed)
+	return maxi(base, 0)
 
 
-static func resource_cost(base: int, days_passed: int = -1) -> int:
-	if days_passed < 0:
-		days_passed = PlayerStats.daysPassed
-	return inflated_cost(base, days_passed)
+static func resource_cost(base: int) -> int:
+	return maxi(base, 0)
 
 
 static func street_food_sell_price(food: int) -> int:
@@ -47,14 +37,12 @@ static func street_food_sell_price(food: int) -> int:
 			return 0
 
 
-static func min_nightly_bills(days_passed: int = -1) -> int:
-	if days_passed < 0:
-		days_passed = PlayerStats.daysPassed
+static func min_nightly_bills() -> int:
 	var total := 0
 	for key in PlayerStats.essentialPrice.keys():
 		if key == "medicine":
 			continue
-		total += essential_cost(key, days_passed)
+		total += essential_cost(key)
 	return total
 
 
