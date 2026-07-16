@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dolb1oadfaqxo"
-path="res://.godot/imported/01_game_orders.png-92be42773caaa2a528cc59e53a8e9270.ctex"
+uid="uid://ba63a24b275id"
+path="res://.godot/imported/04_game_over_ending.png-9e411fe2f168b88b5c82453ce9505a26.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Palamig/Docs/01_game_orders.png"
-dest_files=["res://.godot/imported/01_game_orders.png-92be42773caaa2a528cc59e53a8e9270.ctex"]
+source_file="res://docs/pr-screenshots/04_game_over_ending.png"
+dest_files=["res://.godot/imported/04_game_over_ending.png-9e411fe2f168b88b5c82453ce9505a26.ctex"]
 
 [params]
 

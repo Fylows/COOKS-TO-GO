@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dolb1oadfaqxo"
-path="res://.godot/imported/01_game_orders.png-92be42773caaa2a528cc59e53a8e9270.ctex"
+uid="uid://br5ns3um3njw8"
+path="res://.godot/imported/03_stall_weather_serve.png-a6ad136fdf185ee43a524062def0b802.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Palamig/Docs/01_game_orders.png"
-dest_files=["res://.godot/imported/01_game_orders.png-92be42773caaa2a528cc59e53a8e9270.ctex"]
+source_file="res://docs/pr-screenshots/03_stall_weather_serve.png"
+dest_files=["res://.godot/imported/03_stall_weather_serve.png-a6ad136fdf185ee43a524062def0b802.ctex"]
 
 [params]
 

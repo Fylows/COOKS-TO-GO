@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dolb1oadfaqxo"
-path="res://.godot/imported/01_game_orders.png-92be42773caaa2a528cc59e53a8e9270.ctex"
+uid="uid://b53qktkcvbx5n"
+path="res://.godot/imported/02_eod_must_pay_home.png-f2b1f314426ed8c304c833d677704523.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Palamig/Docs/01_game_orders.png"
-dest_files=["res://.godot/imported/01_game_orders.png-92be42773caaa2a528cc59e53a8e9270.ctex"]
+source_file="res://docs/pr-screenshots/02_eod_must_pay_home.png"
+dest_files=["res://.godot/imported/02_eod_must_pay_home.png-f2b1f314426ed8c304c833d677704523.ctex"]
 
 [params]
 

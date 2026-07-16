@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dolb1oadfaqxo"
-path="res://.godot/imported/01_game_orders.png-92be42773caaa2a528cc59e53a8e9270.ctex"
+uid="uid://cj6jqf06hpjtu"
+path="res://.godot/imported/02b_eod_first_night.png-abad63cb64f3ee0253f818db688a98ae.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Palamig/Docs/01_game_orders.png"
-dest_files=["res://.godot/imported/01_game_orders.png-92be42773caaa2a528cc59e53a8e9270.ctex"]
+source_file="res://docs/pr-screenshots/02b_eod_first_night.png"
+dest_files=["res://.godot/imported/02b_eod_first_night.png-abad63cb64f3ee0253f818db688a98ae.ctex"]
 
 [params]
 
