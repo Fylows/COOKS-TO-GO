@@ -23,7 +23,7 @@ func _ready() -> void:
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 	z_index = 40
-	tooltip_text = "Tap to cook — drop in the pan"
+	tooltip_text = "Tap to cook : drop in the pan"
 	call_deferred("_clamp_hitbox")
 	call_deferred("_ensure_cook_label")
 	if not mouse_entered.is_connected(_on_hover_on):

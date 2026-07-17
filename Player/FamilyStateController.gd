@@ -91,7 +91,7 @@ func blocking_issue() -> String:
 			return "Family still sick"
 		if PlayerStats.playerMoney < price:
 			if LoanController.can_borrow():
-				return "Meds need %s · JuanAngat → Borrow" % PlayerStatController.format_pesos(price)
+				return "Meds need %s - JuanAngat → Borrow" % PlayerStatController.format_pesos(price)
 			return "Meds need %s" % PlayerStatController.format_pesos(price)
 		return "Family → Buy medicine"
 	return ""

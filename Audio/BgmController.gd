@@ -24,7 +24,7 @@ var _lowpass: AudioEffectLowPassFilter
 var _current: String = ""
 var _stress: float = 0.0
 # Jolliness is fixed per track: sampled once when a track starts (day / EOD
-# start), not chased live — a single sale no longer flips the mood back to jolly.
+# start), not chased live : a single sale no longer flips the mood back to jolly.
 var _mood_stress: float = 0.0
 
 
@@ -118,7 +118,7 @@ func play_track(key: String) -> void:
 		_silence_now()
 		return
 	if key == _current and _player.playing:
-		# Keep the mood sampled at track start — don't re-read live money.
+		# Keep the mood sampled at track start : don't re-read live money.
 		_set_bus_muted(false)
 		return
 	_current = key

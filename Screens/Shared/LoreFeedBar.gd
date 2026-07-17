@@ -138,8 +138,8 @@ static func _format_visible_feed(raw: String) -> String:
 		var line := chunk.strip_edges()
 		if line.is_empty():
 			continue
-		if not line.begins_with("•"):
-			line = "•  " + line
+		if not line.begins_with("-"):
+			line = "-  " + line
 		chunks.append(line)
 	if chunks.is_empty():
 		return raw

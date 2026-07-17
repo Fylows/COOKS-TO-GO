@@ -229,14 +229,14 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.45, 1)
 theme_override_font_sizes/font_size = 48
-text = "₱0"
+text = "Php 0"
 horizontal_alignment = 1
 
 [node name="EarnedLabel" type="Label" parent="PanelContainer/VBox" unique_id=1057498884]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.45, 0.92, 0.55, 1)
 theme_override_font_sizes/font_size = 20
-text = "+₱0 sa stall ngayon"
+text = "+Php 0 sa stall ngayon"
 horizontal_alignment = 1
 
 [node name="StockCaption" type="Label" parent="PanelContainer/VBox" unique_id=632231431]

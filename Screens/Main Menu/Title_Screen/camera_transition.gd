@@ -19,7 +19,7 @@ func _ready() -> void:
 
 
 ## end_x / end_y: target world position for the camera.
-## scale: desired "closeness" — scale = 1.0 is normal, 2.0 = twice as zoomed in,
+## scale: desired "closeness" : scale = 1.0 is normal, 2.0 = twice as zoomed in,
 ## 0.5 = zoomed out. Internally this maps to Camera2D.zoom = Vector2(scale, scale)
 ## since higher zoom value = more zoomed in in Godot 4's Camera2D.
 func transition_to(end_x: float, end_y: float, scale: float, duration: float = -1.0) -> void:

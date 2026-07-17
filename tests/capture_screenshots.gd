@@ -82,8 +82,8 @@ func _reset_state(shot: Dictionary) -> void:
 
 	if shot.get("briefing", false):
 		psc.last_night_report = PackedStringArray([
-			"Nanakaw −₱120",
-			"−6 fishball",
+			"Nanakaw -Php 120",
+			"-6 fishball",
 		])
 		stats.pre_day_events.willRain.active = true
 		psc._refresh_morning_forecast()

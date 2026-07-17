@@ -286,7 +286,7 @@ func stop_order_spawning() -> void:
 	_spawn_generation += 1
 
 
-## Tear down every live order card. Call from day-end — don't rely on Day Over covering them.
+## Tear down every live order card. Call from day-end : don't rely on Day Over covering them.
 func clear_orders() -> void:
 	stop_order_spawning()
 	setup_order_slots()
@@ -302,7 +302,7 @@ func clear_orders() -> void:
 	removing_order_ids.clear()
 
 
-## Prefer GameScreen.pause_day() / resume_day() — keep pause entry points centralized there.
+## Prefer GameScreen.pause_day() / resume_day() : keep pause entry points centralized there.
 func set_orders_paused(paused: bool) -> void:
 	_orders_paused = paused
 	for slot: Control in order_slots:

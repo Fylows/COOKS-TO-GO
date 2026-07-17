@@ -1,4 +1,4 @@
-SFX used by COOKS-TO-GO — see also root CREDITS.md
+SFX used by COOKS-TO-GO : see also root CREDITS.md
 
 ## Kenney (CC0 1.0)
 https://kenney.nl
@@ -18,10 +18,10 @@ License: CC0 1.0 Universal. Credit to Kenney.nl appreciated, not required.
 https://mixkit.co/free-sound-effects/
 
 Cook / fry cues (converted to Ogg Vorbis for the game):
-- cook_sizzle.ogg  — oil sizzle loop / fry bed
-- pan_drop.ogg     — skewer drop into oil
-- cooked_ready.ogg — ready chime
-- food_burn.ogg    — burn crackle
+- cook_sizzle.ogg  : oil sizzle loop / fry bed
+- pan_drop.ogg     : skewer drop into oil
+- cooked_ready.ogg : ready chime
+- food_burn.ogg    : burn crackle
 
 Attribution optional under Mixkit's free sound-effects license.
 Do not redistribute the raw Mixkit library as a standalone pack.

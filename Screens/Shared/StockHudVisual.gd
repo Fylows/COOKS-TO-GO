@@ -146,8 +146,8 @@ static func _fill_extras(row: HBoxContainer) -> void:
 	if PlayerStats.palamigUP:
 		_add_chip(row, _tex(PATH_PALAMIG), "Pal", str(PlayerStats.palamigStock), PlayerStats.palamigStock <= 0)
 	else:
-		# Locked affordance — gray chip until Palamig Container is bought.
-		_add_chip(row, _tex(PATH_PALAMIG), "Pal", "—", true)
+		# Locked affordance: gray chip until Palamig Container is bought.
+		_add_chip(row, _tex(PATH_PALAMIG), "Pal", "0", true)
 
 
 static func _clear_row(row: HBoxContainer) -> void:

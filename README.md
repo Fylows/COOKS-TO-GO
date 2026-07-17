@@ -1,8 +1,8 @@
 # COOKS TO GO
 
-Pay the phone bill that keeps your stall “visible,” or lose the tarp — and maybe the roof — before the first fishball hits the oil.
+Pay the phone bill that keeps your stall “visible,” or lose the tarp : and maybe the roof : before the first fishball hits the oil.
 
-A Godot 4.7 street-food cart sim built for a game jam. You run a fishball stall, buy stock and pay bills on your phone each night, then serve timed customer orders during the day. Money is in **₱ (Pesos)**. Store copy lives in [`ITCH.md`](ITCH.md).
+A Godot 4.7 street-food cart sim built for a game jam. You run a fishball stall, buy stock and pay bills on your phone each night, then serve timed customer orders during the day. Money is in **Php (Pesos)**. Store copy lives in [`ITCH.md`](ITCH.md).
 
 <p align="center">
   <img src="docs/pr-screenshots/01_title_endings_progress.png" alt="Title screen with endings progress" width="720" />
@@ -69,7 +69,7 @@ stateDiagram-v2
 - **Credits** lists attributions.
 - **Quit** exits.
 
-### 2. End of day (EOD) — `Screens/EOD/Scenes/Room.tscn`
+### 2. End of day (EOD) : `Screens/EOD/Scenes/Room.tscn`
 
 Manage everything from the phone UI before the next market day. Unread apps show a red badge until you open them that night.
 
@@ -104,53 +104,53 @@ flowchart TB
 
 **Go to bed** starts the next day when bills are handled and the family is healthy. **Main Menu** returns to the title without wiping the run; **Start over** resets.
 
-**Starting money:** ₱1000.
+**Starting money:** Php 1000.
 
 **Resource prices (10 units per buy unless noted):**
 
 | Item | Price |
 |------|------:|
-| Fishball | ₱50 |
-| Kikiam | ₱75 (unlocks day 3+) |
-| Kwek-kwek | ₱150 |
-| Sauce | ₱100 (one-time) |
-| Palamig stock | ₱75 (needs palamig upgrade) |
+| Fishball | Php 50 |
+| Kikiam | Php 75 (unlocks day 3+) |
+| Kwek-kwek | Php 150 |
+| Sauce | Php 100 (one-time) |
+| Palamig stock | Php 75 (needs palamig upgrade) |
 
 **Family bills (per night):**
 
 | Bill | Price |
 |------|------:|
-| Electricity | ₱150 |
-| Water | ₱50 |
-| Rent | ₱75 |
-| Food | ₱150 |
-| Medicine | ₱300 (only when family is sick) |
+| Electricity | Php 150 |
+| Water | Php 50 |
+| Rent | Php 75 |
+| Food | Php 150 |
+| Medicine | Php 300 (only when family is sick) |
 
-**Upgrades:** Palamig ₱100 · Container ₱250 · Faster cooking ₱500 · Slower burning ₱200
+**Upgrades:** Palamig Php 100 - Container Php 250 - Faster cooking Php 500 - Slower burning Php 200
 
-**Extras:** Anting-anting ₱250 · **Weather** app ₱50 · **JuanAngat** loan +₱300 (owe ₱400) · **Sbatter** bet (one-time; wager your name for a chance at ₱250)
+**Extras:** Anting-anting Php 250 - **Weather** app Php 50 - **JuanAngat** loan +Php 300 (owe Php 400) - **Sbatter** bet (one-time; wager your name for a chance at Php 250)
 
 Unpaid rent three nights in a row → homelessness (higher sickness risk). Skipping food, water, or electricity also raises sickness risk.
 
-### 3. Game screen — `Screens/Game/Scenes/GameScreen.tscn`
+### 3. Game screen : `Screens/Game/Scenes/GameScreen.tscn`
 
-- **Timer** — 2-minute market day; ends automatically.
-- **Pause / Play** — freezes the timer and order countdowns.
-- **End Day** — end early and open the day-over screen.
-- **Order cards** — up to five at once; green/yellow/red bar is time left.
-  - **Serve** — sells if you have cooked tray stock (₱5 per item for fishball/kwek-kwek/kikiam).
-  - **Pass** — dismiss the order.
-  - **Palamig-only orders** — opens the pour minigame (₱30 per cup served).
-- **Pan** — drop skewers from the side buttons; cook / burn bars; oil-bubble VFX while frying; click cooked into the ready tray, burnt into the trash.
-- **Money popups** — `+/- ₱` floats below the card; no running total during play.
-- **Barangay Feed** — Taglish chismis strip that reacts to your run.
+- **Timer** : 2-minute market day; ends automatically.
+- **Pause / Play** : freezes the timer and order countdowns.
+- **End Day** : end early and open the day-over screen.
+- **Order cards** : up to five at once; green/yellow/red bar is time left.
+  - **Serve** : sells if you have cooked tray stock (Php 5 per item for fishball/kwek-kwek/kikiam).
+  - **Pass** : dismiss the order.
+  - **Palamig-only orders** : opens the pour minigame (Php 30 per cup served).
+- **Pan** : drop skewers from the side buttons; cook / burn bars; oil-bubble VFX while frying; click cooked into the ready tray, burnt into the trash.
+- **Money popups** : `+/- Php` floats below the card; no running total during play.
+- **Barangay Feed** : Taglish chismis strip that reacts to your run.
 
 BGM mood is sampled from your balance when a track starts (poor nights sound less jolly).
 
 ### 4. Palamig minigame
 
 - Hold pour (mouse / Space) to fill the cup to the target line.
-- Serve good pours; bad pours or spills cost ₱6 per wasted cup.
+- Serve good pours; bad pours or spills cost Php 6 per wasted cup.
 - **Esc** or **Back** exits without completing the order (countdown resumes).
 - Stock syncs cup-by-cup from your palamig jug.
 
@@ -217,7 +217,7 @@ CREDITS.md       Team + third-party attributions
 
 Full attributions: [`CREDITS.md`](CREDITS.md). Sidecar notes sit next to the assets.
 
-**Team:** Jiro, Yel, Goonard (game) · Isha, Bam (sprites) · Jo, Carlos, Nat (story)
+**Team:** Jiro, Yel, Goonard (game) - Isha, Bam (sprites) - Jo, Carlos, Nat (story)
 
 **Third-party (short):**
 
@@ -240,8 +240,8 @@ In-game **Credits** on the title screen lists the same team + a short asset blur
 
 ## Endings
 
-- **10 bad endings** — cause-picked game overs (rent, sickness, app fee, Sbatter, loans).
-- **5 good endings** — survive a week, clear debt with cash left, finish the cart upgrades, keep a roof for 10 days, or pay food/water/power for 7 nights straight.
+- **10 bad endings** : cause-picked game overs (rent, sickness, app fee, Sbatter, loans).
+- **5 good endings** : survive a week, clear debt with cash left, finish the cart upgrades, keep a roof for 10 days, or pay food/water/power for 7 nights straight.
 
 ## Overnight & weather
 

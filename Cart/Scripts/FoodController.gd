@@ -50,7 +50,7 @@ static func update_visual(item: FoodItem, sprite: Sprite2D, anim_sprite: Animate
 	var cook_state_str = FoodItem.CookState.keys()[item.cook_state].capitalize()
 	var path = "res://Shared/Assets/%s/%s_%s.png" % [food_name_cap, food_name_cap, cook_state_str]
 	var is_in_pan := item.location == FoodItem.Location.PAN
-	# No dedicated burnt art — reuse cooked and darken.
+	# No dedicated burnt art : reuse cooked and darken.
 	if item.cook_state == FoodItem.CookState.BURNT:
 		var cooked_path = "res://Shared/Assets/%s/%s_Cooked.png" % [food_name_cap, food_name_cap]
 		if ResourceLoader.exists(cooked_path):

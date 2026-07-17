@@ -1,7 +1,7 @@
 class_name OilBubbleFX
 extends Node2D
 
-## Sizzling oil bubbles over the pan — Kenney Particle Pack (CC0) circles + soft smoke.
+## Sizzling oil bubbles over the pan : Kenney Particle Pack (CC0) circles + soft smoke.
 
 const TEX_RING := preload("res://Cart/Assets/OilBubbles/oil_bubble_ring.png")
 const TEX_SOFT := preload("res://Cart/Assets/OilBubbles/oil_bubble_soft.png")
@@ -36,7 +36,7 @@ func setup(pan_area: Area2D) -> void:
 	_bubbles = _make_layer("OilBubbles", TEX_SOFT, radius, 32, 0.9, 1.7, OIL_AMBER, true)
 	_pop = _make_layer("OilPops", TEX_MID, radius * 0.85, 16, 0.5, 1.05, OIL_HOT, true)
 	_steam = _make_layer("OilSteam", TEX_STEAM, radius * 0.5, 10, 1.4, 2.5, STEAM_TINT, false)
-	# Ring texture reserved for denser pans — swap mid→ring when frying hard.
+	# Ring texture reserved for denser pans : swap mid→ring when frying hard.
 	_apply_intensity(0)
 
 

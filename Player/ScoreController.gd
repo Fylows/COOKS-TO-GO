@@ -212,7 +212,7 @@ func append_journal(lines: PackedStringArray) -> void:
 
 
 func format_run_stats() -> String:
-	return "Day %d · %s earned · %s peak" % [
+	return "Day %d - %s earned - %s peak" % [
 		PlayerStats.daysPassed,
 		PlayerStatController.format_pesos(run_total_earned),
 		PlayerStatController.format_pesos(run_peak_money),
@@ -220,7 +220,7 @@ func format_run_stats() -> String:
 
 
 func format_records() -> String:
-	return "Day %d · %s earned · %s peak" % [
+	return "Day %d - %s earned - %s peak" % [
 		best_days_survived,
 		PlayerStatController.format_pesos(best_run_earned),
 		PlayerStatController.format_pesos(best_peak_money),
@@ -258,10 +258,10 @@ func format_endings_progress() -> String:
 	var bad := EndingBank.bad_count()
 	var good := EndingBank.good_count()
 	if n <= 0:
-		return "Unlock all %d endings!\n(%d bad · %d good)" % [total, bad, good]
+		return "Unlock all %d endings!\n(%d bad - %d good)" % [total, bad, good]
 	if n >= total:
 		return "All %d endings unlocked." % total
-	return "Endings unlocked: %d/%d\n(%d bad · %d good)" % [n, total, bad, good]
+	return "Endings unlocked: %d/%d\n(%d bad - %d good)" % [n, total, bad, good]
 
 
 

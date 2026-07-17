@@ -106,13 +106,13 @@ const ENDINGS := {
 	"may_bubong": {
 		"kind": "good",
 		"title": "May Bubong Pa",
-		"body": "Ten nights and the padlock never learned your name. Rent hurt. Sleep still happened indoors. Keeping a roof while running a cart is quiet politics — the kind that never trends.",
+		"body": "Ten nights and the padlock never learned your name. Rent hurt. Sleep still happened indoors. Keeping a roof while running a cart is quiet politics : the kind that never trends.",
 		"detail": "Reached day 10 without ever going homeless.",
 	},
 	"pamilya_muna": {
 		"kind": "good",
 		"title": "Pamilya Muna",
-		"body": "Kuryente, tubig, ulam — paid before the shiny upgrades. The feed still joked. The thermometer stayed bored. Choosing the house over the hustle photo is how some stalls last past the first viral week.",
+		"body": "Kuryente, tubig, ulam : paid before the shiny upgrades. The feed still joked. The thermometer stayed bored. Choosing the house over the hustle photo is how some stalls last past the first viral week.",
 		"detail": "Seven days of paid food, water, and electricity.",
 	},
 }
@@ -168,7 +168,7 @@ const HINTS := {
 	"app_and_utang": "Owe JuanAngat and still miss the app fee.",
 	"grand_opening_closed": "Softlock on morning one before the first sale.",
 	"isang_linggo": "Open the stall for seven market days.",
-	"walang_utang": "Clear the loan, keep ₱1500+, stay housed and healthy.",
+	"walang_utang": "Clear the loan, keep Php 1500+, stay housed and healthy.",
 	"kompletong_cart": "Own every cart upgrade.",
 	"may_bubong": "Reach day 10 without ever going homeless.",
 	"pamilya_muna": "Pay food, water, and power seven nights in a row.",

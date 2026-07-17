@@ -1,3 +1,3 @@
-menu_burger.png — original 32px hamburger icon for COOKS-TO-GO.
+menu_burger.png: original 32px hamburger icon for COOKS-TO-GO.
 Released under CC0 1.0 (public domain dedication).
 See also root CREDITS.md.

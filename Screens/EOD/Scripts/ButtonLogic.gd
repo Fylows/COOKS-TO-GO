@@ -175,12 +175,12 @@ func _refresh_wallet_hud() -> void:
 		return
 	var loan_line := LoanController.status_text()
 	if loan_line.is_empty():
-		wallet_meta_label.text = "%s · Day %d" % [
+		wallet_meta_label.text = "%s - Day %d" % [
 			PlayerStats.player_name,
 			PlayerStatController.current_day_number(),
 		]
 	else:
-		wallet_meta_label.text = "%s · Day %d · %s" % [
+		wallet_meta_label.text = "%s - Day %d - %s" % [
 			PlayerStats.player_name,
 			PlayerStatController.current_day_number(),
 			loan_line,
@@ -961,7 +961,7 @@ func _confirm_start_without_stock(missing: PackedStringArray) -> void:
 	vbox.add_child(list)
 	for name in missing:
 		var row := Label.new()
-		row.text = "•  %s" % name
+		row.text = "-  %s" % name
 		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		row.add_theme_color_override("font_color", Color(1.0, 0.78, 0.62))
 		PixelText.body(row)
@@ -1782,7 +1782,7 @@ func _style_shop_row(row: HBoxContainer) -> void:
 		price_label.clip_text = false
 		price_label.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
 		price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		# Default fits ₱999. Long wagers/loans resize via _fit_shop_price_wrap.
+		# Default fits Php 999. Long wagers/loans resize via _fit_shop_price_wrap.
 		var price_w := 100.0
 		match row.name:
 			"Gamble":
@@ -1959,7 +1959,7 @@ func _setup_new_day_hint() -> void:
 	new_day_hint_pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	new_day_hint_pill.z_index = 45
 	var style := StyleBoxFlat.new()
-	# Fully opaque — urgent blockers must read on the phone glass, no wash-through.
+	# Fully opaque : urgent blockers must read on the phone glass, no wash-through.
 	style.bg_color = Color(0.48, 0.08, 0.1, 1.0)
 	style.border_color = Color(1.0, 0.42, 0.34, 1.0)
 	style.set_border_width_all(2)
@@ -2335,7 +2335,7 @@ func _briefing_border_for(line: String) -> Color:
 	if _is_weather_briefing_line(line):
 		return Color(0.45, 0.72, 1.0, 1.0)
 	var blob := line.to_lower()
-	if "nanakaw" in blob or "lagnat" in blob or "−" in line or "nawala" in blob:
+	if "nanakaw" in blob or "lagnat" in blob or "-" in line or "nawala" in blob:
 		return Color(0.92, 0.35, 0.32, 1.0)
 	if "+" in line or "naiwan" in blob:
 		return Color(0.35, 0.85, 0.5, 1.0)
@@ -2415,7 +2415,7 @@ func _refresh_weather_chip() -> void:
 		if not forecast.is_empty():
 			label.text = "Weather App\n%s" % forecast
 		else:
-			label.text = "Weather App · %s" % PlayerStatController.weather_title()
+			label.text = "Weather App - %s" % PlayerStatController.weather_title()
 		chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		chip.mouse_default_cursor_shape = Control.CURSOR_ARROW
 	else:
@@ -2517,7 +2517,7 @@ func _refresh_must_pay_strip() -> void:
 	if chips.is_empty() or page != home or _first_night_active():
 		UiMotion.fade_out_then_hide(self, must_pay_strip)
 		return
-	must_pay_label.text = "  ·  ".join(chips)
+	must_pay_label.text = "  -  ".join(chips)
 	must_pay_strip.reset_size()
 	var half := maxf(must_pay_strip.size.x, 280.0) * 0.5
 	must_pay_strip.offset_left = -half
@@ -2630,15 +2630,15 @@ func _refresh_first_night_coach() -> void:
 	var prev := tutorial_label.text
 	match step:
 		"app":
-			tutorial_label.text = "1/3 · Subscribe"
+			tutorial_label.text = "1/3 - Subscribe"
 			_highlight_tutorial_row($ResourceGroup/VBoxContainer/AppSubscription, true)
 			_highlight_tutorial_row($ResourceGroup/VBoxContainer/Fishball, false)
 		"stock":
-			tutorial_label.text = "2/3 · Buy fishballs"
+			tutorial_label.text = "2/3 - Buy fishballs"
 			_highlight_tutorial_row($ResourceGroup/VBoxContainer/AppSubscription, false)
 			_highlight_tutorial_row($ResourceGroup/VBoxContainer/Fishball, true)
 		"start":
-			tutorial_label.text = "3/3 · Go to bed"
+			tutorial_label.text = "3/3 - Go to bed"
 			_clear_tutorial_row_highlights()
 		_:
 			UiMotion.fade_out_then_hide(self, tutorial_panel)
@@ -2844,7 +2844,7 @@ func _refresh_new_day_hint() -> void:
 	if reason.is_empty() or page != home:
 		UiMotion.fade_out_then_hide(self, new_day_hint_pill)
 		return
-	# Urgent blockers stay fully opaque — never re-pop_in from a=0 on every refresh.
+	# Urgent blockers stay fully opaque : never re-pop_in from a=0 on every refresh.
 	UiMotion.kill(new_day_hint_pill.get_meta(&"_ui_motion_tween") if new_day_hint_pill.has_meta(&"_ui_motion_tween") else null)
 	new_day_hint_pill.visible = true
 	new_day_hint_pill.modulate = Color.WHITE

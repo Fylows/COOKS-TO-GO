@@ -69,7 +69,7 @@ func _ready() -> void:
 	_setup_money_hud()
 	_setup_weather_banner()
 	_style_stall_chrome()
-	# Never gate the clock on intro tweens — a finished tween's await hangs forever.
+	# Never gate the clock on intro tweens : a finished tween's await hangs forever.
 	start_day()
 	await _play_day_start_intro()
 	_flash_weather_banner()
@@ -142,7 +142,7 @@ func _style_stock_strip() -> void:
 	var stock := $HUD/StockHud as PanelContainer
 	if stock == null:
 		return
-	# Left under day bar — breaks the twin top-right card stack.
+	# Left under day bar : breaks the twin top-right card stack.
 	stock.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	stock.offset_left = 24.0
 	stock.offset_top = 62.0
@@ -216,7 +216,7 @@ func _layout_orders_between_stock_and_wallet() -> void:
 
 
 func _play_day_start_intro() -> void:
-	# Cart is the hero entrance. Chrome just fades — no equal pop-in stack.
+	# Cart is the hero entrance. Chrome just fades : no equal pop-in stack.
 	var chrome: Array[CanvasItem] = [
 		$HUD/DayHud,
 		$HUD/StockHud,
@@ -261,7 +261,7 @@ func _play_day_start_intro() -> void:
 
 
 func _setup_cook_coach() -> void:
-	# Teach the side skewers once early — icons alone read as decoration.
+	# Teach the side skewers once early : icons alone read as decoration.
 	if PlayerStatController.current_day_number() > 2:
 		return
 	if $HUD.get_node_or_null("CookCoach") != null:
@@ -589,7 +589,7 @@ func _update_day_label() -> void:
 func _setup_weather_banner() -> void:
 	weather_banner = PanelContainer.new()
 	weather_banner.name = "WeatherBanner"
-	# Center-top with fixed width — avoid scale/pivot shooting the panel off-screen.
+	# Center-top with fixed width : avoid scale/pivot shooting the panel off-screen.
 	weather_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	weather_banner.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	weather_banner.grow_vertical = Control.GROW_DIRECTION_END
@@ -668,7 +668,7 @@ func _setup_weather_chip() -> void:
 	PixelText.caption(label)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if PlayerStats.boughtSubscription:
-		label.text = "Weather App · %s" % PlayerStatController.weather_title()
+		label.text = "Weather App - %s" % PlayerStatController.weather_title()
 		chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	else:
 		label.text = "Buy Weather App"
@@ -692,7 +692,7 @@ func _flash_weather_banner() -> void:
 		return
 	if _weather_banner_tween and _weather_banner_tween.is_valid():
 		_weather_banner_tween.kill()
-	# Keep centered; fade only — scale+bad pivot was shoving this off the right edge.
+	# Keep centered; fade only : scale+bad pivot was shoving this off the right edge.
 	weather_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	weather_banner.offset_left = -320.0
 	weather_banner.offset_right = 320.0

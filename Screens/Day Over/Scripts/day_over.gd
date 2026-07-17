@@ -5,7 +5,7 @@ const UiMotion := preload("res://Screens/Shared/UiMotion.gd")
 const NOTE_PAPER := preload("res://Screens/Day Over/Assets/day_over_note_paper.png")
 ## Pixel-snapped chrome radius (Hallmark: one radius token).
 const RADIUS := 4
-## Ink on paper — not cool HUD chrome.
+## Ink on paper : not cool HUD chrome.
 const INK := Color(0.18, 0.14, 0.12)
 const INK_MUTED := Color(0.38, 0.32, 0.28)
 const INK_GOLD := Color(0.55, 0.38, 0.08)
@@ -80,7 +80,7 @@ func _present_summary() -> void:
 	BgmController.play_track("day_over")
 	_refresh_summary()
 	anim.play("blur")
-	# One hero entrance — not wallet + chips both bouncing.
+	# One hero entrance : not wallet + chips both bouncing.
 	UiMotion.pop_in(self, panel)
 
 
@@ -88,7 +88,7 @@ func _ensure_graphic_layout() -> void:
 	var vbox := $PanelContainer/VBox as VBoxContainer
 	vbox.add_theme_constant_override("separation", 14)
 
-	# Bias left — break centered-everything. Reads like a handwritten tally.
+	# Bias left : break centered-everything. Reads like a handwritten tally.
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	subtitle_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	money_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -144,7 +144,7 @@ func _ensure_graphic_layout() -> void:
 		vbox.add_child(orders_strip)
 		vbox.move_child(orders_strip, btn_idx)
 
-	# Kuya's notepad — CC0 paper texture, not cool-ink HUD chrome.
+	# Kuya's notepad : CC0 paper texture, not cool-ink HUD chrome.
 	var panel_style := StyleBoxTexture.new()
 	panel_style.texture = NOTE_PAPER
 	panel_style.set_content_margin_all(36)
@@ -163,7 +163,7 @@ func _ensure_graphic_layout() -> void:
 	if orders_strip:
 		orders_strip.add_theme_color_override("font_color", INK_MUTED)
 
-	# Slight left bias vs dead center — like a scrap on the counter.
+	# Slight left bias vs dead center : like a scrap on the counter.
 	panel.offset_left = -400.0
 	panel.offset_right = 360.0
 	panel.offset_top = -280.0
@@ -197,7 +197,7 @@ func _refresh_summary() -> void:
 	_ensure_graphic_layout()
 	var stats := ScoreController.get_current_day_stats()
 
-	title_label.text = "Day %d — Notes" % PlayerStatController.current_day_number()
+	title_label.text = "Day %d: Notes" % PlayerStatController.current_day_number()
 	subtitle_label.text = "Tinatandaan ni Kuya. Sarado na ang stall."
 	money_label.text = PlayerStatController.format_pesos(PlayerStats.playerMoney)
 	money_label.add_theme_font_size_override("font_size", 48)
@@ -246,7 +246,7 @@ func _rebuild_stock_strip() -> void:
 	parts.append("Kikiam %d" % PlayerStats.kikiamStock)
 	if PlayerStats.palamigUP:
 		parts.append("Palamig %d" % PlayerStats.palamigStock)
-	stock_strip.text = "Natitira: " + " · ".join(parts)
+	stock_strip.text = "Natitira: " + " - ".join(parts)
 
 
 ## cancelled_orders = player pressed Pass. expired_orders = timer ran out.
@@ -265,4 +265,4 @@ func _rebuild_orders_strip(stats: Dictionary) -> void:
 		parts.append("Nauubusan ng oras: %d" % expired)
 	parts.append("Kabuuang kita: %s" % PlayerStatController.format_pesos(total_earnings))
 
-	orders_strip.text = " · ".join(parts)
+	orders_strip.text = " - ".join(parts)

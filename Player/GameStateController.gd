@@ -231,7 +231,7 @@ func _refresh_panel() -> void:
 	if _ending_label:
 		var kind := "GOOD" if EndingBank.is_good(ending_id) else "BAD"
 		var unlocked := ScoreController.unlocked_ending_count()
-		_ending_label.text = "%s · Collection %d/%d" % [kind, unlocked, EndingBank.count()]
+		_ending_label.text = "%s - Collection %d/%d" % [kind, unlocked, EndingBank.count()]
 	if is_victory_toast:
 		_stats_label.visible = false
 	else:

@@ -4,10 +4,10 @@ const TITLE_SCENE := "res://Screens/Main Menu/Title_Screen/title_screen.tscn"
 
 ## Keep in sync with CREDITS.md (short form for the title Credits screen).
 const ASSET_BLURB := """Assets
-Kenney — music, UI SFX, cursors, oil bubbles (CC0)
-Mixkit — cook / fry SFX (free SFX license)
-ambientCG — Day Over paper (CC0)
-Dialogic — dialogue plugin (MIT)
+Kenney: music, UI SFX, cursors, oil bubbles (CC0)
+Mixkit: cook / fry SFX (free SFX license)
+ambientCG: Day Over paper (CC0)
+Dialogic: dialogue plugin (MIT)
 Full list: CREDITS.md in the project repo"""
 
 

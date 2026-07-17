@@ -94,14 +94,14 @@ func _refresh_title_state() -> void:
 	if resume_button:
 		resume_button.visible = can_resume
 		if can_resume:
-			resume_button.text = "Resume · Day %d" % PlayerStatController.current_day_number()
+			resume_button.text = "Resume - Day %d" % PlayerStatController.current_day_number()
 	restart_button.visible = show_new
 	if show_new:
 		restart_button.text = "New Game"
 	if hint_label:
 		if can_resume:
 			hint_label.text = (
-				"Run waiting · %s in the till. Play or Resume to go back to the phone."
+				"Run waiting - %s in the till. Play or Resume to go back to the phone."
 				% PlayerStatController.format_pesos(PlayerStats.playerMoney)
 			)
 		else:

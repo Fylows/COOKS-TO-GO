@@ -32,8 +32,8 @@ func uses_name_wager() -> bool:
 func wager_label() -> String:
 	var pct := get_win_chance_percent()
 	if uses_name_wager():
-		return "Name · %d%%" % pct
-	return "%s · %d%%" % [PlayerStatController.format_pesos(bet_cost()), pct]
+		return "Name - %d%%" % pct
+	return "%s - %d%%" % [PlayerStatController.format_pesos(bet_cost()), pct]
 
 
 func can_bet() -> bool:
@@ -69,7 +69,7 @@ func try_bet() -> String:
 	if won:
 		PlayerStats.sbatter_won = true
 		PlayerStatController.addMoney(WIN_PAYOUT)
-		return "Won %s! (−%s, %d%% odds)" % [
+		return "Won %s! (-%s, %d%% odds)" % [
 			PlayerStatController.format_pesos(WIN_PAYOUT),
 			PlayerStatController.format_pesos(cost),
 			pct,

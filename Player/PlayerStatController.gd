@@ -9,12 +9,12 @@ var morning_forecast: String = ""
 var _night_stolen: int = 0
 var _night_gained: int = 0
 var _night_stock_stolen: int = 0
-## True after Main Menu without wiping — title can Resume into EOD.
+## True after Main Menu without wiping : title can Resume into EOD.
 var run_suspended: bool = false
 
 
 static func format_pesos(amount: int) -> String:
-	return "₱%d" % amount
+	return "Php %d" % amount
 
 
 static func current_day_number() -> int:
@@ -57,8 +57,8 @@ static func format_stall_stock(cooking: CookingController) -> String:
 		"Kikiam %d" % PlayerStats.kikiamStock,
 	])
 	var lines: PackedStringArray = PackedStringArray([
-		"Ready  %s" % " · ".join(ready_parts),
-		"Raw  %s" % " · ".join(raw_parts),
+		"Ready  %s" % " - ".join(ready_parts),
+		"Raw  %s" % " - ".join(raw_parts),
 	])
 	if PlayerStats.boughtSauce:
 		lines.append("Sauce ok")
@@ -82,7 +82,7 @@ static func format_bagged_stock_strip() -> String:
 		parts.append("No sauce")
 	if PlayerStats.palamigUP:
 		parts.append("Palamig %d" % PlayerStats.palamigStock)
-	return " · ".join(parts)
+	return " - ".join(parts)
 
 
 static func poverty_stress() -> float:
@@ -204,7 +204,7 @@ func stall_weather_line() -> String:
 
 func weather_app_upsell_line() -> String:
 	var price: int = int(PlayerStats.upgradePrices.get("weather", 50))
-	return "No Weather App. Open Weather (₱%d)." % price
+	return "No Weather App. Open Weather (Php%d)." % price
 
 
 func weather_effect_blurb() -> String:
@@ -312,15 +312,15 @@ func apply_post_day_events() -> void:
 
 func _build_night_report(loan_paid: int) -> void:
 	if loan_paid > 0:
-		last_night_report.append("JuanAngat kumuha −%s" % format_pesos(loan_paid))
+		last_night_report.append("JuanAngat kumuha -%s" % format_pesos(loan_paid))
 	if PlayerStats.post_day_events.sickChild.active:
 		last_night_report.append("Anak may lagnat kagabi")
 	if PlayerStats.post_day_events.nanakawan.active and _night_stolen > 0:
-		last_night_report.append("Nanakawan −%s" % format_pesos(_night_stolen))
+		last_night_report.append("Nanakawan -%s" % format_pesos(_night_stolen))
 	elif PlayerStats.post_day_events.nanakawan.active:
 		last_night_report.append("May magnanakaw (walang nakuha)")
 	if _night_stock_stolen > 0:
-		last_night_report.append("Nawala −%d fishball" % _night_stock_stolen)
+		last_night_report.append("Nawala -%d fishball" % _night_stock_stolen)
 	if PlayerStats.post_day_events.extraMoney.active and _night_gained > 0:
 		last_night_report.append("May naiwan +%s" % format_pesos(_night_gained))
 	if last_night_report.is_empty():

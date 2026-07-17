@@ -56,7 +56,7 @@ static func entries() -> Array:
 
 		# --- Family / sick ---
 		{"need": ["fam_sick", "medicine_needed"], "prio": 52, "bucket": "family", "line": "Anak may lagnat. Medicine tab: staring contest."},
-		{"need": ["fam_sick", "medicine_paid"], "prio": 46, "bucket": "family", "line": "Bumili ng gamot. Parent points +1. Pesos −300."},
+		{"need": ["fam_sick", "medicine_paid"], "prio": 46, "bucket": "family", "line": "Bumili ng gamot. Parent points +1. Pesos -300."},
 		{"need": ["fam_sick", "skipped_food"], "prio": 54, "bucket": "family", "line": "May sakit, hindi pa nabayaran food. Grabe araw mo."},
 		{"need": ["fam_healthy", "risk_high"], "prio": 30, "bucket": "family", "line": "Healthy pa sila, pero risk meter red na. Babala."},
 		{"need": ["fam_healthy", "paid_all"], "prio": 20, "bucket": "family", "line": "Okay pa ang pamilya. For now. *katok sa kahoy*"},
@@ -116,7 +116,7 @@ static func entries() -> Array:
 		{"need": ["rain_day", "stall_empty"], "prio": 34, "bucket": "stall", "line": "Ulan + walang stock. Perfect storm, pre."},
 		{"need": ["rain_day", "earn_hot"], "prio": 32, "bucket": "stall", "line": "Ulan pero maraming bumili. Wet hero ka."},
 		{"need": ["awasan_day", "cash_broke"], "prio": 31, "bucket": "barangay", "line": "Init na init. Ice candy dreams, fishball reality."},
-		{"need": ["rain_day", "weather_app"], "prio": 46, "bucket": "online", "line": "App: ulan. Traffic: mabagal. Worth the ₱50 ba?"},
+		{"need": ["rain_day", "weather_app"], "prio": 46, "bucket": "online", "line": "App: ulan. Traffic: mabagal. Worth the Php 50 ba?"},
 
 		# --- Tindahan app ---
 		{"need": ["app_unpaid", "cash_ok"], "prio": 33, "bucket": "online", "line": "May pera ka, di ka nag-subscribe. Rebel vendor."},
