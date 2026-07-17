@@ -340,8 +340,7 @@ func _test_events_and_wins() -> void:
 	_stats().playerMoney = 2000
 	_stats().loan_balance = 0
 	_stats().run_seen_endings = PackedStringArray()
-	var EndingBank = load("res://Player/EndingBank.gd")
-	var good_id: String = EndingBank.pick_good_id()
+	var good_id: String = _game_state().pick_good_id()
 	_assert(good_id == "isang_linggo", "week survival qualifies for good ending")
 	_game_state().evaluate_wins()
 	_assert(_game_state().is_victory_toast, "good ending toast shown")

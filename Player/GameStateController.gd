@@ -1,8 +1,11 @@
 extends CanvasLayer
 
 const EndingBank := preload("res://Player/EndingBank.gd")
-## Autowrap labels report a tiny min width; reset_size() collapses without this.
 const OVERLAY_WIDTH := 880.0
+const OVERLAY_MARGIN := 28.0
+const OVERLAY_MAX_HEIGHT_RATIO := 0.85
+const OVERLAY_MAX_BODY_HEIGHT := 430.0
+const OVERLAY_MIN_BODY_HEIGHT := 96.0
 
 var is_game_over: bool = false
 var is_victory_toast: bool = false
@@ -11,7 +14,9 @@ var cause_detail: String = ""
 var ending_id: String = ""
 
 var _blocker: ColorRect
-var _panel: PanelContainer
+var _panel: Panel
+var _content_scroll: ScrollContainer
+var _content_vbox: VBoxContainer
 var _title: Label
 var _reason_label: Label
 var _detail_label: Label
@@ -25,6 +30,7 @@ func _ready() -> void:
 	layer = 2500
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_overlay()
+	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	hide()
 
 
@@ -34,7 +40,7 @@ func evaluate() -> bool:
 		return true
 	if _compute_reason().is_empty():
 		return false
-	var id := EndingBank.pick_id()
+	var id := pick_id()
 	_trigger_game_over(id)
 	return true
 
@@ -42,22 +48,121 @@ func evaluate() -> bool:
 func evaluate_wins() -> bool:
 	if is_game_over or is_victory_toast:
 		return false
-	var id := EndingBank.pick_good_id()
+	var id := pick_good_id()
 	if id.is_empty():
 		return false
 	_trigger_win(id)
 	return true
 
 
-func _layout_panel_centered() -> void:
-	_panel.custom_minimum_size = Vector2(OVERLAY_WIDTH, 0)
-	_panel.reset_size()
-	var half := _panel.size * 0.5
-	_panel.offset_left = -half.x
-	_panel.offset_right = half.x
-	_panel.offset_top = -half.y
-	_panel.offset_bottom = half.y
-	_panel.pivot_offset = half
+## Priority: specific cause first, generic last.
+func pick_id() -> String:
+	var homeless := FamilyStateController.is_homeless
+	var sick := FamilyStateController.is_family_sick and not PlayerStats.paidMedicine
+	var app_due := not PlayerStats.paidTindahanApp
+	var owes_loan := PlayerStats.loan_balance > 0
+	var early := PlayerStats.daysPassed <= 1
+	var skipped_basics := (not PlayerStats.paidFood) or (not PlayerStats.paidWater)
+
+	if homeless:
+		if sick:
+			return "underpass_clinic"
+		if PlayerStats.name_spent_on_sbatter:
+			return "sbatter_sidewalk"
+		return "barangay_notice"
+
+	if sick:
+		if owes_loan:
+			return "juanangat_no_refill"
+		if skipped_basics:
+			return "tubig_at_lagnat"
+		if PlayerStats.palamigUP:
+			return "palamig_over_paracetamol"
+		return "botika_closed"
+
+	if app_due:
+		if early:
+			return "grand_opening_closed"
+		if owes_loan:
+			return "app_and_utang"
+		return "tindahan_app_timeout"
+
+	return "tindahan_app_timeout"
+
+
+func _qualifies_good(id: String) -> bool:
+	match id:
+		"isang_linggo":
+			return PlayerStats.daysPassed >= 7
+		"walang_utang":
+			return (
+				PlayerStats.daysPassed >= 5
+				and PlayerStats.loan_balance <= 0
+				and PlayerStats.playerMoney >= 1500
+				and not FamilyStateController.is_homeless
+				and not FamilyStateController.is_family_sick
+			)
+		"kompletong_cart":
+			return (
+				PlayerStats.palamigUP
+				and PlayerStats.containerUP
+				and PlayerStats.cookUP
+				and PlayerStats.burnUP
+			)
+		"may_bubong":
+			return PlayerStats.daysPassed >= 10 and not PlayerStats.ever_homeless
+		"pamilya_muna":
+			return PlayerStats.daysPassed >= 7 and PlayerStats.consecutive_basics_streak >= 7
+		_:
+			return false
+
+
+## First good ending earned this morning that has not been shown yet this run.
+func pick_good_id() -> String:
+	for id in EndingBank.GOOD_ENDING_ORDER:
+		if id in PlayerStats.run_seen_endings:
+			continue
+		if _qualifies_good(id):
+			return id
+	return ""
+
+
+func _layout_panel() -> void:
+	if _panel == null:
+		return
+	var viewport_size := _overlay_viewport_size()
+	var side_margin := minf(OVERLAY_MARGIN, viewport_size.x * 0.08)
+	var panel_width := minf(OVERLAY_WIDTH, maxf(280.0, viewport_size.x - side_margin * 2.0))
+	var panel_max_height := minf(
+		maxf(220.0, viewport_size.y - OVERLAY_MARGIN * 2.0),
+		maxf(220.0, viewport_size.y * OVERLAY_MAX_HEIGHT_RATIO)
+	)
+	var fixed_height := 64.0 + 56.0 + 52.0 + 32.0
+	if _secondary_button != null and _secondary_button.visible:
+		fixed_height += 50.0 + 16.0
+	var body_height := minf(
+		OVERLAY_MAX_BODY_HEIGHT,
+		maxf(OVERLAY_MIN_BODY_HEIGHT, panel_max_height - fixed_height)
+	)
+	_panel.custom_minimum_size = Vector2(panel_width, 0)
+	if _content_scroll:
+		_content_scroll.custom_minimum_size = Vector2(0, body_height)
+	if _content_vbox:
+		_content_vbox.custom_minimum_size = Vector2(maxf(220.0, panel_width - 72.0), 0)
+	var panel_height := minf(panel_max_height, fixed_height + body_height)
+	_panel.size = Vector2(panel_width, panel_height)
+	_panel.position = Vector2(
+		maxf(0.0, (viewport_size.x - _panel.size.x) * 0.5),
+		maxf(0.0, (viewport_size.y - _panel.size.y) * 0.5)
+	)
+	_panel.pivot_offset = _panel.size * 0.5
+
+
+func _overlay_viewport_size() -> Vector2:
+	var root_size := Vector2(get_tree().root.size)
+	if root_size.x > 0.0 and root_size.y > 0.0:
+		return root_size
+	return get_viewport().get_visible_rect().size
 
 
 func _present_overlay() -> void:
@@ -67,7 +172,7 @@ func _present_overlay() -> void:
 	if _blocker:
 		_blocker.mouse_filter = Control.MOUSE_FILTER_STOP
 		_blocker.modulate.a = 0.0
-	_layout_panel_centered()
+	_layout_panel()
 	_panel.modulate.a = 0.0
 	_panel.scale = Vector2(0.9, 0.9)
 	var tween := create_tween()
@@ -77,6 +182,11 @@ func _present_overlay() -> void:
 	tween.tween_property(_panel, "modulate:a", 1.0, 0.22)
 	tween.tween_property(_panel, "scale", Vector2.ONE, 0.22)\
 		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
+func _on_viewport_size_changed() -> void:
+	if visible:
+		_layout_panel()
 
 
 func dismiss_victory() -> void:
@@ -246,18 +356,12 @@ func _build_overlay() -> void:
 	_blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_blocker)
 
-	_panel = PanelContainer.new()
-	_panel.anchor_left = 0.5
-	_panel.anchor_top = 0.5
-	_panel.anchor_right = 0.5
-	_panel.anchor_bottom = 0.5
-	_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_panel = Panel.new()
+	_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	_panel.custom_minimum_size = Vector2(OVERLAY_WIDTH, 0)
-	_panel.offset_left = -OVERLAY_WIDTH * 0.5
-	_panel.offset_right = OVERLAY_WIDTH * 0.5
-	_panel.offset_top = -200.0
-	_panel.offset_bottom = 200.0
+	_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_panel.clip_contents = true
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color(0.04, 0.03, 0.05, 0.98)
 	panel_style.border_color = Color(0.45, 0.08, 0.1, 1)
@@ -268,8 +372,14 @@ func _build_overlay() -> void:
 	add_child(_panel)
 
 	var vbox := VBoxContainer.new()
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.offset_left = 32.0
+	vbox.offset_top = 32.0
+	vbox.offset_right = -32.0
+	vbox.offset_bottom = -32.0
 	vbox.add_theme_constant_override("separation", 16)
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_panel.add_child(vbox)
 
 	_title = Label.new()
@@ -281,12 +391,24 @@ func _build_overlay() -> void:
 	_title.add_theme_color_override("font_color", Color(0.72, 0.18, 0.2))
 	vbox.add_child(_title)
 
+	_content_scroll = ScrollContainer.new()
+	_content_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_content_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	_content_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_content_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	vbox.add_child(_content_scroll)
+
+	_content_vbox = VBoxContainer.new()
+	_content_vbox.add_theme_constant_override("separation", 14)
+	_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_content_scroll.add_child(_content_vbox)
+
 	_ending_label = Label.new()
 	_ending_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_ending_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_ending_label.add_theme_font_size_override("font_size", 16)
 	_ending_label.add_theme_color_override("font_color", Color(1.0, 0.86, 0.42))
-	vbox.add_child(_ending_label)
+	_content_vbox.add_child(_ending_label)
 
 	_reason_label = Label.new()
 	_reason_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -294,7 +416,7 @@ func _build_overlay() -> void:
 	_reason_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_reason_label.add_theme_font_size_override("font_size", 22)
 	_reason_label.add_theme_color_override("font_color", Color(0.88, 0.84, 0.82))
-	vbox.add_child(_reason_label)
+	_content_vbox.add_child(_reason_label)
 
 	_detail_label = Label.new()
 	_detail_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -302,7 +424,7 @@ func _build_overlay() -> void:
 	_detail_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_detail_label.add_theme_font_size_override("font_size", 16)
 	_detail_label.add_theme_color_override("font_color", Color(0.55, 0.48, 0.48))
-	vbox.add_child(_detail_label)
+	_content_vbox.add_child(_detail_label)
 
 	_stats_label = Label.new()
 	_stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -310,7 +432,7 @@ func _build_overlay() -> void:
 	_stats_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_stats_label.add_theme_font_size_override("font_size", 16)
 	_stats_label.add_theme_color_override("font_color", Color(0.42, 0.4, 0.45))
-	vbox.add_child(_stats_label)
+	_content_vbox.add_child(_stats_label)
 
 	_primary_button = Button.new()
 	_primary_button.text = "Start over"
