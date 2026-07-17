@@ -48,7 +48,6 @@ const CUP_ICON_TODO := preload("res://Shared/Assets/Palamig/cup.PNG")
 
 var results_modal: ColorRect
 var results_label: Label
-var sfx := {}
 
 @onready var stats: Node = get_node_or_null("/root/PlayerStats")
 @onready var stat_controller: Node = get_node_or_null("/root/PlayerStatController")
@@ -58,12 +57,6 @@ func _ready() -> void:
 	_reset_session()
 	jug.gui_input.connect(_on_jug_input)
 	back_button.pressed.connect(_exit_to_game)
-	for s in ["pour", "serve", "waste", "sold_out"]:
-		var player := AudioStreamPlayer.new()
-		player.bus = "SFX"
-		player.stream = load("res://Palamig/Assets/SFX/%s.wav" % s)
-		add_child(player)
-		sfx[s] = player
 	_build_results_modal()
 	_update_ui()
 
@@ -134,7 +127,7 @@ func _show_results() -> void:
 		PlayerStatController.format_pesos(total_money_lost),
 	]
 	results_modal.visible = true
-	sfx["sold_out"].play()
+	SfxController.play_palamig_sold_out()
 
 
 func _close_results() -> void:
@@ -145,7 +138,7 @@ func _close_results() -> void:
 func _exit_to_game() -> void:
 	if is_pouring:
 		is_pouring = false
-		sfx["pour"].stop()
+		SfxController.stop_palamig_pour()
 		cup_fill = 0.0
 	if results_modal and results_modal.visible:
 		results_modal.hide()
@@ -158,8 +151,7 @@ func _finish_minigame() -> void:
 		return
 	_finish_sent = true
 	is_pouring = false
-	if sfx.has("pour"):
-		sfx["pour"].stop()
+	SfxController.stop_palamig_pour()
 	# Hidden UI still ate Space and billed waste_cost. Lock input on finish.
 	set_process_input(false)
 	minigame_finished.emit(total_money_earned, total_money_lost)
@@ -222,7 +214,7 @@ func _start_pour() -> void:
 		return
 	cup_fill = 0.0
 	is_pouring = true
-	sfx["pour"].play()
+	SfxController.start_palamig_pour()
 	feedback_label.text = "Pouring..."
 
 
@@ -230,7 +222,7 @@ func _stop_pour() -> void:
 	if not is_pouring:
 		return
 	is_pouring = false
-	sfx["pour"].stop()
+	SfxController.stop_palamig_pour()
 	if cup_fill <= 0.0:
 		return
 
@@ -244,7 +236,7 @@ func _stop_pour() -> void:
 		if stat_controller:
 			stat_controller.addMoney(sale_price)
 		palamig_served.emit(sale_price)
-		sfx["serve"].play()
+		SfxController.play_palamig_serve()
 		if order_cups_total > 0:
 			order_cups_served += 1
 			cup_fill = 0.0
@@ -265,7 +257,7 @@ func _stop_pour() -> void:
 			stat_controller.subtractMoney(waste_cost)
 		money_lost.emit(waste_cost)
 		palamig_wasted.emit(1)
-		sfx["waste"].play()
+		SfxController.play_palamig_waste()
 		if spilled:
 			feedback_label.text = "Spilled! Cup overflowed (%s lost)." % PlayerStatController.format_pesos(waste_cost)
 		else:

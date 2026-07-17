@@ -15,9 +15,6 @@ const JOLLY_PITCH := 1.0
 const SAD_PITCH := 0.86
 const JOLLY_VOL := -10.0
 const SAD_VOL := -15.0
-const JOLLY_CUTOFF := 20500.0
-const SAD_CUTOFF := 6000.0
-
 var _player: AudioStreamPlayer
 var _ghost: AudioStreamPlayer
 var _lowpass: AudioEffectLowPassFilter
@@ -26,10 +23,14 @@ var _stress: float = 0.0
 # Jolliness is fixed per track: sampled once when a track starts (day / EOD
 # start), not chased live : a single sale no longer flips the mood back to jolly.
 var _mood_stress: float = 0.0
+var _pending_track: String = ""
+var _audio_unlocked := not OS.has_feature("web")
+var _missing_bus_warned := false
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process_input(true)
 	_ensure_players()
 	call_deferred("_sync_from_settings")
 
@@ -46,27 +47,29 @@ func _ensure_players() -> void:
 
 func _make_player(volume_db: float, pitch: float) -> AudioStreamPlayer:
 	var player := AudioStreamPlayer.new()
-	player.bus = BUS_NAME
+	player.bus = _music_bus_name()
 	player.process_mode = Node.PROCESS_MODE_ALWAYS
 	player.volume_db = volume_db
 	player.pitch_scale = pitch
 	return player
 
 
-func _setup_music_bus() -> void:
+func _music_bus_name() -> StringName:
 	var idx := AudioServer.get_bus_index(BUS_NAME)
 	if idx < 0:
-		AudioServer.add_bus()
-		idx = AudioServer.bus_count - 1
-		AudioServer.set_bus_name(idx, BUS_NAME)
-		AudioServer.set_bus_send(idx, &"Master")
-		var lowpass := AudioEffectLowPassFilter.new()
-		lowpass.cutoff_hz = 20500.0
-		lowpass.resonance = 0.7
-		AudioServer.add_bus_effect(idx, lowpass)
+		if not _missing_bus_warned:
+			push_warning("Missing Music audio bus. Falling back to Master. Check default_bus_layout.tres.")
+			_missing_bus_warned = true
+		return &"Master"
+	return &"Music"
+
+
+func _setup_music_bus() -> void:
+	var idx := AudioServer.get_bus_index(BUS_NAME)
+	if idx >= 0 and AudioServer.get_bus_effect_count(idx) > 0:
+		_lowpass = AudioServer.get_bus_effect(idx, 0) as AudioEffectLowPassFilter
 	else:
-		AudioServer.set_bus_send(idx, &"Master")
-	_lowpass = AudioServer.get_bus_effect(idx, 0) as AudioEffectLowPassFilter
+		_lowpass = null
 
 
 func _music_allowed() -> bool:
@@ -75,6 +78,38 @@ func _music_allowed() -> bool:
 
 func _is_game_over_track() -> bool:
 	return _current == "game_over"
+
+
+func _input(event: InputEvent) -> void:
+	if _audio_unlocked:
+		return
+	if event is InputEventMouseButton:
+		if not event.pressed:
+			return
+	elif event is InputEventScreenTouch:
+		if not event.pressed:
+			return
+	elif event is InputEventKey:
+		if not event.pressed or event.echo:
+			return
+	elif event is InputEventJoypadButton:
+		if not event.pressed:
+			return
+	else:
+		return
+	_unlock_audio()
+
+
+func _unlock_audio() -> void:
+	if _audio_unlocked:
+		return
+	_audio_unlocked = true
+	if _pending_track.is_empty() or not _music_allowed():
+		return
+	var resume := _pending_track
+	_pending_track = ""
+	_current = ""
+	play_track(resume)
 
 
 func _process(delta: float) -> void:
@@ -99,8 +134,6 @@ func _apply_stress_to_players(s: float) -> void:
 		return
 	_player.pitch_scale = lerpf(JOLLY_PITCH, SAD_PITCH, s)
 	_player.volume_db = lerpf(JOLLY_VOL, SAD_VOL, s)
-	if _lowpass:
-		_lowpass.cutoff_hz = lerpf(JOLLY_CUTOFF, SAD_CUTOFF, s)
 	if _ghost:
 		_ghost.volume_db = lerpf(-80.0, -22.0, s)
 
@@ -115,7 +148,12 @@ func play_track(key: String) -> void:
 	_ensure_players()
 	if not _music_allowed():
 		_current = key
+		_pending_track = ""
 		_silence_now()
+		return
+	if not _audio_unlocked:
+		_current = key
+		_pending_track = key
 		return
 	if key == _current and _player.playing:
 		# Keep the mood sampled at track start : don't re-read live money.
@@ -123,6 +161,8 @@ func play_track(key: String) -> void:
 		return
 	_current = key
 	var stream: AudioStream = TRACKS[key]
+	_player.bus = _music_bus_name()
+	_ghost.bus = _music_bus_name()
 	_player.stream = stream
 	_ghost.stream = stream
 	_set_bus_muted(false)
@@ -140,15 +180,13 @@ func _apply_game_over_mood() -> void:
 	_stress = 1.0
 	_player.pitch_scale = 0.88
 	_player.volume_db = -11.0
-	if _lowpass:
-		_lowpass.cutoff_hz = 2200.0
 	if _ghost:
 		_ghost.stop()
 		_ghost.volume_db = -80.0
 
 
 func _apply_money_mood() -> void:
-	if _player == null or _lowpass == null:
+	if _player == null:
 		return
 	if _is_game_over_track():
 		_apply_game_over_mood()
@@ -162,6 +200,7 @@ func _apply_money_mood() -> void:
 func stop() -> void:
 	_silence_now()
 	_current = ""
+	_pending_track = ""
 
 
 func _silence_now() -> void:

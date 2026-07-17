@@ -14,14 +14,19 @@ const SOUNDS := {
 	"coin": preload("res://Audio/SFX/handleCoins.ogg"),
 	"error": preload("res://Audio/SFX/error_001.ogg"),
 	"cook_start": preload("res://Audio/SFX/cook_sizzle_short.mp3"),
+	"pan_sizzle": preload("res://Audio/SFX/cook_sizzle.mp3"),
+	"palamig_pour": preload("res://Palamig/Assets/SFX/pour.wav"),
+	"palamig_serve": preload("res://Palamig/Assets/SFX/serve.wav"),
+	"palamig_waste": preload("res://Palamig/Assets/SFX/waste.wav"),
+	"palamig_sold_out": preload("res://Palamig/Assets/SFX/sold_out.wav"),
 }
 
 const BUS_NAME := "SFX"
-const PAN_SIZZLE_STREAM := preload("res://Audio/SFX/cook_sizzle.mp3")
 
 var _player: AudioStreamPlayer
-var _pan_sizzle_player: AudioStreamPlayer
+var _loop_players: Dictionary = {}
 var _cook_start_cooldown_until_ms: int = 0
+var _missing_bus_warned := false
 
 
 func _ready() -> void:
@@ -32,30 +37,43 @@ func _ready() -> void:
 func _ensure_player() -> void:
 	if _player:
 		return
-	_ensure_sfx_bus()
 	_player = AudioStreamPlayer.new()
-	_player.bus = BUS_NAME
+	_player.bus = _sfx_bus_name()
 	_player.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_player)
 
 
-func _ensure_sfx_bus() -> void:
-	if AudioServer.get_bus_index(BUS_NAME) < 0:
-		AudioServer.add_bus()
-		AudioServer.set_bus_name(AudioServer.bus_count - 1, BUS_NAME)
+func _sfx_bus_name() -> StringName:
+	var idx := AudioServer.get_bus_index(BUS_NAME)
+	if idx < 0:
+		if not _missing_bus_warned:
+			push_warning("Missing SFX audio bus. Falling back to Master. Check default_bus_layout.tres.")
+			_missing_bus_warned = true
+		return &"Master"
+	return &"SFX"
 
 
-func _ensure_pan_sizzle_player() -> void:
-	if _pan_sizzle_player:
-		return
-	_ensure_sfx_bus()
-	_pan_sizzle_player = AudioStreamPlayer.new()
-	var stream := PAN_SIZZLE_STREAM.duplicate() as AudioStreamMP3
-	stream.loop = true
-	_pan_sizzle_player.stream = stream
-	_pan_sizzle_player.bus = BUS_NAME
-	_pan_sizzle_player.process_mode = Node.PROCESS_MODE_ALWAYS
-	add_child(_pan_sizzle_player)
+func _make_loop_stream(key: String) -> AudioStream:
+	var stream := SOUNDS[key].duplicate() as AudioStream
+	if stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
+	elif stream is AudioStreamOggVorbis:
+		(stream as AudioStreamOggVorbis).loop = true
+	elif stream is AudioStreamWAV:
+		(stream as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD
+	return stream
+
+
+func _ensure_loop_player(key: String) -> AudioStreamPlayer:
+	if key in _loop_players and is_instance_valid(_loop_players[key]):
+		return _loop_players[key]
+	var player := AudioStreamPlayer.new()
+	player.stream = _make_loop_stream(key)
+	player.bus = _sfx_bus_name()
+	player.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(player)
+	_loop_players[key] = player
+	return player
 
 
 func play(key: String) -> void:
@@ -64,8 +82,29 @@ func play(key: String) -> void:
 	if key not in SOUNDS:
 		return
 	_ensure_player()
+	_player.bus = _sfx_bus_name()
 	_player.stream = SOUNDS[key]
 	_player.play()
+
+
+func start_loop(key: String, volume_db: float = 0.0) -> void:
+	if not AudioSettings.sfx_enabled:
+		return
+	if key not in SOUNDS:
+		return
+	var player := _ensure_loop_player(key)
+	player.bus = _sfx_bus_name()
+	player.volume_db = volume_db
+	if not player.playing:
+		player.play()
+
+
+func stop_loop(key: String) -> void:
+	if key not in _loop_players:
+		return
+	var player: AudioStreamPlayer = _loop_players[key]
+	if is_instance_valid(player) and player.playing:
+		player.stop()
 
 
 func play_click() -> void:
@@ -85,18 +124,14 @@ func play_cancel_order() -> void:
 
 
 func set_pan_sizzle_active(active: bool) -> void:
-	_ensure_pan_sizzle_player()
 	if active:
-		if not _pan_sizzle_player.playing:
-			_pan_sizzle_player.play()
+		start_loop("pan_sizzle")
 		return
-	if _pan_sizzle_player.playing:
-		_pan_sizzle_player.stop()
+	stop_loop("pan_sizzle")
 
 
 func stop_pan_sizzle() -> void:
-	if _pan_sizzle_player and _pan_sizzle_player.playing:
-		_pan_sizzle_player.stop()
+	stop_loop("pan_sizzle")
 
 
 ## Short oil sizzle when adding food to an active pan (throttled when mashing).
@@ -138,6 +173,26 @@ func play_error() -> void:
 	play("error")
 
 
+func start_palamig_pour() -> void:
+	start_loop("palamig_pour")
+
+
+func stop_palamig_pour() -> void:
+	stop_loop("palamig_pour")
+
+
+func play_palamig_serve() -> void:
+	play("palamig_serve")
+
+
+func play_palamig_waste() -> void:
+	play("palamig_waste")
+
+
+func play_palamig_sold_out() -> void:
+	play("palamig_sold_out")
+
+
 func play_morning_rush() -> void:
 	if not AudioSettings.sfx_enabled:
 		return
@@ -154,7 +209,7 @@ func _play_one_shot(key: String, volume_db: float = 0.0) -> void:
 	_ensure_player()
 	var player := AudioStreamPlayer.new()
 	player.stream = SOUNDS[key]
-	player.bus = BUS_NAME
+	player.bus = _sfx_bus_name()
 	player.volume_db = volume_db
 	player.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(player)
